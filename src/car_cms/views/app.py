@@ -197,8 +197,7 @@ class SignupView(AppTypeCheck, View):
                 user = User.objects.create_user(
                     data['username'], data['name'], password=data['password'],
                     cellphone=data['cellphone'], name_card=data['namecard'],
-                    referer_code=data['referer_code'], user_type=self.app_type,
-                    is_admin=False, is_superuser=False
+                    referer_code=data['referer_code'], user_type=self.app_type
                 )
         except Exception as e:
             context = dict(
@@ -207,6 +206,8 @@ class SignupView(AppTypeCheck, View):
                 errors=form.errors,
                 type=self.app_type
             )
+            print(e)
+            print(context)
             return render(request, 'car_cms/auth/signup.html', context=context)
         else:
             login(request, user)
