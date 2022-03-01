@@ -1,3 +1,5 @@
+import os.path
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -9,11 +11,18 @@ admin.site.site_header = site_header
 admin.site.site_title = site_header
 admin.site.index_title = site_header
 
+
 def trigger_error(request):
     division_by_zero = 1 / 0
 
+
 def elb_status(request):
     return HttpResponse(status=200)
+
+def manifest_view(request):
+    with open(os.path.join(settings.BASE_DIR, 'itechs', 'manifest.json'), 'r') as file:
+        return HttpResponse(file, content_type='application/json; charset=utf8')
+
 
 urlpatterns = [
                   path('', include('car_cms.urls_fc_app', namespace='car_cms_fc_app')),
@@ -21,4 +30,5 @@ urlpatterns = [
                   path('carcompare/', include('carcompare.urls', namespace='carcompare')),
                   path('sentry-debug/', trigger_error),
                   path('elb-status/', elb_status),
+                  path('manifest.json/', manifest_view)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
