@@ -265,17 +265,17 @@
 
         function showPolicy() {
             {% if type == "dealer" %}
-                location.href = `/carcms/compare/${compareId}/policy/`
+                location.href = `/compare/${compareId}/policy/`
             {% else %}
-                location.href = `/carcms_fc/compare/${compareId}/policy/`
+                location.href = `/compare/${compareId}/policy/`
             {% endif %}
         }
 
         function showEstimate() {
             {% if type == "dealer" %}
-                location.href = `/carcms/compare/${compareId}/estimate/`
+                location.href = `/compare/${compareId}/estimate/`
             {% else %}
-                location.href = `/carcms_fc/compare/${compareId}/estimate/`
+                location.href = `/compare/${compareId}/estimate/`
             {% endif %}
         }
 

@@ -9,20 +9,15 @@ admin.site.site_header = site_header
 admin.site.site_title = site_header
 admin.site.index_title = site_header
 
-
 def trigger_error(request):
     division_by_zero = 1 / 0
-
 
 def elb_status(request):
     return HttpResponse(status=200)
 
-
 urlpatterns = [
                   path('', include('car_cms.urls_fc_app', namespace='car_cms_fc_app')),
                   path('admin/', admin.site.urls),
-                  path('commons/api/', include('commons.urls_api', namespace='commons_api')),
-                  # path('carcms/', include('car_cms.urls_app', namespace='car_cms_app')),
                   path('carcompare/', include('carcompare.urls', namespace='carcompare')),
                   path('sentry-debug/', trigger_error),
                   path('elb-status/', elb_status),

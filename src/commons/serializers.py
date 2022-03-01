@@ -3,7 +3,7 @@ from django.utils import timezone
 from rest_framework import serializers
 from rest_framework_api_key.permissions import HasAPIKey
 
-from commons.models import CustomerInfo, Address, BankAccount
+from commons.models import Address, BankAccount
 from commons.utils.ssn import SsnParser
 
 
@@ -13,22 +13,6 @@ class AddressSerializer(serializers.ModelSerializer):
         fields = ['postcode', 'address', 'address_detail']
 
 
-class CustomerInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomerInfo
-        fields = ['id', 'email', 'name', 'cellphone', 'birthdate', 'ssn', 'address', 'extra_1', 'extra_2', 'extra_3']
-        read_only_fields = ['id']
-
-    address = AddressSerializer(many=False, required=False)
-
-    def create(self, validated_data):
-        address_data = validated_data.pop('address', None)
-        customer_info = CustomerInfo(**validated_data)
-        if address_data:
-            address = Address.objects.create(**address_data)
-            customer_info.address = address
-        customer_info.save()
-        return customer_info
 
 
 class BankAccountSerializer(serializers.ModelSerializer):

@@ -15,7 +15,7 @@ ALLOWED_HOSTS = ['dev.itechs.io']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'itechs_core_dev',
+        'NAME': 'chadirect_dev',
         'USER': 'itechs',
         'PASSWORD': 'dkdlxldptm1!',
         'HOST': 'itechs-core.cz11mooapt6e.ap-northeast-2.rds.amazonaws.com',
@@ -33,7 +33,7 @@ CACHES = {
     }
 }
 
-AWS_STORAGE_BUCKET_NAME = 'itechs-core'
+AWS_STORAGE_BUCKET_NAME = 'chadirect-core'
 AWS_DEFAULT_ACL = 'public-read'
 AWS_ACCESS_KEY_ID = 'AKIAZGI6WZDTLWRP3EPO'
 AWS_SECRET_ACCESS_KEY = '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'
@@ -65,7 +65,7 @@ CLOUDWATCH_AWS_KEY = "HNlrLYZaWmRE82qowE0fxMYXB73XGFH6z4vfw6Bq"
 
 SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
 
-CELERY_BROKER_URL = 'redis://itechs-redis.cjhpy0.0001.apn2.cache.amazonaws.com:6379/0'
+CELERY_BROKER_URL = 'redis://itechs-redis.cjhpy0.0001.apn2.cache.amazonaws.com:6379/1'
 
 JANDI_CP_INSURANCE_URL = "https://wh.jandi.com/connect-api/webhook/23279605/a5f69df1544841f1a152453c927df16b"
 

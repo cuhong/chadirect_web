@@ -1,16 +1,11 @@
 import uuid
-import datetime
-from django.contrib.auth import get_user_model
 from django.db import models, transaction
 from django.utils import timezone
 from encrypted_fields.fields import EncryptedCharField, EncryptedEmailField, EncryptedDateField
 from sequences import get_next_value
 
-from account.models import APIKey
-from commons.utils.popbill import PopbillAccountCheck
 from itechs.storages import ProtectedFileStorage
 
-User = get_user_model()
 
 
 class VehicleInsurerChoices(models.TextChoices):
@@ -94,60 +89,6 @@ class Address(models.Model):
     address_detail = models.TextField(null=False, blank=False, verbose_name='주소상세')
 
 
-class CustomerInfo(UUIDPkMixin, DateTimeMixin):
-    class Meta:
-        verbose_name = '고객정보'
-        verbose_name_plural = verbose_name
-        ordering = ('-registered_at',)
-
-    MALE = 0
-    FEMALE = 1
-    GENDER_CHOICES = ((0, '남성'), (1, '여성'))
-    name = EncryptedCharField(max_length=100, null=True, blank=True, verbose_name='성명')
-    cellphone = EncryptedCharField(max_length=100, null=True, blank=True, verbose_name='휴대전화')
-    email = EncryptedEmailField(null=True, blank=True, verbose_name='이메일')
-    birthdate = EncryptedDateField(null=True, blank=True, verbose_name='생년월일')
-    address = models.ForeignKey(Address, null=True, blank=True, verbose_name='주소', on_delete=models.PROTECT)
-    ssn = EncryptedCharField(max_length=13, null=True, blank=True, verbose_name='주민번호')
-    gender = models.IntegerField(choices=GENDER_CHOICES, null=True, blank=True, verbose_name='성별')
-    extra_1 = models.CharField(max_length=300, null=True, blank=True, verbose_name='추가필드1')
-    extra_2 = models.CharField(max_length=300, null=True, blank=True, verbose_name='추가필드2')
-    extra_3 = models.CharField(max_length=300, null=True, blank=True, verbose_name='추가필드3')
-
-    @property
-    def full_age(self):
-        # 만나이 계산
-        if self.birthdate is None:
-            # 판단불가
-            return None
-        now = timezone.now().date()
-        birthdate = self.birthdate
-        year_diff = now.year - birthdate.year
-        bdate_year_change = birthdate.replace(year=now.year)
-        if now > bdate_year_change:
-            # 생일 지납
-            return year_diff
-        else:
-            return year_diff - 1
-
-    @property
-    def age(self):
-        # 나이 계산
-        if self.birthdate is None:
-            # 판단불가
-            return None
-        now = timezone.now().date()
-        return now.year - self.birthdate.year + 1
-
-    @property
-    def is_minor(self):
-        # 미성년자 판단
-        full_age = self.full_age
-        if full_age is None:
-            return None
-        return full_age < 19
-
-
 class ProtectedFileAbstract(UUIDPkMixin, DateTimeMixin, models.Model):
     class Meta:
         verbose_name = '보안파일'
@@ -224,15 +165,6 @@ class BankAccount(UUIDPkMixin, DateTimeMixin, models.Model):
     def __str__(self):
         return f"{self.get_bank_code_display()}/{self.account_no}/{self.account_name}"
 
-    def _account_name_check(self):
-        popbill = PopbillAccountCheck()
-        result = popbill.check_account(self.bank_code, self.account_no)
-        name_match = self.account_name.strip() == result.get('account_name', None)
-        self.checked = name_match
-        self.result_code = result.get('code')
-        self.result_msg = result.get('msg') if name_match else "예금주명이 일치하지 않습니다."
-        self.check_datetime = timezone.now() if result.get('result') else None
-        self.save()
 
 
 class LocationMixin(models.Model):

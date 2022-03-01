@@ -1,7 +1,6 @@
 from ckeditor.fields import RichTextField
 from django.db import models
 
-from car_cms.models import Account
 from commons.models import DateTimeMixin
 
 
@@ -17,5 +16,5 @@ class Notice(DateTimeMixin, models.Model):
 
 
 class NoticeReadLog(DateTimeMixin, models.Model):
-    account = models.OneToOneField(Account, null=False, blank=False, verbose_name='사용자', on_delete=models.PROTECT)
+    account = models.OneToOneField('account.User', null=False, blank=False, verbose_name='사용자', on_delete=models.PROTECT)
     notice = models.ForeignKey(Notice, null=False, blank=False, verbose_name='공지사항', on_delete=models.PROTECT)

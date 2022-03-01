@@ -72,17 +72,17 @@
 
     function prevPage() {
         {% if type == "dealer" %}
-        location.href = `/carcms/compare/?page=${currentPage - 1}`
+        location.href = `/compare/?page=${currentPage - 1}`
         {% else %}
-        location.href = `/carcms_fc/compare/?page=${currentPage - 1}`
+        location.href = `/compare/?page=${currentPage - 1}`
         {% endif %}
     }
 
     function nextPage() {
         {% if type == "dealer" %}
-        location.href = `/carcms/compare/?page=${currentPage + 1}`
+        location.href = `/compare/?page=${currentPage + 1}`
         {% else %}
-        location.href = `/carcms_fc/compare/?page=${currentPage + 1}`
+        location.href = `/compare/?page=${currentPage + 1}`
         {% endif %}
     }
 

@@ -1,10 +1,13 @@
 from django.contrib import admin, messages
+from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.shortcuts import render
 from inline_actions.admin import InlineActionsModelAdminMixin
 
 from car_cms.admin.inline_mixin import CustomInlineActionsModelAdminMixin
-from car_cms.models import Compare, CompareStatus, Account, ComparePending, CompareAll
+from car_cms.models import Compare, CompareStatus, ComparePending, CompareAll
 
+User = get_user_model()
 
 @admin.register(CompareAll)
 class CompareAllAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
@@ -66,7 +69,7 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super(ComparePendingAdmin, self).save_model(request, obj, form, change)
         obj.refresh_from_db()
-        obj.set_manager(request.user.carcrm_user)
+        obj.set_manager(request.user)
 
     # def response_add(self, request, obj, post_url_continue=None):
     #     super(ComparePendingAdmin, self).response_add(request, obj, post_url_continue=post_url_continue)
@@ -117,7 +120,7 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
         # 1. has the form been submitted?
         if '_save' in request.POST:
             try:
-                manager = Account.objects.get(id=request.POST.get('user'))
+                manager = request.user
                 obj.set_manager(manager=manager)
             except Exception as e:
                 print(e)
@@ -131,7 +134,7 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
         # 3. simply display the form
         else:
             pass
-        chatuser_queryset = Account.objects.filter(is_admin=True, is_active=True)
+        chatuser_queryset = User.objects.filter(Q(is_admin=True) | Q(is_superuser=True)).filter(is_active=True)
         return render(
             request,
             'car_cms/admin/set_manager.html',
@@ -264,7 +267,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
             return False
 
     def get_queryset(self, request):
-        qs = super(CompareAdmin, self).get_queryset(request).filter(manager=request.user.carcrm_user)
+        qs = super(CompareAdmin, self).get_queryset(request).filter(manager=request.user)
         return qs
 
     def get_inline_actions(self, request, obj=None):

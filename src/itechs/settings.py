@@ -91,7 +91,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'mathfilters',
     'bootstrap_pagination',
-    'rest_framework_api_key',
+    # 'rest_framework_api_key',
     'encrypted_fields',
     'imagekit',
     'inline_actions',

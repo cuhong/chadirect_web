@@ -655,17 +655,17 @@
 
     function notice() {
         {% if type == "dealer" %}
-            location.href = `/carcms/notice/`
+            location.href = `//notice/`
         {% else %}
-            location.href = `/carcms_fc/notice/`
+            location.href = `/notice/`
         {% endif %}
     }
 
     function noticeDetail(notice_id) {
         {% if type == "dealer" %}
-            location.href = `/carcms/notice/${notice_id}/`
+            location.href = `/notice/${notice_id}/`
         {% else %}
-            location.href = `/carcms_fc/notice/${notice_id}/`
+            location.href = `/notice/${notice_id}/`
         {% endif %}
     }
 
@@ -687,9 +687,9 @@
 
     function compareDetail(compare_id) {
         {% if type == "dealer" %}
-            location.href = `/carcms/compare/${compare_id}/`
+            location.href = `/compare/${compare_id}/`
         {% else %}
-            location.href = `/carcms_fc/compare/${compare_id}/`
+            location.href = `/compare/${compare_id}/`
         {% endif %}
     }
 

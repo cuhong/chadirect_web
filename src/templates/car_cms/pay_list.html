@@ -212,17 +212,17 @@
 
         function prevPage() {
             {% if type == "dealer" %}
-            location.href = `/carcms/compare/pay/?page=${currentPage - 1}`
+            location.href = `/compare/pay/?page=${currentPage - 1}`
             {% else %}
-            location.href = `/carcms_fc/compare/pay/?page=${currentPage - 1}`
+            location.href = `/compare/pay/?page=${currentPage - 1}`
             {% endif %}
         }
 
         function nextPage() {
             {% if type == "dealer" %}
-            location.href = `/carcms/compare/pay/?page=${currentPage + 1}`
+            location.href = `/compare/pay/?page=${currentPage + 1}`
             {% else %}
-            location.href = `/carcms_fc/compare/pay/?page=${currentPage + 1}`
+            location.href = `/compare/pay/?page=${currentPage + 1}`
             {% endif %}
         }
 

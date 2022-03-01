@@ -20,7 +20,9 @@ from django.views.generic import TemplateView
 from sentry_sdk import capture_exception
 
 from car_cms.exceptions.compare import CarCMSCompareError
-from car_cms.models import Account as CMSAccount, Notice, Compare, CompareStatus, FindPassword, FindPasswordError
+from car_cms.models import Notice, Compare, CompareStatus
+
+
 
 
 class AppTypeCheck():
@@ -79,10 +81,10 @@ class PasswordChangeRequestView(AppTypeCheck, View):
     def post(self, request):
         try:
             email = request.POST.get('email')
-            account = CMSAccount.objects.get(user__email=email)
-            FindPassword.request_change(account, app_type=self.app_type)
+            user = User.objects.get(user__email=email)
+            FindPassword.request_change(user, app_type=self.app_type)
             response_data = {"result": True}
-        except CMSAccount.DoesNotExist:
+        except User.DoesNotExist:
             response_data = {"result": False, "msg": "존재하지 않는 이메일입니다."}
         except Exception as e:
             capture_exception(e)
@@ -93,13 +95,9 @@ class PasswordChangeRequestView(AppTypeCheck, View):
 class CmsUserPermissionMixin(UserPassesTestMixin):
 
     def test_func(self):
-        try:
-            cms_user = CMSAccount.objects.get(user=self.request.user, is_active=True)
-        except:
-            return False
-        else:
-            self.cms_user = cms_user
-            return True
+        if self.request.user.is_authenticated is True:
+            return self.request.user.is_admin or self.requset.user.is_superuser
+        return False
 
     def dispatch(self, request, *args, **kwargs):
         self.cms_user = None
@@ -148,7 +146,7 @@ class LogoutView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, Djang
         return url
 
 
-from account.models import User
+from account.models import User, FindPassword
 
 
 class SignupForm(forms.Form):
@@ -197,10 +195,8 @@ class SignupView(AppTypeCheck, View):
         try:
             with transaction.atomic():
                 user = User.objects.create_user(
-                    data['username'], data['name'], password=data['password']
-                )
-                account = CMSAccount.objects.select_for_update().create(
-                    user=user, name=data['name'], cellphone=data['cellphone'], name_card=data['namecard'],
+                    data['username'], data['name'], password=data['password'],
+                    cellphone=data['cellphone'], name_card=data['namecard'],
                     referer_code=data['referer_code'], user_type=self.app_type
                 )
         except Exception as e:
@@ -212,9 +208,7 @@ class SignupView(AppTypeCheck, View):
             )
             return render(request, 'car_cms/auth/signup.html', context=context)
         else:
-            user = authenticate(request, email=data['username'], password=data['password'])
-            if user is not None:
-                login(request, user)
+            login(request, user)
             if self.app_type == "dealer":
                 return HttpResponseRedirect(reverse('car_cms_app:index'))
             else:
@@ -227,13 +221,13 @@ class IndexView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, Templa
     def get_context_data(self, **kwargs):
         now = timezone.localdate()
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['cms_user'] = self.request.user.carcrm_user
+        context['cms_user'] = self.request.user
         context['notice_list'] = Notice.objects.values('id', 'title', 'registered_at').filter(is_open=True)[:3]
         context['year'] = now.year
         context['month'] = now.month
         context['type'] = self.app_type
         context['summary'] = Compare.objects.filter(
-            account=self.request.user.carcrm_user, registered_at__year=now.year, registered_at__month=now.month
+            account=self.request.user, registered_at__year=now.year, registered_at__month=now.month
         ).aggregate(
             total=Coalesce(Count('id'), 0),
             request=Coalesce(Sum(Case(When(status=0, then=1), default=0, output_field=models.IntegerField())), 0),
@@ -326,7 +320,7 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
             except:
                 birthdate = None
             compare = Compare.objects.create(
-                account=request.user.carcrm_user,
+                account=request.user,
                 customer_name=data['customer_name'],
                 customer_cellphone=data.get('customer_cellphone'),
                 customer_type=data['customer_type'],
@@ -338,7 +332,7 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 car_name=data['car_name'],
                 car_type=data['car_type'],
                 car_price=data.get('car_price', 0),
-                car_identification=data.get('car_identification', ''),
+                car_identification=None if data.get('car_identification', None) == "" else data.get('car_identification', None),
                 attach_1=data['attach_1'],
                 attach_2=data['attach_2'],
                 attach_3=data['attach_3'],
@@ -377,7 +371,7 @@ class CompareListView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, 
     def get_queryset(self):
         queryset = super(CompareListView, self).get_queryset()
         return queryset.values('id', 'registered_at', 'status', 'customer_name', 'customer_cellphone',
-                               'car_identification', 'car_name').filter(account=self.request.user.carcrm_user).annotate(
+                               'car_identification', 'car_name').filter(account=self.request.user).annotate(
             status_display=Case(
                 When(status=0, then=Value('견적요청')),
                 When(status=1, then=Value('견적 산출중')),
@@ -395,14 +389,14 @@ class CompareDetailView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
     def get(self, request, compare_id):
         template_name = 'car_cms/compare_detail.html'
         compare = Compare.objects.get(
-            account=request.user.carcrm_user, id=compare_id
+            account=request.user, id=compare_id
         )
         context = dict(compare=compare, type=self.app_type)
         return render(request, template_name, context=context)
 
     def post(self, request, compare_id):
         compare = Compare.objects.get(
-            account=request.user.carcrm_user, id=compare_id
+            account=request.user, id=compare_id
         )
         action = request.POST.get('action', None)
         try:
@@ -517,7 +511,7 @@ class PayListView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, List
     def get_queryset(self):
         queryset = super(PayListView, self).get_queryset()
         return queryset.filter(
-            account=self.request.user.carcrm_user,
+            account=self.request.user,
             status=CompareStatus.CONTRACT_SUCCESS
         )
 
@@ -532,7 +526,7 @@ class PayListView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, List
             if form.is_valid() is False:
                 raise Exception('잘못된 요청')
             compare = Compare.objects.get(
-                account=self.request.user.carcrm_user, id=form.cleaned_data.get('payId'),
+                account=self.request.user, id=form.cleaned_data.get('payId'),
                 status=CompareStatus.CONTRACT_SUCCESS
             )
             compare.request_pay()
@@ -557,10 +551,10 @@ class BankAccountForm(forms.Form):
 class BankAccountView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, View):
     def get(self, request):
         response_data = {
-            "bank": request.user.carcrm_user.bank,
-            "bank_account_no": request.user.carcrm_user.bank_account_no,
-            'real_name': request.user.carcrm_user.real_name,
-            'ssn': request.user.carcrm_user.ssn
+            "bank": request.user.bank,
+            "bank_account_no": request.user.bank_account_no,
+            'real_name': request.user.real_name,
+            'ssn': request.user.ssn
         }
         return JsonResponse(response_data)
 
@@ -569,7 +563,7 @@ class BankAccountView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, 
         try:
             if form.is_valid() is False:
                 raise Exception('잘못된 요청')
-            account = request.user.carcrm_user
+            account = request.user
             account.bank = form.cleaned_data.get('bank')
             account.bank_account_no = form.cleaned_data.get('bank_account_no')
             account.real_name = form.cleaned_data.get('name')

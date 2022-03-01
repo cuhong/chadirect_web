@@ -216,8 +216,6 @@
     {% endblock %}
 </head>
 <body>
-{% block outerbody %}
-{% endblock %}
 <div class="container container-restrict" id="mainContainer">
     <div class="overlay" id="overlay">
         <div class="row d-flex align-items-center">
@@ -227,32 +225,29 @@
             </div>
         </div>
     </div>
+    {% block outerbody %}
+    {% endblock %}
     {% block body %}
     {% endblock %}
-</div>
 
-<div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="contactModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="contactModalLabel">문의</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <button class="btn btn-kakao-primary btn-block"
-                        onclick="document.location.href='https://pf.kakao.com/_lxbzIb/chat'">카카오톡 상담
-                </button>
-                <button class="btn btn-phone-primary btn-block mb-2" onclick="document.location.href='tel:1544-7653'"><i
-                        class="bi bi-telephone"></i> 1544-7653
-                </button>
-                <div class="small">
-        주식회사 인스플랫폼 | 대표자 최용성 | 서울 광진구 군자로 176-1 동부빌딩 5층 군자동 476-5 | Email: advisor@directin.co.kr
-        Phone: 02-2275-1220 | 법인사업자번호 : 558-88-01054 | 통신판매업신고 : 서울 노원 제 20-1320호 |
-                    <span style="cursor: pointer" onclick="showPrivacyPolicyModal()">개인정보처리방침</span> |
-                    <span style="cursor: pointer" onclick="showServicePolicyModal()">서비스 이용약관</span>
+    <div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="contactModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contactModalLabel">문의</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <button class="btn btn-kakao-primary btn-block"
+                            onclick="document.location.href='https://pf.kakao.com/_lxbzIb/chat'">카카오톡 상담
+                    </button>
+                    <button class="btn btn-phone-primary btn-block mb-2"
+                            onclick="document.location.href='tel:1544-7653'"><i
+                            class="bi bi-telephone"></i> 1544-7653
+                    </button>
                 </div>
             </div>
         </div>
@@ -1027,17 +1022,17 @@
 
     function notice() {
         {% if type == "dealer" %}
-            location.href = `/carcms/notice/`
+            location.href = `/notice/`
         {% else %}
-            location.href = `/carcms_fc/notice/`
+            location.href = `/notice/`
         {% endif %}
     }
 
     function noticeDetail(notice_id) {
         {% if type == "dealer" %}
-            location.href = `/carcms/notice/${notice_id}/`
+            location.href = `/notice/${notice_id}/`
         {% else %}
-            location.href = `/carcms_fc/notice/${notice_id}/`
+            location.href = `/notice/${notice_id}/`
         {% endif %}
     }
 
@@ -1059,9 +1054,9 @@
 
     function compareDetail(compare_id) {
         {% if type == "dealer" %}
-            location.href = `/carcms/compare/${compare_id}/`
+            location.href = `/compare/${compare_id}/`
         {% else %}
-            location.href = `/carcms_fc/compare/${compare_id}/`
+            location.href = `/compare/${compare_id}/`
         {% endif %}
     }
 
@@ -1135,19 +1130,19 @@
         $("#money").val(x.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
     }
 
-     function inputNumberFormat(obj) {
-     obj.value = comma(uncomma(obj.value));
- }
+    function inputNumberFormat(obj) {
+        obj.value = comma(uncomma(obj.value));
+    }
 
- function comma(str) {
-     str = String(str);
-     return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
- }
+    function comma(str) {
+        str = String(str);
+        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    }
 
- function uncomma(str) {
-     str = String(str);
-     return str.replace(/[^\d]+/g, '');
- }
+    function uncomma(str) {
+        str = String(str);
+        return str.replace(/[^\d]+/g, '');
+    }
 
 </script>
 {% block extrascript %}

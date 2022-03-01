@@ -3,10 +3,8 @@ from django.utils import timezone
 from sequences import get_next_value
 
 from car_cms.exceptions.compare import CarCMSCompareError
-from car_cms.models import AccountNullableFKMixin, AccountFKMixin
 from car_cms.models.upload import compare_attach_upload_to
 from commons.models import DateTimeMixin, UUIDPkMixin, VehicleInsurerChoices
-from customer.models import ProtectedCustomerInfo
 from itechs.storages import ProtectedFileStorage
 from simple_history.models import HistoricalRecords
 
@@ -357,10 +355,10 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         db_index=True, editable=False, verbose_name='일련번호'
     )
     account = models.ForeignKey(
-        'car_cms.Account', null=False, blank=False, verbose_name='요청자', on_delete=models.PROTECT
+        'account.User', null=False, blank=False, verbose_name='요청자', on_delete=models.PROTECT
     )
     manager = models.ForeignKey(
-        'car_cms.Account', null=True, blank=True, verbose_name='담당자', on_delete=models.PROTECT,
+        'account.User', null=True, blank=True, verbose_name='담당자', on_delete=models.PROTECT,
         related_name='compare_manager'
     )
     status = models.IntegerField(
@@ -384,7 +382,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         choices=CarTypeChoices.choices, null=False, blank=False, default=CarTypeChoices.NEW,
         verbose_name='신차구분'
     )
-    car_identification = models.CharField(max_length=100, null=False, blank=False, verbose_name='차량/차대번호')
+    car_identification = models.CharField(max_length=100, null=True, blank=True, verbose_name='차량/차대번호')
     attach_1 = models.FileField(
         null=True, blank=True, upload_to=compare_attach_upload_to, storage=ProtectedFileStorage(),
         verbose_name='첨부파일 1(견적서)'
@@ -576,7 +574,7 @@ class CompareAll(Compare):
 #     {'code': 'f16', 'name': 'cadillac', 'static_path': 'car_cms/manufacturer/foreign_16_cadillac.png'},
 #     {'code': 'f16b', 'name': 'tesla', 'static_path': 'car_cms/manufacturer/foreign_16b_tesla.png'},
 #     {'code': 'f17', 'name': 'maserati', 'static_path': 'car_cms/manufacturer/foreign_17_maserati.png'},
-#     {'code': 'f18', 'name': 'bentley', 'static_path': 'car_cms/manufacturer/foreign_18_bentley.png'},
+#     {'code': 'f18', 'name'적: 'bentley', 'static_path': 'car_cms/manufacturer/foreign_18_bentley.png'},
 #     {'code': 'f19', 'name': 'lamborghini', 'static_path': 'car_cms/manufacturer/foreign_19_lamborghini.png'},
 #     {'code': 'f20', 'name': 'citroen', 'static_path': 'car_cms/manufacturer/foreign_20_citroen.png'},
 #     {'code': 'f21', 'name': 'ds', 'static_path': 'car_cms/manufacturer/foreign_21_ds.png'},
