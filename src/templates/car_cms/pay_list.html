@@ -1,0 +1,233 @@
+{% extends 'car_cms/base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}차다이렉트{% endblock %}
+
+{% block extrastyle %}
+    <style>
+        .compare-box {
+            background-color: white;
+            border: none;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(201, 201, 201, 0.43);
+        }
+
+        .compare-box:last-child {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block outerbody %}
+    {% include 'car_cms/partials/navbar.html' with title="차다이렉트" %}
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column justify-content-center p-3">
+        <div>
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">정산리스트</span>
+            </div>
+            <button type="button" class="btn btn-cc-primary btn-block mb-2" onclick="showBankAccountModal()">계좌관리
+            </button>
+            {% if pay_list.count == 0 %}
+                <div class="text-center font-weight-light">
+                    정산대상건이 없습니다.
+                </div>
+            {% else %}
+                <div class="">
+                    {% for pay in pay_list %}
+                        <div data-pay-id="{{ pay.id }}"
+                             class="d-flex flex-row justify-content-between cursor-pointer compare-box">
+                            <div class="d-flex flex-column pr-2">
+                                <div class="mb-2"><span class="h5 color-primary">{{ pay.customer_name }}</span>
+                                    <small>{{ pay.customer_cellphone }}</small></div>
+                                <div>{{ pay.get_insurer_display }} / {{ pay.fee|intcomma }}원</div>
+                            </div>
+                            <div class="d-flex flex-column text-right">
+                                {% if pay.pay_request %}
+                                    <!-- 지급요청 -->
+                                    {% if pay.is_payed %}
+                                        <!-- 지급됨 -->
+                                        <small class="font-weight-lighter">{{ pay.payed_at|date:"Y/m/d" }} 지급</small>
+                                    {% else %}
+                                        <!-- 지급전 -->
+                                        <small class="font-weight-lighter">지급처리중</small>
+                                    {% endif %}
+                                {% else %}
+                                    <!-- 지급요청 전 -->
+                                    {% if type == "dealer" %}
+                                    <button type="button" class="btn btn-cc-primary-outline btn-block"
+                                            data-pay-id="{{ pay.id }}"
+                                            onclick="requestPay(this.dataset.payId)">지급요청
+                                    </button>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        {% if page_obj.has_previous %}
+            <button type="button" class="btn btn-cc-primary-outline btn-block" onclick="prevPage()">이전</button>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <button type="button" class="btn btn-cc-primary btn-block mb-1" onclick="nextPage()">다음</button>
+        {% endif %}
+    </div>
+    <input type="number" id="currentPage" value="{{ page_obj.number }}" hidden>
+
+    <div class="modal fade" id="bankModal" tabindex="-1" role="dialog" aria-labelledby="bankModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: unset !important; right: 0;" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bankModalLabel">계좌관리</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="bank">은행</label>
+                        <input id="bank" name="bank" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="bankAccount">계좌번호</label>
+                        <input id="bankAccount" name="bankAccount" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="realName">예금주명</label>
+                        <input id="realName" name="realName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="ssn">주민번호</label>
+                        <input id="ssn" name="ssn" class="form-control">
+                    </div>
+                    <button type="button" class="btn btn-cc-primary btn-block mb-2" onclick="saveBankAccount()">저장
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block extrascript %}
+    <script>
+        const currentPage = parseInt(document.getElementById('currentPage').value)
+        const bankInput = document.getElementById('bank')
+        const bankAccountInput = document.getElementById('bankAccount')
+        const realNameInput = document.getElementById('realName')
+        const ssnInput = document.getElementById('ssn')
+
+        function requestPay(payId) {
+            console.log(payId)
+            $.ajax({
+                type: "POST",
+                data: {'payId': payId, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                dataType: "json",
+                success: function (response) {
+                    if (response.result) {
+                        alert('요청되었습니다.')
+                        location.reload()
+                    } else {
+                        alert(response.msg)
+                    }
+                },
+                error: function (request, status, error) {
+                    alert("로그인이 필요합니다.")
+                    window.location.replace("/accounts/login/")
+                },
+            });
+        }
+
+        function showBankAccountModal() {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'car_cms_app:bank_account' %}",
+                dataType: "json",
+                success: function (response) {
+                    if (response.bank !== null) {
+                        bankInput.value = response.bank
+                    }
+                    if (response.bank_account_no !== null) {
+                        bankAccountInput.value = response.bank_account_no
+                    }
+                    if (response.real_name !== null) {
+                        realNameInput.value = response.real_name
+                    }
+                    if (response.ssn !== null) {
+                        ssnInput.value = response.ssn
+                    }
+                    $("#bankModal").modal('show')
+                },
+                error: function (request, status, error) {
+                    alert("로그인이 필요합니다.")
+                    window.location.replace("/accounts/login/")
+                },
+            });
+        }
+
+        function saveBankAccount() {
+            if (bankInput.value === '') {
+                alert('은행을 입력하세요')
+                return
+            }
+            if (bankAccountInput.value === '') {
+                alert('계좌번호를 입력하세요')
+                return
+            }
+            if (realNameInput.value === '') {
+                alert('예금주명을 입력하세요')
+                return
+            }
+            if (ssnInput.value === '') {
+                alert('주민번호를 입력하세요')
+                return
+            }
+            $.ajax({
+                type: "POST",
+                url: "{% url 'car_cms_app:bank_account' %}",
+                data: {
+                    'bank': bankInput.value, 'bank_account_no': bankAccountInput.value, 'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'ssn': ssnInput.value, 'name': realNameInput.value
+                },
+                dataType: "json",
+                success: function (response) {
+                    if (response.result) {
+                        alert('저장되었습니다.')
+                    $("#bankModal").modal('hide')
+                    } else {
+                        alert(response.msg)
+                    }
+                },
+                error: function (request, status, error) {
+                    alert("로그인이 필요합니다.")
+                    window.location.replace("/accounts/login/")
+                },
+            });
+        }
+
+        function prevPage() {
+            {% if type == "dealer" %}
+            location.href = `/carcms/compare/pay/?page=${currentPage - 1}`
+            {% else %}
+            location.href = `/carcms_fc/compare/pay/?page=${currentPage - 1}`
+            {% endif %}
+        }
+
+        function nextPage() {
+            {% if type == "dealer" %}
+            location.href = `/carcms/compare/pay/?page=${currentPage + 1}`
+            {% else %}
+            location.href = `/carcms_fc/compare/pay/?page=${currentPage + 1}`
+            {% endif %}
+        }
+
+        document.addEventListener('DOMContentLoaded', function (event) {
+            //overlay.off()
+        })
+    </script>
+{% endblock %}

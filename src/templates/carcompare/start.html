@@ -1,0 +1,206 @@
+{% extends 'carcompare/base.html' %}
+{% load static %}
+
+{% block body %}
+    <div class="row p-3">
+        <div class="col-md-6">
+            <form class="form">
+                <div class="form-group">
+                    <label for="name">고객명</label>
+                    <input id="name" name="name" type="text" class="form-control">
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="ssn_prefix">주민번호 앞자리</label>
+                            <input id="ssn_prefix" name="ssn_prefix" type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="ssn_suffix">주민번호 뒷자리</label>
+                            <input id="ssn_suffix" name="ssn_suffix" type="text" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="phone_company">통신사</label>
+                            <select id="phone_company" name="phone_company" class="form-control">
+                                <option value="01">SKT</option>
+                                <option value="02">KT</option>
+                                <option value="03">LGU</option>
+                                <option value="04">SKT(알뜰)</option>
+                                <option value="05">KT(알뜰)</option>
+                                <option value="06">LGU(알뜰)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="phone1">휴대전화 국번</label>
+                            <input id="phone1" name="phone1" type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="phone2">중간자리</label>
+                            <input id="phone2" name="phone2" type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="phone3">마지막자리</label>
+                            <input id="phone3" name="phone3" type="text" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <button class="btn btn-primary btm-block" id="requestAuthNoBtn" onclick="requestAuthNo()">인증번호 요청</button>
+            <div id="authBlock" class="pt-2" hidden>
+                <div class="form-group">
+                    <label for="auth_number">인증번호</label>
+                    <input id="auth_number" name="auth_number" maxlength="6" type="text" class="form-control">
+                </div>
+                <button class="btn btn-primary btm-block" id="requestAuthBtn" onclick="requestAuth()">인증 요청</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascript %}
+    <script>
+        const name = document.getElementById('name')
+        const ssn_prefix = document.getElementById('ssn_prefix')
+        const ssn_suffix = document.getElementById('ssn_suffix')
+        const phone_company = document.getElementById('phone_company')
+        const phone1 = document.getElementById('phone1')
+        const phone2 = document.getElementById('phone2')
+        const phone3 = document.getElementById('phone3')
+        const auth_number = document.getElementById('auth_number')
+        const requestAuthNoBtn = document.getElementById('requestAuthNoBtn')
+        const requestAuthBtn = document.getElementById('requestAuthBtn')
+        const authBlock = document.getElementById('authBlock')
+        var session_id = null
+
+        function validate() {
+            let errorList = []
+            if (name.value === '') {
+                errorList.push('이름을 입력하세요')
+            }
+            if (ssn_prefix.value.length !== 6) {
+                errorList.push('주민번호 앞자리를 입력하세요')
+            }
+            if (ssn_suffix.value.length !== 7) {
+                errorList.push('주민번호 뒷자리를 입력하세요')
+            }
+            if (phone1.value.length !== 3) {
+                errorList.push('올바른 휴대전화 국번을 입력하세요')
+            }
+            if (phone2.value === '') {
+                errorList.push('휴대전화 중간자리를 입력하세요')
+            }
+            if (phone3.value.length !== 4) {
+                errorList.push('올바른 휴대전화 마지막자리를 입력하세요')
+            }
+            if (errorList.length !== 0) {
+                alert(errorList)
+                return false
+            } else {
+                return true
+            }
+        }
+
+        function requestAuth() {
+            if (auth_number.value.length !== 6) {
+                alert('인증번호는 6자리 숫자입니다.')
+                return null
+            }
+            requestAuthBtn.disabled = true
+            const url = `/carcompare/${session_id}/auth/`
+            const data = {
+                auth_number: auth_number.value,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                dataType: "json",
+                success: function (response) {
+                    console.log(response)
+                    if (response.result) {
+                        console.log(response)
+                        location.replace(`/carcompare/${session_id}/compare/`)
+                    } else {
+                        alert(response.error)
+                        location.reload()
+                    }
+                },
+                error: function (request, status, error) {
+                    alert('서버오류. 인증요청 실패.')
+                    location.reload()
+                },
+            });
+        }
+
+        function requestAuthNo() {
+            const isValid = validate()
+            if (isValid === false) {
+                return;
+            }
+            const data = {
+                name: name.value,
+                ssn_prefix: ssn_prefix.value,
+                ssn_suffix: ssn_suffix.value,
+                phone_company: phone_company.value,
+                phone1: phone1.value,
+                phone2: phone2.value,
+                phone3: phone3.value,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }
+            requestAuthNoBtn.innerText = '인증번호 요청 중입니다'
+            requestAuthNoBtn.disabled = true
+            $.ajax({
+                type: "POST",
+                data: data,
+                dataType: "json",
+                success: function (response) {
+                    console.log(response)
+                    if (response.result) {
+                        requestAuthNoBtn.hidden = true
+                        name.disabled = true
+                        ssn_prefix.disabled = true
+                        ssn_suffix.disabled = true
+                        phone_company.disabled = true
+                        phone1.disabled = true
+                        phone2.disabled = true
+                        phone3.disabled = true
+                        authBlock.hidden = false
+                        session_id = response.session_id
+                    } else {
+                        alert(response.error)
+                        location.reload()
+                    }
+                },
+                error: function (request, status, error) {
+                    alert('서버오류. 인증요청 실패.')
+                    requestAuthNoBtn.innerText = '인증번호 요청'
+                    requestAuthNoBtn.disabled = false
+                },
+            });
+        }
+
+        function testData() {
+            name.value = '홍찬의'
+            ssn_prefix.value = '860906'
+            ssn_suffix.value = '1020710'
+            phone1.value = '010'
+            phone2.value = '2484'
+            phone3.value = '6313'
+        }
+
+        //testData()
+    </script>
+{% endblock %}

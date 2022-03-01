@@ -1,0 +1,21 @@
+EC2 ubuntu 20 LTS
+# install python 3.9
+sudo apt update
+sudo apt install software-properties-common
+
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt install python3.9
+sudo apt-get install build-essential
+sudo apt-get install python3.9-dev
+# clone code
+git clone https://git.jetbrains.space/itechs/core/backend.git
+cd backend
+
+# create virtual env
+python3.9 -m venv .env --without-pip
+source .env/bin/activate
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python get-pip.py
+
+# install requirements
+pip install -r requirements.txt

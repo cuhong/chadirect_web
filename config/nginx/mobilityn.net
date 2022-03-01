@@ -1,0 +1,33 @@
+server {
+        listen 80;
+        server_name itechs.io;
+        if ($http_x_forwarded_proto = 'http'){
+        return 301 https://$host$request_uri;
+        }
+        underscores_in_headers on;
+
+        client_max_body_size 100M;
+
+        access_log /home/ubuntu/backend_config/log/nginx-access.log;
+        error_log /home/ubuntu/backend_config/log/nginx-error.log;
+
+        location /elb-status {
+            access_log off;
+            return 200;
+        }
+
+        location /robots.txt {
+           return 200 "User-agent: *\nAllow: /";
+        }
+
+        location / {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Host $http_host;
+            proxy_redirect off;
+            proxy_pass http://unix:/home/ubuntu/backend/config/gunicorn/itechs.sock;
+            proxy_connect_timeout 300;
+            proxy_send_timeout 300;
+            proxy_read_timeout 300;
+            send_timeout 300;
+        }
+}

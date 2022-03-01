@@ -1,0 +1,124 @@
+{% extends 'car_cms/base.html' %}
+{% load static %}
+
+{% block title %}로그인{% endblock %}
+
+{% block extrastyle %}
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column justify-content-center p-3" style="height: 100vh">
+        <div class="d-flex justify-content-center" style="flex: 2">
+            <div class="d-flex justify-content-center align-items-center">
+                {% if type == "dealer" %}
+                    <img src="{% static 'car_cms/main_image_dealer.png' %}" width="50%">
+                {% else %}
+                    <img src="{% static 'car_cms/main_image_fc.png' %}" width="50%">
+                {% endif %}
+            </div>
+        </div>
+        <div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="h5 mb-3 text-center">로그인이 필요한 서비스입니다.</div>
+                <div class="form-group">
+                    <label class="sr-only">이메일</label>
+                    <input autofocus placeholder="이메일" class="form-control-cc form-control-lg" type="email"
+                           id="id_username"
+                           name="username">
+                </div>
+                <div class="form-group">
+                    <label class="sr-only">비밀번호</label>
+                    <input placeholder="비밀번호" class="form-control-cc form-control-lg" type="password" id="id_password"
+                           name="password">
+                </div>
+                <button type="submit" class="btn btn-cc-primary btn-block mb-3">로그인</button>
+            </form>
+            <button type="button" class="btn btn-cc-primary-outline btn-block" onclick="signUp()">회원가입</button>
+            <div class="text-center mt-2">
+                <span style="cursor: pointer" onclick="showPasswordChangeModal()">비밀번호 찾기</span>
+            </div>
+        </div>
+        <div class="small mt-5">
+        주식회사 인스플랫폼 | 대표자 최용성 | 서울 광진구 군자로 176-1 동부빌딩 5층 군자동 476-5 | Email: advisor@directin.co.kr
+        Phone: 02-2275-1220 | 법인사업자번호 : 558-88-01054 | 통신판매업신고 : 서울 노원 제 20-1320호 |
+            <span style="cursor: pointer" onclick="showPrivacyPolicyModal()">개인정보처리방침</span> |
+            <span style="cursor: pointer" onclick="showServicePolicyModal()">서비스 이용약관</span>
+        </div>
+    </div>
+
+    <div class="modal fade" id="passwordChangeModal" tabindex="-1" role="dialog"
+         aria-labelledby="passwordChangeModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordChangeModalLabel">비밀번호 찾기</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="email">이메일</label>
+                        <input class="form-control" id="email" placeholder="회원가입시 입력한 이메일주소">
+                    </div>
+                    <button class="btn btn-phone-primary btn-block mb-2" onclick="requestChangePassword()">비밀번호 찾기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascript %}
+    <script>
+        let hasError = false
+        {% if loginError %}
+            hasError = true
+        {% endif %}
+        document.addEventListener('DOMContentLoaded', function (event) {
+            if (hasError) {
+                alert('이메일과 비밀번호를 확인하세요.')
+            }
+        })
+
+        var passwordChangeUrl
+        {% if type == "dealer" %}
+            passwordChangeUrl = "{% url 'car_cms_app:password_change_request' %}"
+        {% else %}
+            passwordChangeUrl = "{% url 'car_cms_fc_app:password_change_request' %}"
+        {% endif %}
+
+        const emailInput = document.getElementById('email')
+
+        function showPasswordChangeModal() {
+            $("#passwordChangeModal").modal('show')
+        }
+
+        function requestChangePassword() {
+            if (emailInput.value === '') {
+                alert('이메일을 입력해주세요')
+                return
+            } else {
+                $.ajax({
+                    type: "POST",
+                    data: {'email': emailInput.value, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                    url: passwordChangeUrl,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.result) {
+                            alert('입력하신 이메일로 비밀번호 변경 링크가 발송되었습니다. 이메일을 확인해주세요.')
+                                $("#passwordChangeModal").modal('hide')
+                        } else {
+                            alert(response.msg)
+                        }
+                    },
+                    error: function (request, status, error) {
+                    },
+                });
+            }
+
+        }
+    </script>
+{% endblock %}

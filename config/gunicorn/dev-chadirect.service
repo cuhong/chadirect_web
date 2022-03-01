@@ -1,0 +1,13 @@
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/backend/src
+ExecStart=/home/ubuntu/backend/.env/bin/gunicorn --workers 3 --timeout 300 --reload --bind unix:/home/ubuntu/backend/config/gunicorn/gunicorn.sock itechs.wsgi:application --access-logfile /home/ubuntu/backend/config/log/gunicorn-access.log --error-logfile /home/ubuntu/backend/config/log/gunicorn-error.log
+ExecReload=/bin/kill -s HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

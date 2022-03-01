@@ -1,0 +1,73 @@
+{% extends 'car_cms/base.html' %}
+{% load static %}
+
+{% block title %}차다이렉트{% endblock %}
+
+{% block extrastyle %}
+{% endblock %}
+
+{% block outerbody %}
+    {% include 'car_cms/partials/navbar.html' with title="차다이렉트" %}
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column justify-content-center p-3">
+        <div class="h5 mt-3 mb-5 text-center">견적요청</div>
+        <div>
+            <form method="get" id="compareTypeForm">
+                <div class="form-group">
+                    <label>고객유형 <span class="color-danger">*</span></label>
+                    <select class="form-control-cc form-control-lg" id="id_type" name="type">
+                        <option value="0">개인</option>
+                        <option value="1">사업자</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>차량유형 <span class="color-danger">*</span></label>
+                    <select class="form-control-cc form-control-lg" id="id_carType" name="carType">
+                        <option value="0">신차</option>
+                        <option value="1">중고차</option>
+                    </select>
+                </div>
+            </form>
+            <button type="button" class="btn btn-cc-primary btn-block mb-3" onclick="submitType()">다음</button>
+            <button type="button" class="btn btn-cc-primary-outline btn-block" onclick="index()">취소</button>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extrascript %}
+    <script>
+        const compareTypeForm = document.getElementById('compareTypeForm')
+
+        function validate() {
+            if (customer_name.value === '') {
+                alert('고객명을 입력하세요.')
+                return false
+            }
+            if (customer_identification.value === '') {
+                alert('주민/사업자번호를 입력하세요.')
+                return false
+            }
+            if (car_name.value === '') {
+                alert('차명을 입력하세요.')
+                return false
+            }
+            if (car_type.value === "1") {
+                // 중고차
+                if (car_identification.value === "") {
+                    alert('중고차는 차량번호가 필수입니다.')
+                    return false
+                }
+            }
+            return true
+        }
+        function submitType() {
+            compareTypeForm.submit()
+        }
+        document.addEventListener('DOMContentLoaded', function (event) {
+            //overlay.off()
+        })
+    </script>
+{% endblock %}

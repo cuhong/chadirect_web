@@ -1,0 +1,316 @@
+{% extends 'car_cms/base.html' %}
+{% load static %}
+
+{% block title %}회원가입{% endblock %}
+
+{% block extrastyle %}
+    <style>
+        .cc-login-asterisk {
+            color: red;
+        }
+
+        .nameCardWrapper {
+            min-height: 10rem;
+            border: 1px solid #5a6268;
+            background-color: #d5d5d5;
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin-bottom: 0.5rem;
+            border-radius: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column justify-content-center p-3">
+    <div class="h5 mt-3 mb-5 text-center">회원가입</div>
+    <div>
+        <form method="post" id="signupForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>성명 <span class="cc-login-asterisk">*</span></label>
+                <input autofocus placeholder="성명" class="form-control-cc form-control-lg is-valid" type="text"
+                       id="id_name"
+                       name="name" value="{{ form.name.value|default_if_none:'' }}">
+                <div class="invalid-feedback">성명을 입력하세요.</div>
+            </div>
+            <div class="form-group">
+                <label>휴대전화 <span class="cc-login-asterisk">*</span></label>
+                <input autofocus placeholder="휴대전화(- 제외)"
+                       class="form-control-cc form-control-lg is-valid"
+                       type="text"
+                       pattern="[0-9]*"
+                       inputmode="numeric"
+                       id="id_cellphone"
+                       name="cellphone" value="{{ form.cellphone.value|default_if_none:'' }}">
+                <div class="invalid-feedback">휴대전화 번호 형식이 올바르지 않습니다.</div>
+            </div>
+            <div class="form-group">
+                <label>이메일 <span class="cc-login-asterisk">*</span></label>
+                <input autofocus placeholder="이메일" class="form-control-cc form-control-lg is-valid" type="text"
+                       id="id_username"
+                       name="username" value="{{ form.username.value|default_if_none:'' }}">
+                <div class="invalid-feedback">이메일 주소 형식이 올바르지 않습니다.</div>
+            </div>
+            <div class="form-group">
+                <label>비밀번호 <span class="cc-login-asterisk">*</span></label>
+                <input placeholder="비밀번호" class="form-control-cc form-control-lg is-valid" type="password"
+                       id="id_password"
+                       name="password">
+                <div class="invalid-feedback">비밀번호를 입력하세요.</div>
+            </div>
+            <div class="form-group">
+                <label>비밀번호 확인 <span class="cc-login-asterisk">*</span></label>
+                <input placeholder="비밀번호 확인" class="form-control-cc form-control-lg is-valid" type="password"
+                       id="id_password2"
+                       name="password2">
+                <div class="invalid-feedback">비밀번호가 일치하지 않습니다.</div>
+            </div>
+            <div class="form-group">
+                <label>추천인 코드</label>
+                <input placeholder="추천인 코드" class="form-control-cc form-control-lg is-valid" type="text"
+                       id="id_referer_code"
+                       name="referer_code">
+            </div>
+            <label>명함 <span class="cc-login-asterisk">*</span></label>
+            <input id="id_namecard" class="form-control is-valid" name="namecard" type="file" accept="image/*" hidden>
+            <div class="invalid-feedback">명함을 등록해주세요.</div>
+            <div id="nameCardWrapper" class="nameCardWrapper d-flex justify-content-center align-items-center"
+                 onclick="namecardInput.click()">
+                {% if type == "dealer" %}
+                <div>딜러 인증을 위해<br>명함 사진을 올려주세요.</div>
+                {% elif type == "fc" %}
+                <div>설계사 인증을 위해<br>명함 사진을 올려주세요.</div>
+                {% endif %}
+            </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="policyCheck">
+            <label class="form-check-label" for="" onclick="showServicePolicyModal()" style="cursor: pointer;">이용약관 동의</label>
+        </div>
+        <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" id="privacyPolicyCheck">
+            <label class="form-check-label" for="" onclick="showPrivacyPolicyModal()" style="cursor: pointer">개인정보처리방침 동의</label>
+        </div>
+        </form>
+        <button class="btn btn-cc-primary btn-block mb-3" onclick="register()">회원가입</button>
+        <button type="button" class="btn btn-cc-primary-outline btn-block" onclick="index()">취소</button>
+    </div>
+
+    <div class="modal fade" id="registerFailModal" tabindex="-1" role="dialog" aria-labelledby="registerFailModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerFailModalLabel">회원가입 오류</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% for k, v in form.errors.items %}
+                        {{ v }}
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascript %}
+    <script>
+        let isValid = false
+        const signupForm = document.getElementById('signupForm')
+        const nameInput = document.getElementById('id_name')
+        const cellphoneInput = document.getElementById('id_cellphone')
+        const usernameInput = document.getElementById('id_username')
+        const passwordInput = document.getElementById('id_password')
+        const password2Input = document.getElementById('id_password2')
+        const namecardInput = document.getElementById('id_namecard')
+        const refererCodeInput = document.getElementById('id_referer_code')
+        const nameCardWrapper = document.getElementById('nameCardWrapper')
+        const privacyPolicyCheck = document.getElementById('privacyPolicyCheck')
+        const policyCheck = document.getElementById('policyCheck')
+
+        function validateName() {
+            var target = nameInput
+            if (target.value === '') {
+                if (target.classList.contains('is-valid')) {
+                    target.classList.remove('is-valid')
+                }
+                target.classList.add('is-invalid')
+                return false
+            } else {
+                if (target.classList.contains('is-invalid')) {
+                    target.classList.remove('is-invalid')
+                }
+                target.classList.add('is-valid')
+                return true
+            }
+        }
+
+        function validatePassword() {
+            var target = passwordInput
+            if (target.value === '') {
+                if (target.classList.contains('is-valid')) {
+                    target.classList.remove('is-valid')
+                }
+                target.classList.add('is-invalid')
+                return false
+            } else {
+                if (target.classList.contains('is-invalid')) {
+                    target.classList.remove('is-invalid')
+                }
+                target.classList.add('is-valid')
+                return true
+            }
+        }
+
+        function validateNamecard() {
+            var target = namecardInput
+            if (target.files.length === 0) {
+                if (target.classList.contains('is-valid')) {
+                    target.classList.remove('is-valid')
+                }
+                target.classList.add('is-invalid')
+                return false
+            } else {
+                if (target.classList.contains('is-invalid')) {
+                    target.classList.remove('is-invalid')
+                }
+                target.classList.add('is-valid')
+                return true
+            }
+        }
+
+        function validateUsername() {
+            usernameInput.value = usernameInput.value.trim()
+            var target = usernameInput
+            if (isEmail(target.value)) {
+                if (target.classList.contains('is-invalid')) {
+                    target.classList.remove('is-invalid')
+                }
+                target.classList.add('is-valid')
+                return true
+            } else {
+                if (target.classList.contains('is-valid')) {
+                    target.classList.remove('is-valid')
+                }
+                target.classList.add('is-invalid')
+                return false
+            }
+        }
+
+        function validateCellphone() {
+            var target = cellphoneInput
+            if (isCellphone(target.value)) {
+                if (target.classList.contains('is-invalid')) {
+                    target.classList.remove('is-invalid')
+                }
+                target.classList.add('is-valid')
+                return true
+            } else {
+                if (target.classList.contains('is-valid')) {
+                    target.classList.remove('is-valid')
+                }
+                target.classList.add('is-invalid')
+                return false
+            }
+        }
+
+        function validatePassword2() {
+            var target = password2Input
+            if (target.value === passwordInput.value) {
+                if (target.classList.contains('is-invalid')) {
+                    target.classList.remove('is-invalid')
+                }
+                target.classList.add('is-valid')
+                return true
+            } else {
+                if (target.classList.contains('is-valid')) {
+                    target.classList.remove('is-valid')
+                }
+                target.classList.add('is-invalid')
+                return false
+            }
+        }
+
+        function validate() {
+            var tempValid = true
+            if (validateName() === false) {
+                tempValid = false
+            }
+            if (validateCellphone() === false) {
+                tempValid = false
+            }
+            if (validateUsername() === false) {
+                tempValid = false
+            }
+            if (validatePassword() === false) {
+                tempValid = false
+            }
+            if (validatePassword2() === false) {
+                tempValid = false
+            }
+            if (validateNamecard() === false) {
+                tempValid = false
+            }
+            isValid = tempValid
+            return isValid
+        }
+
+        function register() {
+            if (policyCheck.checked === false) {
+                alert('이용약관 동의가 필요합니다.')
+                return
+            }
+            if (privacyPolicyCheck.checked === false) {
+                alert('개인정보처리방침 동의가 필요합니다.')
+                return
+            }
+            validate()
+            if (isValid === true) {
+                signupForm.submit()
+            }
+        }
+
+        nameInput.addEventListener('keyup', function (event) {
+            validateName()
+        })
+        cellphoneInput.addEventListener('keyup', function (event) {
+            validateCellphone()
+        })
+        cellphoneInput.addEventListener('keydown', function (event) {
+            if (event.key === '-') {
+                event.preventDefault()
+            }
+        })
+        usernameInput.addEventListener('keyup', function (event) {
+            validateUsername()
+        })
+        passwordInput.addEventListener('keyup', function (event) {
+            validatePassword()
+        })
+        password2Input.addEventListener('keyup', function (event) {
+            validatePassword2()
+        })
+        namecardInput.addEventListener('change', async function (event) {
+            var file = event.target.files[0]
+            var imageUrl = window.URL.createObjectURL(file)
+            var dimension = await imageSize(imageUrl)
+            nameCardWrapper.style.height = `${nameCardWrapper.offsetWidth * dimension.height / dimension.width}px`
+            nameCardWrapper.style.backgroundImage = `url('${imageUrl}')`
+            nameCardWrapper.innerHTML = ''
+        }, false)
+        document.addEventListener('DOMContentLoaded', function (event) {
+
+
+            {% if form.errors %}
+                $("#registerFailModal").modal('show')
+            {% endif %}
+        })
+    </script>
+{% endblock %}

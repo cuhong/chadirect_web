@@ -1,0 +1,250 @@
+{% load static %}
+<div class="modal fade" id="manufacturerModal" tabindex="-1" role="dialog" aria-labelledby="manufacturerModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: unset !important; right: 0;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="manufacturerModalLabel">제조사 선택</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="font-size: 0.8rem">
+                <div class="d-flex flex-row mb-4">
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="현대" data-manufacturer-id="l01">
+                        <img src="{% static 'car_cms/manufacturer/local_01_hyundai.png' %}" width="35%">
+                        <div class="mt-2">현대
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="기아" data-manufacturer-id="l02">
+                        <img src="{% static 'car_cms/manufacturer/local_02_kia.png' %}" width="35%">
+                        <div class="mt-2">기아
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="제네시스" data-manufacturer-id="l03">
+                        <img src="{% static 'car_cms/manufacturer/local_03_genesis.png' %}" width="35%">
+                        <div class="mt-2">제네시스
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row mb-4">
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="벤츠" data-manufacturer-id="f01">
+                        <img src="{% static 'car_cms/manufacturer/foreign_01_benz.png' %}" width="35%">
+                        <div class="mt-2">
+                            벤츠
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="BMW" data-manufacturer-id="f02">
+                        <img src="{% static 'car_cms/manufacturer/foreign_02_bmw.png' %}" width="35%">
+                        <div class="mt-2">
+                            BMW
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="아우디" data-manufacturer-id="f03">
+                        <img src="{% static 'car_cms/manufacturer/foreign_03_audi.png' %}" width="35%">
+                        <div class="mt-2">
+                            아우디
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row mb-4">
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="폭스바겐" data-manufacturer-id="f04">
+                        <img src="{% static 'car_cms/manufacturer/foreign_04_volkswagen.png' %}" width="35%">
+                        <div class="mt-2">폭스바겐
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="볼보" data-manufacturer-id="f05">
+                        <img src="{% static 'car_cms/manufacturer/foreign_05_volvo.png' %}" width="35%">
+                        <div class="mt-2">볼보
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="미니" data-manufacturer-id="f06">
+                        <img src="{% static 'car_cms/manufacturer/foreign_06_mini.png' %}" width="35%">
+                        <div class="mt-2">미니
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="d-flex flex-row mb-4">
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="르노삼성" data-manufacturer-id="l04">
+                        <img src="{% static 'car_cms/manufacturer/local_04_renault.png' %}" width="35%">
+                        <div class="mt-2">르노삼성
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="쉐보레" data-manufacturer-id="l05">
+                        <img src="{% static 'car_cms/manufacturer/local_05_chevrolet.png' %}" width="35%">
+                        <div class="mt-2">쉐보레
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="쌍용" data-manufacturer-id="l06">
+                        <img src="{% static 'car_cms/manufacturer/local_06_ssangyong.png' %}" width="35%">
+                        <div class="mt-2">쌍용
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="d-flex flex-row mb-4">
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="렉서스" data-manufacturer-id="f07">
+                        <img src="{% static 'car_cms/manufacturer/foreign_07_lexus.png' %}" width="35%">
+                        <div class="mt-2">렉서스
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="포르쉐" data-manufacturer-id="f08">
+                        <img src="{% static 'car_cms/manufacturer/foreign_08_porsche.png' %}" width="35%">
+                        <div class="mt-2">포르쉐
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="혼다" data-manufacturer-id="f09">
+                        <img src="{% static 'car_cms/manufacturer/foreign_09_honda.png' %}" width="35%">
+                        <div class="mt-2">혼다
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row mb-4">
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="도요타" data-manufacturer-id="f10">
+                        <img src="{% static 'car_cms/manufacturer/foreign_10_toyota.png' %}" width="35%">
+                        <div class="mt-2">도요타
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="Jeep" data-manufacturer-id="f11">
+                        <img src="{% static 'car_cms/manufacturer/foreign_11_jeep.png' %}" width="35%">
+                        <div class="mt-2">Jeep
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="포드" data-manufacturer-id="f12">
+                        <img src="{% static 'car_cms/manufacturer/foreign_12_ford.png' %}" width="35%">
+                        <div class="mt-2">포드
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row mb-4">
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="랜드로버" data-manufacturer-id="f13">
+                        <img src="{% static 'car_cms/manufacturer/foreign_13_landrover.png' %}" width="35%">
+                        <div class="mt-2">랜드로버
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="링컨" data-manufacturer-id="f14">
+                        <img src="{% static 'car_cms/manufacturer/foreign_14_lincoln.png' %}" width="35%">
+                        <div class="mt-2">링컨
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="푸조" data-manufacturer-id="f15">
+                        <img src="{% static 'car_cms/manufacturer/foreign_15_peugeot.png' %}" width="35%">
+                        <div class="mt-2">푸조
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row mb-4">
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="캐딜락" data-manufacturer-id="f16">
+                        <img src="{% static 'car_cms/manufacturer/foreign_16_cadillac.png' %}" width="35%">
+                        <div class="mt-2">캐딜락
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="테슬라" data-manufacturer-id="f16b">
+                        <img src="{% static 'car_cms/manufacturer/foreign_16b_tesla.png' %}" width="35%">
+                        <div class="mt-2">테슬라
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="마세라티" data-manufacturer-id="f17">
+                        <img src="{% static 'car_cms/manufacturer/foreign_17_maserati.png' %}" width="35%">
+                        <div class="mt-2">마세라티
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row mb-4">
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="벤틀리" data-manufacturer-id="f18">
+                        <img src="{% static 'car_cms/manufacturer/foreign_18_bentley.png' %}" width="35%">
+                        <div class="mt-2">벤틀리
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="람보르기니" data-manufacturer-id="f19">
+                        <img src="{% static 'car_cms/manufacturer/foreign_19_lamborghini.png' %}" width="35%">
+                        <div class="mt-2">람보르기니
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="시트로엥" data-manufacturer-id="f20">
+                        <img src="{% static 'car_cms/manufacturer/foreign_20_citroen.png' %}" width="35%">
+                        <div class="mt-2">시트로엥
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row mb-4">
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="DS" data-manufacturer-id="f21">
+                        <img src="{% static 'car_cms/manufacturer/foreign_21_ds.png' %}" width="35%">
+                        <div class="mt-2">DS
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="재규어" data-manufacturer-id="f22">
+                        <img src="{% static 'car_cms/manufacturer/foreign_22_jaguar.png' %}" width="35%">
+                        <div class="mt-2">재규어
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="롤스로이스" data-manufacturer-id="f23">
+                        <img src="{% static 'car_cms/manufacturer/foreign_23_rollsroyce.png' %}" width="35%">
+                        <div class="mt-2">롤스로이스
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row mb-4">
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="마이바흐" data-manufacturer-id="f51">
+                        <img src="{% static 'car_cms/manufacturer/foreign_51_Maybach.png' %}" width="35%">
+                        <div class="mt-2">마이바흐
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="인피니티" data-manufacturer-id="f52">
+                        <img src="{% static 'car_cms/manufacturer/foreign_52_infiniti.png' %}" width="35%">
+                        <div class="mt-2">인피니티
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="피아트" data-manufacturer-id="f53">
+                        <img src="{% static 'car_cms/manufacturer/foreign_53_fiat.png' %}" width="35%">
+                        <div class="mt-2">피아트
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row mb-4">
+                    <div class="d-flex flex-column justify-content-center align-items-center"
+                         onclick="setManufacturer(this)" data-manufacturer-name="에스턴마틴" data-manufacturer-id="f54">
+                        <img src="{% static 'car_cms/manufacturer/foreign_54_astonmartin.png' %}" width="11%">
+                        <div class="mt-2">에스턴마틴
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

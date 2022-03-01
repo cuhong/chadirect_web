@@ -1,0 +1,93 @@
+{% extends 'car_cms/base.html' %}
+{% load static %}
+
+{% block title %}차다이렉트{% endblock %}
+
+{% block extrastyle %}
+    <style>
+        .compare-box {
+            background-color: white;
+            border: none;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(201, 201, 201, 0.43);
+        }
+
+        .compare-box:last-child {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block outerbody %}
+    {% include 'car_cms/partials/navbar.html' with title="차다이렉트" %}
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column justify-content-center p-3">
+        <div>
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">내 견적</span>
+            </div>
+            {% if compare_list.count == 0 %}
+                <div class="text-center font-weight-light">
+                    견적이 없습니다.
+                </div>
+            {% else %}
+                <div class="">
+                    {% for compare in compare_list %}
+                        <div data-compare-id="{{ compare.id }}"
+                             class="d-flex flex-row justify-content-between cursor-pointer compare-box"
+                             onclick="compareDetail(this.dataset.compareId)">
+                            <div class="d-flex flex-column pr-2">
+                                <div class="mb-2"><span class="h5 color-primary">{{ compare.customer_name }}</span>
+                                    <small>{{ compare.customer_cellphone }}</small></div>
+                                <div>{{ compare.car_name }}({{ compare.car_identification|default_if_none:"미확인" }})</div>
+                            </div>
+                            <div class="d-flex flex-column text-right">
+                            <small class="font-weight-lighter">{{ compare.registered_at|date:"Y/m/d" }}</small>
+                            <small class="font-weight-lighter">{{ compare.registered_at|date:"H:i" }}</small>
+                            <small class="font-weight-normal">{{ compare.status_display }}</small>
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        {% if page_obj.has_previous %}
+            <button type="button" class="btn btn-cc-primary-outline btn-block" onclick="prevPage()">이전</button>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <button type="button" class="btn btn-cc-primary btn-block mb-1" onclick="nextPage()">다음</button>
+        {% endif %}
+    </div>
+    <input type="number" id="currentPage" value="{{ page_obj.number }}" hidden>
+
+{% endblock %}
+
+
+{% block extrascript %}
+    <script>
+    const currentPage = parseInt(document.getElementById('currentPage').value)
+
+    function prevPage() {
+        {% if type == "dealer" %}
+        location.href = `/carcms/compare/?page=${currentPage - 1}`
+        {% else %}
+        location.href = `/carcms_fc/compare/?page=${currentPage - 1}`
+        {% endif %}
+    }
+
+    function nextPage() {
+        {% if type == "dealer" %}
+        location.href = `/carcms/compare/?page=${currentPage + 1}`
+        {% else %}
+        location.href = `/carcms_fc/compare/?page=${currentPage + 1}`
+        {% endif %}
+    }
+
+    document.addEventListener('DOMContentLoaded', function (event) {
+        //overlay.off()
+    })
+</script>
+{% endblock %}

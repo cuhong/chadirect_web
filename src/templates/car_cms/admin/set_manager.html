@@ -1,0 +1,49 @@
+{#{% extends "car_cms/admin/base.html" %}#}
+{#{% load inline_action_tags %}#}
+{##}
+{#{% block title %}#}
+{#    담당자 배정#}
+{#{% endblock %}#}
+{#{% block body %}#}
+{#    <div class="d-flex flex-column justify-content-center p-3">#}
+{#        <form action="" method="post">#}
+{#            {% csrf_token %}#}
+{#            {% render_inline_action_fields %}#}
+{#            <div class="form-group">#}
+{#                <select class="form-control form-control-lg" id="id_user" name="user">#}
+{#                    {% for chatuser in chatuser_queryset %}#}
+{#                        <option value="{{ chatuser.id }}">{{ chatuser.name }}</option>#}
+{#                    {% endfor %}#}
+{#                </select>#}
+{#            </div>#}
+{#            <input type="submit" class="btn btn-primary btn-block" name="_save" value="배정"/>#}
+{#            <input type="submit" class="btn btn-warning btn-block" name="_back" value="취소"/>#}
+{#        </form>#}
+{#    </div>#}
+{#{% endblock %}#}
+
+
+
+
+
+{% extends "admin/base_site.html" %}
+{% load inline_action_tags %}
+
+{% block content %}
+    <div class="d-flex flex-column justify-content-center p-3">
+        <form action="" method="post">
+            {% csrf_token %}
+            {% render_inline_action_fields %}
+            <div class="form-group">
+            <label for="id_user">배정할 담당자</label>
+                <select class="form-control form-control-lg" id="id_user" name="user">
+                    {% for chatuser in chatuser_queryset %}
+                        <option value="{{ chatuser.id }}">{{ chatuser.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type="submit" class="btn btn-primary btn-block" name="_save" value="배정"/>
+            <input type="submit" class="btn btn-warning btn-block" name="_back" value="취소"/>
+        </form>
+    </div>
+{% endblock %}

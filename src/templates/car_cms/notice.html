@@ -1,0 +1,83 @@
+{% extends 'car_cms/base.html' %}
+{% load static %}
+
+{% block title %}차다이렉트{% endblock %}
+
+{% block extrastyle %}
+    <style>
+
+        .notice-box {
+            background-color: white;
+            border: none;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(201, 201, 201, 0.43);
+        }
+
+        .notice-box:last-child {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block outerbody %}
+    {% include 'car_cms/partials/navbar.html' with title="차다이렉트" %}
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column justify-content-center p-3">
+        <div>
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">공지사항</span>
+            </div>
+            {% if notice_list.count == 0 %}
+                <div class="text-center font-weight-light">
+                    등록된 공지사항이 없습니다.
+                </div>
+            {% else %}
+                <div class="">
+                    {% for notice in notice_list %}
+                        <div data-notice-id="{{ notice.id }}" class="notice-box d-flex flex-row justify-content-between mb-2 cursor-pointer" onclick="noticeDetail(this.dataset.noticeId)">
+                            <div class="pr-2">{{ notice.title|slice:":30" }}</div>
+                            <div class="font-weight-lighter">{{ notice.registered_at|date:"Y/m/d" }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        {% if page_obj.has_previous %}
+            <button type="button" class="btn btn-cc-primary-outline btn-block" onclick="prevPage()">이전</button>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <button type="button" class="btn btn-cc-primary btn-block mb-1" onclick="nextPage()">다음</button>
+        {% endif %}
+    </div>
+    <input type="number" id="currentPage" value="{{ page_obj.number }}" hidden>
+{% endblock %}
+
+
+
+
+{% block extrascript %}
+    <script>
+    const currentPage = parseInt(document.getElementById('currentPage').value)
+
+    function prevPage() {
+        {% if type == "dealer" %}
+        location.href = `/carcms/notice/?page=${currentPage - 1}`
+        {% else %}
+        location.href = `/carcms_fc/notice/?page=${currentPage - 1}`
+        {% endif %}
+    }
+
+    function nextPage() {
+        {% if type == "dealer" %}
+        location.href = `/carcms/notice/?page=${currentPage + 1}`
+        {% else %}
+        location.href = `/carcms_fc/notice/?page=${currentPage + 1}`
+        {% endif %}
+    }
+    document.addEventListener('DOMContentLoaded', function (event) {
+        //overlay.off()
+    })
+</script>
+{% endblock %}

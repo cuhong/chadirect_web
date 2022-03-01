@@ -1,0 +1,211 @@
+<script>
+    function setToday() {
+        // 가입기준일 오늘로 설정
+        const dt = new Date()
+        const year = dt.getFullYear();
+        const month = (dt.getMonth() + 1).toString().padStart(2, "0");
+        const day = (dt.getDate() + 1).toString().padStart(2, "0");
+        const day2 = (dt.getDate()).toString().padStart(2, "0");
+        const minDateValue = `${year}-${month}-${day}`
+        const maxDateValue = `${year - 19}-${month}-${day2}`
+        console.log(maxDateValue)
+        driver_1_birthdate.max = maxDateValue
+        driver_1_birthdate.value = maxDateValue
+        driver_2_birthdate.max = maxDateValue
+        driver_2_birthdate.value = maxDateValue
+        start_date.min = minDateValue
+        start_date.value = minDateValue
+    }
+
+    async function fetchGeybo(
+        next_col, manufacturer_value = "", car_name_value = "", register_year_value = "",
+        detail_name_value = ""
+    ) {
+        const data = {
+            "next_col": next_col,
+            "manufacturer": manufacturer_value,
+            "car_name": car_name_value,
+            "register_year": register_year_value,
+            "detail_name": detail_name_value,
+            "start_date": start_date.value
+        }
+        const response = await fetch("https://its-api.net/api/get-select-carlist/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        const responseData = await response.json()
+        return responseData.data
+    }
+
+    start_date.addEventListener('change', function () {
+        dateSelectCallback()
+    })
+
+    function dateSelectCallback() {
+        manufacturer.value = ""
+        car_name.innerHTML = '<option value="" disabled selected>선택</option>'
+        car_register_year.innerHTML = '<option value="" disabled selected>선택</option>'
+        detail_car_name.innerHTML = '<option value="" disabled selected>선택</option>'
+        detail_option.innerHTML = '<option value="" disabled selected>선택</option>'
+    }
+
+
+
+    manufacturer.addEventListener('change', async function (event) {
+        await setCarName(event.target.value)
+    })
+
+    async function setCarName(manufacturer_v) {
+        car_name.innerHTML = '<option value="" disabled selected>선택</option>'
+        car_register_year.innerHTML = '<option value="" disabled selected>선택</option>'
+        detail_car_name.innerHTML = '<option value="" disabled selected>선택</option>'
+        detail_option.innerHTML = '<option value="" disabled selected>선택</option>'
+        car_name.disabled = true
+        const gyebodata = await fetchGeybo(next_col = 'car_name', manufacturer_value = manufacturer_v)
+        var option
+        gyebodata.forEach(function (gyebo) {
+            option = document.createElement('option')
+            option.value = gyebo['car_name']
+            option.innerText = gyebo['car_name']
+            car_name.appendChild(option)
+        })
+        car_name.disabled = false
+    }
+
+    car_name.addEventListener('change', async function (event) {
+        await setRegisterYear(event.target.value)
+    })
+
+    async function setRegisterYear(car_name) {
+        car_register_year.innerHTML = '<option value="" disabled selected>선택</option>'
+        detail_car_name.innerHTML = '<option value="" disabled selected>선택</option>'
+        detail_option.innerHTML = '<option value="" disabled selected>선택</option>'
+        car_register_year.disabled = true
+        const gyebodata = await fetchGeybo(
+            next_col = 'register_year',
+            manufacturer_value = manufacturer.value,
+            car_name_value = car_name
+        )
+        var option
+        gyebodata.forEach(function (gyebo) {
+            console.log(gyebo)
+            option = document.createElement('option')
+            option.value = gyebo['register_year']
+            option.innerText = gyebo['register_year']
+            car_register_year.appendChild(option)
+        })
+        car_register_year.disabled = false
+    }
+
+    car_register_year.addEventListener('change', async function (event) {
+        await setDetailCarName(event.target.value)
+    })
+
+    async function setDetailCarName(register_year) {
+        detail_car_name.innerHTML = '<option value="" disabled selected>선택</option>'
+        detail_option.innerHTML = '<option value="" disabled selected>선택</option>'
+        detail_car_name.disabled = true
+        const gyebodata = await fetchGeybo(
+            next_col = 'detail_name',
+            manufacturer_value = manufacturer.value,
+            car_name_value = car_name.value,
+            register_year_value = register_year,
+        )
+        var option
+        gyebodata.forEach(function (gyebo) {
+            console.log(gyebo)
+            option = document.createElement('option')
+            option.value = gyebo['detail_name']
+            option.innerText = gyebo['detail_name']
+            detail_car_name.appendChild(option)
+        })
+        detail_car_name.disabled = false
+    }
+
+    detail_car_name.addEventListener('change', async function (event) {
+        await setCarOption(event.target.value)
+    })
+
+    async function setCarOption(detail_name) {
+        detail_option.innerHTML = '<option value="" disabled selected>선택</option>'
+        detail_option.disabled = true
+        const gyebodata = await fetchGeybo(
+            next_col = 'detail_option',
+            manufacturer_value = manufacturer.value,
+            car_name_value = car_name.value,
+            register_year_value = car_register_year.value,
+            detail_name_value = detail_name
+        )
+        var option
+        gyebodata.forEach(function (gyebo) {
+            console.log(gyebo)
+            option = document.createElement('option')
+            option.value = gyebo['detail_option']
+            option.innerText = gyebo['detail_option']
+            detail_option.appendChild(option)
+        })
+        detail_option.disabled = false
+    }
+
+    treaty_range.addEventListener('change', function (event) {
+        const targetElemOptions = event.target.options
+        const selectedOption = targetElemOptions[targetElemOptions.selectedIndex]
+        driver_2_birthdate.parentElement.hidden = selectedOption.dataset.driverTwoBirthdateShow === 'false'
+        pubtrans.hidden = selectedOption.dataset.discountPubtrans === 'false'
+
+    })
+
+    coverage_mp_list.addEventListener('change', function (event) {
+        const mpElemOptions = coverage_mp.options
+        const mpType = event.target.value
+        var option
+        var select = false
+        for (i = 0; i < mpElemOptions.length; i++) {
+            option = mpElemOptions[i]
+            if (option.dataset.mpType === mpType) {
+                option.hidden = false
+                if (select === false) {
+                    option.selected = true
+                    select = true
+                }
+            } else {
+                option.hidden = true
+            }
+        }
+    })
+
+    discount_bb.addEventListener('change', function (event) {
+        if (event.target.value === "가입") {
+            discount_bb_year.parentElement.hidden = false
+            discount_bb_month.parentElement.hidden = false
+            discount_bb_price.parentElement.hidden = false
+        } else {
+            discount_bb_year.parentElement.hidden = true
+            discount_bb_month.parentElement.hidden = true
+            discount_bb_price.parentElement.hidden = true
+        }
+    })
+
+    function successCallback() {
+        // TODO
+    }
+
+    discount_mileage.addEventListener('change', function (event) {
+        if (event.target.value === "가입") {
+            discount_dist.parentElement.hidden = false
+            discount_dist.parentElement.hidden = false
+            discount_dist.parentElement.hidden = false
+        } else {
+            discount_dist.parentElement.hidden = true
+            discount_dist.parentElement.hidden = true
+            discount_dist.parentElement.hidden = true
+        }
+    })
+
+    document.addEventListener('DOMContentLoaded', function () {
+        setToday()
+    })
+</script>

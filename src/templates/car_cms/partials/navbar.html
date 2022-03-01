@@ -1,0 +1,70 @@
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-white">
+    {% if type == "dealer" %}
+    <a href="{% url 'car_cms_app:index' %}" class="navbar-brand" style="font-size: 1rem !important;">
+        차다이렉트 딜러용
+    </a>
+{% else %}
+        <a href="{% url 'car_cms_fc_app:index' %}" class="navbar-brand" style="font-size: 1rem !important;">
+        차다이렉트 설계사용</a>
+        {% endif %}
+    <div class="d-flex flex-fill justify-content-end">
+    <button class="navbar-toggler pr-0 " type="button" onclick="showContact()">
+        <i class="bi bi-question-circle"></i>
+    </button>
+        </div>
+    <button class="navbar-toggler pr-0" type="button" data-toggle="collapse" data-target="#mainNav"
+            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                {% if type == "dealer" %}
+                <a class="nav-link" href="{% url 'car_cms_app:index' %}">홈</a>
+                {% else %}
+                <a class="nav-link" href="{% url 'car_cms_fc_app:index' %}">홈</a>
+                {% endif %}
+            </li>
+            <li class="nav-item">
+                {% if type == "dealer" %}
+                <a class="nav-link" href="{% url 'car_cms_app:compare_create' %}">견적요청</a>
+                {% else %}
+                <a class="nav-link" href="{% url 'car_cms_fc_app:compare_create' %}">견적요청</a>
+                {% endif %}
+            </li>
+            <li class="nav-item">
+                {% if type == "dealer" %}
+                <a class="nav-link" href="{% url 'car_cms_app:compare_list' %}">내 견적</a>
+                {% else %}
+                <a class="nav-link" href="{% url 'car_cms_fc_app:compare_list' %}">내 견적</a>
+                {% endif %}
+            </li>
+            <li class="nav-item">
+                {% if type == "dealer" %}
+                <a class="nav-link" href="{% url 'car_cms_app:pay_list' %}">정산</a>
+                {% else %}
+                <a class="nav-link" href="{% url 'car_cms_fc_app:pay_list' %}">정산</a>
+                {% endif %}
+            </li>
+            <div class="dropdown-divider"></div>
+            <li class="nav-item">
+                {% if type == "dealer" %}
+                <a class="nav-link" href="{% url 'car_cms_app:notice' %}">공지사항</a>
+                {% else %}
+                <a class="nav-link" href="{% url 'car_cms_fc_app:notice' %}">공지사항</a>
+                {% endif %}
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="showContact()">문의하기</a>
+            </li>
+            <li class="nav-item">
+                {% if type == "dealer" %}
+                <a class="nav-link" href="{% url 'car_cms_app:logout' %}">로그아웃</a>
+                {% else %}
+                <a class="nav-link" href="{% url 'car_cms_fc_app:logout' %}">로그아웃</a>
+                {% endif %}
+            </li>
+            <div class="dropdown-divider"></div>
+        </ul>
+    </div>
+</nav>

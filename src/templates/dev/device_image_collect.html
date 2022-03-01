@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>인슈어테크서비스 이미지 수집</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .container-narrow {
+            max-width: 576px;
+        }
+    </style>
+</head>
+<body>
+<div class="container container-narrow p-3">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">인슈어테크서비스 휴대전화 정보 이미지 수집</span>
+        </div>
+        <div class="card-body">
+            <div>
+                <p>저희 (주)인슈어테크서비스는 휴대전화 정보 이미지 OCR(광학문자판독) 서비스 고도화를 위해 다양한 기종의 휴대전화 정보 이미지를 수집하고 있습니다.</p>
+                <p>수집된 이미지는 OCR 결과 고도화를 위한 기술개발 용도 이외의 목적으로 일체 사용되지 않으며 외부로 유출되지 않도록 안전하게 보관됩니다.</p>
+                <p>아래 기종별 휴대전화 정보 확인 방법에 따라 휴대전화 정보 화면을 캡쳐하신 후 업로드 부탁드립니다.</p>
+                <p><a href="#" onclick="$('#samsungModal').modal('show')">안드로이드(삼성) 휴대전화 정보 확인 방법</a></p>
+                <p><a href="#" onclick="$('#lgModal').modal('show')">안드로이드(LG) 휴대전화 정보 확인 방법</a></p>
+                <p><a href="#" onclick="$('#appleModal').modal('show')">iPhone(애플) 휴대전화 정보 확인 방법</a></p>
+            </div>
+            <hr class="mt-4 mb-4">
+            <div>
+                <form class="form mb-3" method="post" enctype="multipart/form-data" id="uploadForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.image.id_for_label }}" class="h6">휴대전화 정보 이미지</label>
+                        <input type="file" class="form-control-file" id="{{ form.image.id_for_label }}" name="{{ form.image.name }}"
+                               required  accept="image/*">
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="agreeCheck">
+                        <label class="form-check-label" for="agreeCheck">상기 용도에 한해 휴대전화 정보 이미지를 제공하는 것에 동의합니다.</label>
+                    </div>
+                </form>
+                <button type="button" class="btn btn-primary btn-block btn-lg" id="uploadBtn">전송</button>
+                <small>* 수집 작업과 관련하여 문의가 있으신 분은 admin@itechs.io로 연락 바랍니다.</small>
+            </div>
+        </div>
+        <div class="card-footer">
+            <h6 class="font-weight-bolder">(주)인슈어테크서비스</h6>
+            대표이사 : 홍찬의 | 사업자등록번호 : 743-86-00950<br>주소 : 서울시 중구 서소문로 130 1405호(서소문동, 대양빌딩)<br>
+            이메일 : admin@itechs.io | 전화번호 : 02-6952-1996
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="samsungModal" tabindex="-1" role="dialog" aria-labelledby="samsungModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="samsungModalLabel">안드로이드(삼성) 휴대전화 정보 확인 방법</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4 mb-5">
+                        <h5>1. 설정</h5>
+                        <p>휴대전화의 설정 메뉴로 들어갑니다</p>
+                        <img src="{% static 'dev/image_collect/samsung_01.jpg' %}" class="img-responsive"
+                             style="max-width:100%;">
+                    </div>
+                    <div class="col-md-4 mb-5">
+                        <h5>2. 휴대전화 정보</h5>
+                        <p>하단의 '휴대전화 정보' 항목으로 들어갑니다.</p>
+                        <img src="{% static 'dev/image_collect/samsung_02.jpg' %}" class="img-responsive"
+                             style="max-width:100%;">
+                    </div>
+
+                    <div class="col-md-4 mb-5">
+                        <h5>3. 화면 캡쳐</h5>
+                        <p>붉은 박스 내의 정보가 모두 보이도록 화면 캡쳐 후 업로드</p>
+                        <img src="{% static 'dev/image_collect/samsung_03.jpg' %}" class="img-responsive"
+                             style="max-width:100%;">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="lgModal" tabindex="-1" role="dialog" aria-labelledby="lgModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="lgModalLabel">안드로이드(LG) 휴대전화 정보 확인 방법</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-5">
+                        <h5>방법 1.</h5>
+                        <p>휴대전화의 설정 -> 휴대폰 정보 에서 붉은 박스 내의 정보가 모두 보이도록 캡쳐</p>
+                        <img src="{% static 'dev/image_collect/lg_01.png' %}" class="img-responsive"
+                             style="max-width:100%;">
+                    </div>
+                    <div class="col-md-6 mb-5">
+                        <h5>방법 2.</h5>
+                        <p><span class="text-danger">방법 1 화면이 보이지 않는 경우</span> 휴대전화의 설정 -> 일반 -> 상태 에서 붉은 박스 내의 정보가 모두
+                            보이도록 캡쳐</p>
+                        <img src="{% static 'dev/image_collect/lg_02.png' %}" class="img-responsive"
+                             style="max-width:100%;">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="appleModal" tabindex="-1" role="dialog" aria-labelledby="appleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="appleModalLabel">iPhone(애플) 휴대전화 정보 확인 방법</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 mb-5">
+                        <p>사용하고 있는 아이폰으로 <a href="https://appleid.apple.com/manage/section/devices/edit"
+                                            target="_blank">이 링크</a>를 통해 계정정보 페이지 접속 후 아래와 같은 이미지 캡쳐</p>
+                        <img src="{% static 'dev/image_collect/ios.png' %}" class="img-responsive"
+                             style="max-width:100%;">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"
+        integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
+        crossorigin="anonymous"></script>
+<script>
+    const uploadBtn = document.getElementById('uploadBtn')
+    const agreeCheck = document.getElementById('agreeCheck')
+    const fileInput = document.getElementById('{{ form.image.id_for_label }}')
+    const uploadForm = $("#uploadForm")
+    uploadBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+        if (agreeCheck.checked === false) {
+            alert('이미지 제공에 동의해주세요')
+        } else if (fileInput.value === "") {
+            alert('이미지가 선택되지 않았습니다.')
+        } else {
+            uploadForm.submit();
+        }
+    })
+
+    document.addEventListener('DOMContentLoaded', function (event) {
+        {% if messages %}
+            {% for m in messages %}
+                alert('{{ m }}')
+            {% endfor %}
+        {% endif %}
+    })
+</script>
+</body>
+</html>

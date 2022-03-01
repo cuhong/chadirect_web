@@ -1,0 +1,301 @@
+{% extends 'car_cms/base.html' %}
+{% load static %}
+
+{% block title %}차다이렉트{% endblock %}
+
+{% block extrastyle %}
+{% endblock %}
+
+{% block outerbody %}
+    {% include 'car_cms/partials/navbar.html' with title="차다이렉트" %}
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column justify-content-center p-3">
+        <div class="h5 mt-3 mb-0 text-center">견적요청</div>
+        <div class="h6 mt-3 mb-5 text-center">사업자/신차</div>
+        <div>
+            <div class="mb-4"><span class="color-danger">*</span> 표시는 필수 입력 항목입니다.</div>
+            <form method="post" id="compareForm" enctype="multipart/form-data">
+                {% csrf_token %}
+{#                <div class="form-check mb-3">#}
+{#                    <input type="checkbox" class="form-check-input" id="channelCheck" name="channelCheck" checked>#}
+{#                    <label class="form-check-label" for="channelCheck">다이렉트</label>#}
+{#                </div>#}
+                <div class="form-group">
+                    <label>선호채널 <span class="color-danger">*</span></label>
+                    <select class="form-control-cc form-control-lg" id="id_channel" name="channel">
+                        <option value="direct" {% if form.channel.value == 'direct' %}selected{% endif %}>다이렉트</option>
+                        <option value="legacy" {% if form.channel.value == 'legacy' %}selected{% endif %}>일반</option>
+                    </select>
+                </div>
+                <input id="id_customer_type" name="customer_type" value="1" hidden placeholder="고객유형">
+                <div class="form-group">
+                    <label>사업자명 <span class="color-danger">*</span></label>
+                    <input autofocus placeholder="사업자명" class="form-control-cc form-control-lg is-valid" type="text"
+                           id="id_customer_name"
+                           name="customer_name" value="{{ form.customer_name.value|default_if_none:'' }}">
+                    <div class="invalid-feedback">사업자명을 입력하세요.</div>
+                </div>
+                <div class="form-group">
+                    <label>사업자번호 <span class="color-danger">*</span></label>
+                    <input autofocus placeholder="사업자번호" class="form-control-cc form-control-lg is-valid"
+                           type="text"
+                           id="id_customer_identification"
+                           name="customer_identification"
+                           pattern="[0-9]*"
+                           inputmode="numeric"
+                           value="{{ form.customer_identification.value|default_if_none:'' }}">
+                    <div class="invalid-feedback">사업자번호 값을 확인하세요.</div>
+                </div>
+                <div class="form-group">
+                    <label>사업자유형 <span class="color-danger">*</span></label>
+                    <select class="form-control-cc form-control-lg" id="bizType" name="">
+                        <option value="co" selected>법인사업자</option>
+                        <option value="personal">개인사업자</option>
+                    </select>
+                </div>
+                <div class="form-group" hidden id="ssnWrapper">
+                    <label>대표자 주민번호 <span class="color-danger">*</span></label>
+                    <input autofocus placeholder="대표자 주민번호" class="form-control-cc form-control-lg is-valid"
+                           type="text"
+                           id="id_ssn"
+                           name="ssn"
+                           pattern="[0-9]*"
+                           inputmode="numeric"
+                           value="{{ form.id_ssn.value|default_if_none:'' }}">
+                    <div class="invalid-feedback">대표자 주민번호 값을 확인하세요.</div>
+                </div>
+                <div class="form-group">
+                    <label>담당자 휴대전화</label>
+                    <input autofocus placeholder="휴대전화(- 제외)" class="form-control-cc form-control-lg is-valid"
+                           type="text"
+                           id="id_customer_cellphone"
+                           pattern="[0-9]*"
+                           inputmode="numeric"
+                           name="customer_cellphone" value="{{ form.customer_cellphone.value|default_if_none:'' }}">
+                    <div class="invalid-feedback">휴대전화 번호 형식이 올바르지 않습니다.</div>
+                </div>
+                <input id="id_car_type" name="car_type" value="0" hidden placeholder="차량유형">
+                <div class="form-group mb-1">
+                    <label>제조사 <span class="color-danger">*</span></label>
+                    <input placeholder="제조사" class="form-control-cc form-control-lg" type="text"
+                           id="id_manufacturer" hidden
+                           name="manufacturer" value="{{ form.manufacturer.value|default_if_none:'' }}">
+                </div>
+                <button id="manufacturerBtn" type="button" class="btn  btn-cc-primary btn-block mb-3" data-toggle="modal" data-target="#manufacturerModal">
+                    제조사 선택
+                </button>
+                <div class="form-group">
+                    <label>차량모델 <span class="color-danger">*</span></label>
+                    <input autofocus placeholder="차명" class="form-control-cc form-control-lg is-valid" type="text"
+                           id="id_car_name"
+                           name="car_name" value="{{ form.car_name.value|default_if_none:'' }}">
+                    <div class="invalid-feedback">차량모델을 입력하세요.</div>
+                </div>
+                <div class="form-group">
+                    <label>차량가격 <span class="color-danger">*</span></label>
+                    <input autofocus placeholder="차량가격(만원)" class="form-control-cc form-control-lg is-valid" type="number"
+                           id="id_car_price"
+                           name="car_price"  value="{{ form.car_price.value|default_if_none:'' }}">
+                    <div class="invalid-feedback">차량가격을 입력하세요.</div>
+                </div>
+                <div class="form-group">
+                    <label>운전자범위 <span class="color-danger">*</span></label>
+                    <select class="form-control-cc form-control-lg" id="id_driver_range" name="driver_range">
+{#                        <option value="0" {% if form.driver_range.value == 0 %}selected{% endif %}>피보험자 1인</option>#}
+{#                        <option value="1" {% if form.driver_range.value == 1 %}selected{% endif %}>피보험자 1인+지정1인</option>#}
+{#                        <option value="2" {% if form.driver_range.value == 2 %}selected{% endif %}>누구나</option>#}
+{#                        <option value="3" {% if form.driver_range.value == 3 %}selected{% endif %}>부부</option>#}
+{#                        <option value="4" {% if form.driver_range.value == 4 %}selected{% endif %}>부부+지정1인</option>#}
+{#                        <option value="5" {% if form.driver_range.value == 5 %}selected{% endif %}>가족</option>#}
+{#                        <option value="6" {% if form.driver_range.value == 6 %}selected{% endif %}>가족+지정1인</option>#}
+{#                        <option value="7" {% if form.driver_range.value == 7 %}selected{% endif %}>가족+형제자매</option>#}
+                        <option value="9" {% if form.driver_range.value == 9 %}selected{% endif %} data-biz-type="co">법인사업자(임직원한정)</option>
+                        <option value="10" {% if form.driver_range.value == 10 %}selected{% endif %} data-biz-type="co">법인사업자(누구나)</option>
+                        <option value="8" {% if form.driver_range.value == 8 %}selected{% endif %} data-biz-type="personal">개인사업자(임직원한정)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>최저운전자 생년월일</label>
+                    <input autofocus placeholder="19860906 형태" class="form-control-cc form-control-lg is-valid" type="text"
+                           id="id_min_age"
+                           name="min_age" value="{{ form.min_age.value|default_if_none:'' }}">
+                </div>
+                <div class="form-group">
+                    <label>차량/차대번호</label>
+                    <input autofocus placeholder="차량/차대번호" class="form-control-cc form-control-lg is-valid" type="text"
+                           id="id_car_identification"
+                           name="car_identification" value="{{ form.car_identification.value|default_if_none:'' }}">
+                    <div class="invalid-feedback">차량/차대번호를 입력하세요.</div>
+                </div>
+                <div class="form-group">
+                    <label>메모</label>
+                    <textarea class="form-control-cc form-control-lg" id="id_memo" name="memo" rows="2"
+                              placeholder="설계사에게 전달할 내용을 적어주세요"></textarea>
+                </div>
+
+                <label>사업자등록증</label>
+                <input id="id_attach_1" class="form-control is-valid" name="attach_1" type="file" accept="image/*"
+                       hidden>
+                <div class="invalid-feedback">사업자등록증을 등록해주세요.</div>
+                <div id="attach_1" class="imagePreviewWrapper d-flex justify-content-center align-items-center"
+                     onclick="showImageInput(this.id)">
+                    <div>사업자등록증을 등록해주세요.</div>
+                </div>
+
+                <label>견적서</label>
+                <input id="id_attach_2" class="form-control is-valid" name="attach_2" type="file" accept="image/*"
+                       hidden>
+                <div id="attach_2" class="imagePreviewWrapper d-flex justify-content-center align-items-center"
+                     onclick="showImageInput(this.id)">
+                    <div>견적서를 등록해주세요.</div>
+                </div>
+
+                <label>추가서류 1</label>
+                <input id="id_attach_3" class="form-control is-valid" name="attach_3" type="file" accept="image/*"
+                       hidden>
+                <div id="attach_3" class="imagePreviewWrapper d-flex justify-content-center align-items-center"
+                     onclick="showImageInput(this.id)">
+                    <div>추가서류를 등록해주세요.</div>
+                </div>
+            </form>
+            <button class="btn btn-cc-primary btn-block mb-3" onclick="compare()">견적요청</button>
+            <button type="button" class="btn btn-cc-primary-outline btn-block" onclick="index()">취소</button>
+        </div>
+        {% include 'car_cms/partials/manufacturer.html' %}
+    </div>
+
+{% endblock %}
+
+{% block extrascript %}
+    <script>
+        const compareForm = document.getElementById('compareForm')
+        const attach_1 = document.getElementById('id_attach_1')
+        const attach_2 = document.getElementById('id_attach_2')
+        const attach_3 = document.getElementById('id_attach_3')
+        const attach1PreviewWrapper = document.getElementById('attach_1')
+        const attach2PreviewWrapper = document.getElementById('attach_2')
+        const attach3PreviewWrapper = document.getElementById('attach_3')
+        const customer_name = document.getElementById('id_customer_name')
+        const customer_identification = document.getElementById('id_customer_identification')
+        const car_name = document.getElementById('id_car_name')
+        const car_type = document.getElementById('id_car_type')
+        const car_identification = document.getElementById('id_car_identification')
+        const car_price = document.getElementById('id_car_price')
+        const ssnWrapper = document.getElementById('ssnWrapper')
+        const ssn = document.getElementById('id_ssn')
+        const bizType = document.getElementById('bizType')
+        const driver_range = document.getElementById('id_driver_range')
+
+        function showImageInput(id) {
+            var inputElem = document.getElementById(`id_${id}`)
+            inputElem.click()
+        }
+
+        bizType.addEventListener('change', function (event) {
+            console.log(event.target.value)
+            for (i=0; i < driver_range.options.length; i++) {
+                console.log(driver_range.options[i])
+                driver_range.options[i].selected = false
+                var is_match = driver_range.options[i].dataset.bizType === event.target.value
+                driver_range.options[i].hidden = !is_match
+                if (is_match === true) {
+                    driver_range.options[i].selected = true
+                }
+            }
+            if (event.target.value === 'co') {
+                // 법인
+                ssnWrapper.hidden = true
+            } else if (event.target.value === 'personal') {
+                // 개인
+                ssnWrapper.hidden = false
+            }
+        })
+
+        attach_1.addEventListener('change', async function (event) {
+            var file = event.target.files[0]
+            var imageUrl = window.URL.createObjectURL(file)
+            var dimension = await imageSize(imageUrl)
+            attach1PreviewWrapper.style.height = `${attach1PreviewWrapper.offsetWidth * dimension.height / dimension.width}px`
+            attach1PreviewWrapper.style.backgroundImage = `url('${imageUrl}')`
+            attach1PreviewWrapper.innerHTML = ''
+        }, false)
+
+        attach_2.addEventListener('change', async function (event) {
+            var file = event.target.files[0]
+            var imageUrl = window.URL.createObjectURL(file)
+            var dimension = await imageSize(imageUrl)
+            attach2PreviewWrapper.style.height = `${attach2PreviewWrapper.offsetWidth * dimension.height / dimension.width}px`
+            attach2PreviewWrapper.style.backgroundImage = `url('${imageUrl}')`
+            attach2PreviewWrapper.innerHTML = ''
+        }, false)
+
+        attach_3.addEventListener('change', async function (event) {
+            var file = event.target.files[0]
+            var imageUrl = window.URL.createObjectURL(file)
+            var dimension = await imageSize(imageUrl)
+            attach3PreviewWrapper.style.height = `${attach3PreviewWrapper.offsetWidth * dimension.height / dimension.width}px`
+            attach3PreviewWrapper.style.backgroundImage = `url('${imageUrl}')`
+            attach3PreviewWrapper.innerHTML = ''
+        }, false)
+
+        function validate() {
+            if (customer_name.value === '') {
+                alert('사업자명을 입력하세요.')
+                return false
+            }
+            if (customer_identification.value === '') {
+                alert('사업자번호를 입력하세요.')
+                return false
+            }
+            if (manufacturerInput.value === ''){
+                alert('제조사를 선택하세요.')
+                return false
+            }
+            if (car_name.value === '') {
+                alert('차량모델을 입력하세요.')
+                return false
+            }
+            if (bizType.value === 'personal') {
+                if (ssn.value === '') {
+                    alert('개인사업자일 경우 대표자 주민번호를 입력하세요.')
+                    return false
+                }
+            }
+            if (car_type.value === "1") {
+                // 중고차
+                if (car_identification.value === "") {
+                    alert('중고차는 차량번호가 필수입니다.')
+                    return false
+                }
+            } else {
+                // 신차
+                if (car_price.value === '' || car_price.value === null || car_price.value === undefined || car_price.value === 0) {
+                    alert('차량가격은 필수 입니다.')
+                    return false
+                }
+            }
+            return true
+        }
+
+        function compare() {
+            if (validate() !== true) {
+                return null
+            }
+            compareForm.submit()
+        }
+        const manufacturerInput = document.getElementById('id_manufacturer')
+        const manufacturerBtn = document.getElementById('manufacturerBtn')
+
+        function setManufacturer(manufacturer) {
+            manufacturerInput.value = manufacturer.dataset.manufacturerId
+            manufacturerBtn.innerText = manufacturer.dataset.manufacturerName
+            $("#manufacturerModal").modal('hide')
+        }
+
+        document.addEventListener('DOMContentLoaded', function (event) {
+            //overlay.off()
+        })
+    </script>
+{% endblock %}

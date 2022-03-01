@@ -1,0 +1,784 @@
+{% load static %}
+{% load humanize %}
+<!doctype html>
+<html lang="ko">
+<head>
+    {#    <link rel="manifest" href="{% url 'manifest' %}">#}
+    <meta name="theme-color" content="#EBB8A4">
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, maximum-scale=1.0, minimum-scale=1, user-scalable=no,initial-scale=1.0"/>
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
+    <!-- 주소창 등의 웹 브라우저 UI를 표시하지 않기 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- 상태 바의 스타일을 지정 -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- 홈 화면에서 표시되는 앱 이름을 지정 -->
+    <meta name="apple-mobile-web-app-title" content="Hong's Coffee">
+    <!-- 홈 화면에서 표시되는 앱 아이콘을 지정 -->
+    <link rel="apple-touch-icon" href="{% static 'pwa/icons/icon-192x192.png' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <title>차다이렉트</title>
+    <style>
+        @import url(http://fonts.googleapis.com/earlyaccess/nanummyeongjo.css);
+
+        body, html {
+            background-color: #ffffff;
+            /*
+            color: #18becb;
+             */
+            color: #003B4A;
+        }
+
+        .nnmj {
+            font-family: 'Nanum Myeongjo', serif !important;
+        }
+
+        .overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ffffff;
+            z-index: 2;
+        }
+
+        .spinner {
+            position: fixed;
+            z-index: 1031; /* High z-index so it is on top of the page */
+            top: calc(50% - (32px / 2));
+            right: calc(50% - (32px / 2)); /* or: left: 50%; */
+        }
+
+        .container-restrict {
+            max-width: 600px;
+            max-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+            color: #003B4A !important;
+        }
+
+        .bg-cc-primary {
+            background-color: #ffffff;
+        }
+
+        .bg-cc-secondary {
+            background-color: #18becb;
+        }
+
+        .btn-cc-primary {
+            color: #fff;
+            background-color: #18becb;
+            border-color: #18becb;
+            height: 3rem;
+            border-radius: 1.5rem;
+        }
+
+        .btn-kakao-primary {
+            color: rgba(0, 0, 0, 0.85);
+            background-color: #FEE500;
+            border-color: #FEE500;
+            height: 3rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+        }
+
+        .btn-phone-primary {
+            color: #fff;
+            background-color: #18becb;
+            border-color: #18becb;
+            height: 3rem;
+            border-radius: 0.5rem;
+        }
+
+        .btn-cc-primary-outline {
+            color: #18becb !important;
+            background-color: white;
+            border-color: #18becb;
+            height: 3rem;
+            border-radius: 1.5rem;
+        }
+
+        .form-control-cc {
+            display: block;
+            width: 100%;
+            height: 3rem;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #000000;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: 1.5rem;
+            transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+
+        .form-control-cc-danger {
+            border: 1px solid red !important;
+        }
+
+        .form-control-cc::placeholder {
+            color: rgba(90, 98, 104, 0.78);
+        }
+
+        .form-control-cc:focus {
+            border: 2px solid #18becb !important;
+            box-shadow: none;
+            outline: none;
+        }
+
+        .modal-dialog {
+            position: relative;
+            width: auto;
+            margin: .5rem;
+            pointer-events: none;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .modal-content {
+            position: relative;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            width: 100%;
+            pointer-events: auto;
+            background-color: #ffffff;
+            background-clip: padding-box;
+            border: 0;
+            border-radius: .3rem;
+            outline: 0;
+        }
+
+        .modal-body {
+            position: relative;
+            -ms-flex: 1 1 auto;
+            flex: 1 1 auto;
+            padding: 1rem;
+        }
+
+        .header_title {
+            font-size: 1.5rem;
+            margin-top: 1rem !important;
+            margin-bottom: 3rem !important;
+            font-weight: 300 !important;
+            line-height: 2rem;
+        }
+
+        .navbar-brand-cc {
+            display: inline-block;
+            padding-top: .3125rem;
+            padding-bottom: .3125rem;
+            font-size: 1rem;
+            line-height: inherit;
+            white-space: nowrap;
+        }
+
+        .navbar-light .navbar-toggler {
+            color: rgba(0, 0, 0, .5);
+            border-color: transparent;
+        }
+
+        .color-primary {
+            color: #18becb;
+        }
+
+        .color-danger {
+            color: red;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        .imagePreviewWrapper {
+            min-height: 10rem;
+            border: 1px solid #5a6268;
+            background-color: #d5d5d5;
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin-bottom: 2rem;
+            border-radius: 1.5rem;
+            cursor: pointer;
+        }
+
+    </style>
+    {% block extrastyle %}
+    {% endblock %}
+</head>
+<body>
+{% block outerbody %}
+{% endblock %}
+<div class="container container-restrict" id="mainContainer">
+    <div class="overlay" id="overlay">
+        <div class="row d-flex align-items-center">
+            <div class="col-12">
+                <div class="spinner-grow spinner" role="status">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex flex-column justify-content-center p-3" id="estimate">
+        <div class="header_title" style="line-height: 2.5rem">
+            <span class="h3 font-weight-bolder">{{ compare.customer_name }}</span> 고객님의<br>보험 비교견적
+        </div>
+        <div class="mb-3">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">보험료</span>
+            </div>
+            {% if compare.estimate_insurer_1 and compare.estimate_premium_1 %}
+                <div class="d-flex justify-content-between insurer mb-3">
+                    {% if compare.estimate_insurer_1 == 'hyundai' %}
+                        <img src="{% static 'car_cms/insurer/01_hyundai.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_1 == 'db' %}
+                        <img src="{% static 'car_cms/insurer/02_db.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_1 == 'kb' %}
+                        <img src="{% static 'car_cms/insurer/03_kb.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_1 == 'hanwha' %}
+                        <img src="{% static 'car_cms/insurer/04_hanhwa.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_1 == 'meritz' %}
+                        <img src="{% static 'car_cms/insurer/05_meritz.png' %}" width="40%" height="40%">
+                    {% else %}
+                        <div class="font-weight-bold">{{ compare.get_estimate_insurer_1_display }}</div>
+                    {% endif %}
+                    <div class="text-right">{{ compare.estimate_premium_1|intcomma }}원<br>
+                        <small>{{ compare.estimate_memo_1|default_if_none:"" }}</small></div>
+                </div>
+            {% endif %}
+            {% if compare.estimate_insurer_2 and compare.estimate_premium_2 %}
+                <div class="d-flex justify-content-between insurer mb-3">
+                    {% if compare.estimate_insurer_2 == 'hyundai' %}
+                        <img src="{% static 'car_cms/insurer/01_hyundai.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_2 == 'db' %}
+                        <img src="{% static 'car_cms/insurer/02_db.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_2 == 'kb' %}
+                        <img src="{% static 'car_cms/insurer/03_kb.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_2 == 'hanwha' %}
+                        <img src="{% static 'car_cms/insurer/04_hanhwa.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_2 == 'meritz' %}
+                        <img src="{% static 'car_cms/insurer/05_meritz.png' %}" width="40%" height="40%">
+                    {% else %}
+                        <div class="font-weight-bold">{{ compare.get_estimate_insurer_2_display }}</div>
+                    {% endif %}
+                    <div class="text-right">{{ compare.estimate_premium_1|intcomma }}원<br>
+                        <small>{{ compare.estimate_memo_2|default_if_none:"" }}</small></div>
+                </div>
+            {% endif %}
+            {% if compare.estimate_insurer_3 and compare.estimate_premium_3 %}
+                <div class="d-flex justify-content-between insurer mb-3">
+                    {% if compare.estimate_insurer_3 == 'hyundai' %}
+                        <img src="{% static 'car_cms/insurer/01_hyundai.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_3 == 'db' %}
+                        <img src="{% static 'car_cms/insurer/02_db.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_3 == 'kb' %}
+                        <img src="{% static 'car_cms/insurer/03_kb.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_3 == 'hanwha' %}
+                        <img src="{% static 'car_cms/insurer/04_hanhwa.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_3 == 'meritz' %}
+                        <img src="{% static 'car_cms/insurer/05_meritz.png' %}" width="40%" height="40%">
+                    {% else %}
+                        <div class="font-weight-bold">{{ compare.get_estimate_insurer_3_display }}</div>
+                    {% endif %}
+                    <div class="text-right">{{ compare.estimate_premium_1|intcomma }}원<br>
+                        <small>{{ compare.estimate_memo_3|default_if_none:"" }}</small></div>
+                </div>
+            {% endif %}
+            {% if compare.estimate_insurer_4 and compare.estimate_premium_4 %}
+                <div class="d-flex justify-content-between insurer mb-3">
+                    {% if compare.estimate_insurer_4 == 'hyundai' %}
+                        <img src="{% static 'car_cms/insurer/01_hyundai.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_4 == 'db' %}
+                        <img src="{% static 'car_cms/insurer/02_db.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_4 == 'kb' %}
+                        <img src="{% static 'car_cms/insurer/03_kb.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_4 == 'hanwha' %}
+                        <img src="{% static 'car_cms/insurer/04_hanhwa.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_4 == 'meritz' %}
+                        <img src="{% static 'car_cms/insurer/05_meritz.png' %}" width="40%" height="40%">
+                    {% else %}
+                        <div class="font-weight-bold">{{ compare.get_estimate_insurer_4_display }}</div>
+                    {% endif %}
+                    <div class="text-right">{{ compare.estimate_premium_1|intcomma }}원<br>
+                        <small>{{ compare.estimate_memo_4|default_if_none:"" }}</small></div>
+                </div>
+            {% endif %}
+            {% if compare.estimate_insurer_5 and compare.estimate_premium_5 %}
+                <div class="d-flex justify-content-between insurer mb-3">
+                    {% if compare.estimate_insurer_5 == 'hyundai' %}
+                        <img src="{% static 'car_cms/insurer/01_hyundai.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_5 == 'db' %}
+                        <img src="{% static 'car_cms/insurer/02_db.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_5 == 'kb' %}
+                        <img src="{% static 'car_cms/insurer/03_kb.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_5 == 'hanwha' %}
+                        <img src="{% static 'car_cms/insurer/04_hanhwa.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_5 == 'meritz' %}
+                        <img src="{% static 'car_cms/insurer/05_meritz.png' %}" width="40%" height="40%">
+                    {% else %}
+                        <div class="font-weight-bold">{{ compare.get_estimate_insurer_5_display }}</div>
+                    {% endif %}
+                    <div class="text-right">{{ compare.estimate_premium_1|intcomma }}원<br>
+                        <small>{{ compare.estimate_memo_5|default_if_none:"" }}</small></div>
+                </div>
+            {% endif %}
+            {% if compare.estimate_insurer_6 and compare.estimate_premium_6 %}
+                <div class="d-flex justify-content-between insurer mb-3">
+                    {% if compare.estimate_insurer_6 == 'hyundai' %}
+                        <img src="{% static 'car_cms/insurer/01_hyundai.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_6 == 'db' %}
+                        <img src="{% static 'car_cms/insurer/02_db.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_6 == 'kb' %}
+                        <img src="{% static 'car_cms/insurer/03_kb.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_6 == 'hanwha' %}
+                        <img src="{% static 'car_cms/insurer/04_hanhwa.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_6 == 'meritz' %}
+                        <img src="{% static 'car_cms/insurer/05_meritz.png' %}" width="40%" height="40%">
+                    {% else %}
+                        <div class="font-weight-bold">{{ compare.get_estimate_insurer_6_display }}</div>
+                    {% endif %}
+                    <div class="text-right">{{ compare.estimate_premium_1|intcomma }}원<br>
+                        <small>{{ compare.estimate_memo_6|default_if_none:"" }}</small></div>
+                </div>
+            {% endif %}
+            {% if compare.estimate_insurer_7 and compare.estimate_premium_7 %}
+                <div class="d-flex justify-content-between insurer mb-3">
+                    {% if compare.estimate_insurer_7 == 'hyundai' %}
+                        <img src="{% static 'car_cms/insurer/01_hyundai.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_7 == 'db' %}
+                        <img src="{% static 'car_cms/insurer/02_db.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_7 == 'kb' %}
+                        <img src="{% static 'car_cms/insurer/03_kb.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_7 == 'hanwha' %}
+                        <img src="{% static 'car_cms/insurer/04_hanhwa.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_7 == 'meritz' %}
+                        <img src="{% static 'car_cms/insurer/05_meritz.png' %}" width="40%" height="40%">
+                    {% else %}
+                        <div class="font-weight-bold">{{ compare.get_estimate_insurer_7_display }}</div>
+                    {% endif %}
+                    <div class="text-right">{{ compare.estimate_premium_1|intcomma }}원<br>
+                        <small>{{ compare.estimate_memo_7|default_if_none:"" }}</small></div>
+                </div>
+            {% endif %}
+            {% if compare.estimate_insurer_8 and compare.estimate_premium_8 %}
+                <div class="d-flex justify-content-between insurer mb-3">
+                    {% if compare.estimate_insurer_8 == 'hyundai' %}
+                        <img src="{% static 'car_cms/insurer/01_hyundai.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_8 == 'db' %}
+                        <img src="{% static 'car_cms/insurer/02_db.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_8 == 'kb' %}
+                        <img src="{% static 'car_cms/insurer/03_kb.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_8 == 'hanwha' %}
+                        <img src="{% static 'car_cms/insurer/04_hanhwa.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_8 == 'meritz' %}
+                        <img src="{% static 'car_cms/insurer/05_meritz.png' %}" width="40%" height="40%">
+                    {% else %}
+                        <div class="font-weight-bold">{{ compare.get_estimate_insurer_8_display }}</div>
+                    {% endif %}
+                    <div class="text-right">{{ compare.estimate_premium_1|intcomma }}원<br>
+                        <small>{{ compare.estimate_memo_8|default_if_none:"" }}</small></div>
+                </div>
+            {% endif %}
+            {% if compare.estimate_insurer_9 and compare.estimate_premium_9 %}
+                <div class="d-flex justify-content-between insurer mb-3">
+                    {% if compare.estimate_insurer_9 == 'hyundai' %}
+                        <img src="{% static 'car_cms/insurer/01_hyundai.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_9 == 'db' %}
+                        <img src="{% static 'car_cms/insurer/02_db.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_9 == 'kb' %}
+                        <img src="{% static 'car_cms/insurer/03_kb.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_9 == 'hanwha' %}
+                        <img src="{% static 'car_cms/insurer/04_hanhwa.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_9 == 'meritz' %}
+                        <img src="{% static 'car_cms/insurer/05_meritz.png' %}" width="40%" height="40%">
+                    {% else %}
+                        <div class="font-weight-bold">{{ compare.get_estimate_insurer_9_display }}</div>
+                    {% endif %}
+                    <div class="text-right">{{ compare.estimate_premium_1|intcomma }}원<br>
+                        <small>{{ compare.estimate_memo_9|default_if_none:"" }}</small></div>
+                </div>
+            {% endif %}
+            {% if compare.estimate_insurer_10 and compare.estimate_premium_10 %}
+                <div class="d-flex justify-content-between insurer mb-3">
+                    {% if compare.estimate_insurer_10 == 'hyundai' %}
+                        <img src="{% static 'car_cms/insurer/01_hyundai.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_10 == 'db' %}
+                        <img src="{% static 'car_cms/insurer/02_db.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_10 == 'kb' %}
+                        <img src="{% static 'car_cms/insurer/03_kb.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_10 == 'hanwha' %}
+                        <img src="{% static 'car_cms/insurer/04_hanhwa.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_10 == 'meritz' %}
+                        <img src="{% static 'car_cms/insurer/05_meritz.png' %}" width="40%" height="40%">
+                    {% else %}
+                        <div class="font-weight-bold">{{ compare.get_estimate_insurer_10_display }}</div>
+                    {% endif %}
+                    <div class="text-right">{{ compare.estimate_premium_1|intcomma }}원<br>
+                        <small>{{ compare.estimate_memo_10|default_if_none:"" }}</small></div>
+                </div>
+            {% endif %}
+            {% if compare.estimate_insurer_11 and compare.estimate_premium_11 %}
+                <div class="d-flex justify-content-between insurer mb-3">
+                    {% if compare.estimate_insurer_11 == 'hyundai' %}
+                        <img src="{% static 'car_cms/insurer/01_hyundai.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_11 == 'db' %}
+                        <img src="{% static 'car_cms/insurer/02_db.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_11 == 'kb' %}
+                        <img src="{% static 'car_cms/insurer/03_kb.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_11 == 'hanwha' %}
+                        <img src="{% static 'car_cms/insurer/04_hanhwa.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_11 == 'meritz' %}
+                        <img src="{% static 'car_cms/insurer/05_meritz.png' %}" width="40%" height="40%">
+                    {% else %}
+                        <div class="font-weight-bold">{{ compare.get_estimate_insurer_11_display }}</div>
+                    {% endif %}
+                    <div class="text-right">{{ compare.estimate_premium_1|intcomma }}원<br>
+                        <small>{{ compare.estimate_memo_11|default_if_none:"" }}</small></div>
+                </div>
+            {% endif %}
+            {% if compare.estimate_insurer_12 and compare.estimate_premium_12 %}
+                <div class="d-flex justify-content-between insurer mb-3">
+                    {% if compare.estimate_insurer_12 == 'hyundai' %}
+                        <img src="{% static 'car_cms/insurer/01_hyundai.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_12 == 'db' %}
+                        <img src="{% static 'car_cms/insurer/02_db.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_12 == 'kb' %}
+                        <img src="{% static 'car_cms/insurer/03_kb.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_12 == 'hanwha' %}
+                        <img src="{% static 'car_cms/insurer/04_hanhwa.png' %}" width="40%" height="40%">
+                    {% elif compare.estimate_insurer_12 == 'meritz' %}
+                        <img src="{% static 'car_cms/insurer/05_meritz.png' %}" width="40%" height="40%">
+                    {% else %}
+                        <div class="font-weight-bold">{{ compare.get_estimate_insurer_12_display }}</div>
+                    {% endif %}
+                    <div class="text-right">{{ compare.estimate_premium_1|intcomma }}원<br>
+                        <small>{{ compare.estimate_memo_12|default_if_none:"" }}</small></div>
+                </div>
+            {% endif %}
+
+        </div>
+        <div class="mb-3">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">피보험자 정보</span>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">성명</div>
+                <div>{{ compare.insured_name }}</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">생년월일</div>
+                <div>{{ compare.birthdate|date:"Y-m-d" }}</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">차량 정보</span>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">차명</div>
+                <div>{{ compare.car_name_fixed }}</div>
+            </div>
+            {% if compare.vin %}
+                <div class="d-flex flex-row justify-content-between mb-2">
+                    <div class="font-weight-light">차대번호</div>
+                    <div>{{ compare.vin }}</div>
+                </div>
+            {% endif %}
+            {% if compare.car_no %}
+                <div class="d-flex flex-row justify-content-between mb-2">
+                    <div class="font-weight-light">차량번호</div>
+                    <div>{{ compare.car_no }}</div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">계약 정보</span>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">보험 개시일</div>
+                <div>{{ compare.start_at|date:"Y-m-d" }}</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">운전자 특약 정보</span>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">운전자 범위</div>
+                <div>{{ compare.get_driver_range_fixed_display }}</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">최저연령 운전자 특약</div>
+                {% if compare.min_age %}
+                    <div>만 {{ compare.min_age }}세 미만</div>
+                {% else %}
+                    <div>미가입</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">담보</span>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">대인배상 I</div>
+                <div>가입</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">대인배상 II</div>
+                <div>{% if compare.bi_2 %}가입{% else %}미가입{% endif %}</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">대물배상</div>
+                <div>{{ compare.get_li_display }}</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">자기차량손해</div>
+                <div>{{ compare.get_self_damage_display }}</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">자손/자상</div>
+                <div>{{ compare.get_self_injury_display }}</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">무보험차상해</div>
+                <div>{{ compare.get_uninsured_display }}</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">기타 특약</span>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">긴급출동</div>
+                <div>{{ compare.get_emergency_display }}</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">블랙박스 할인</div>
+                <div>{{ compare.get_blackbox_display }}</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">담당자</span>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">{{ compare.manager.name }}</div>
+                <div><a style="color: #003B4A !important"
+                        href="tel:{{ compare.manager.cellphone }}">{{ compare.manager.cellphone }}</a></div>
+            </div>
+        </div>
+
+        <div>
+            <button type="button" class="btn btn-cc-primary btn-block" id="captureBtn"
+                    onclick="capture('{{ compare.id }}')">다운로드
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="{% static 'vendor/jquery/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'vendor/popper/popper.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'vendor/kakao/kakao.min.js' %}"></script>
+
+<script src="{% static 'vendor/html2canvas/html2canvas.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+<script>
+    const captureBtn = document.getElementById('captureBtn')
+    const compareDetailBtn = document.getElementById('compareDetailBtn')
+
+    function capture() {
+        captureBtn.hidden = true
+        compareDetailBtn.hidden = true
+        html2canvas(document.querySelector("#estimate"), {
+            allowTaint: true,
+            useCORS: true
+        }).then(canvas => {
+            canvas.toBlob(function (blob) {
+                saveAs(blob, "wholePage.png");
+                captureBtn.hidden = false
+                compareDetailBtn.hidden = false
+            })
+        });
+    }
+</script>
+<script>
+
+    function getParameterByName(name, url = window.location.href) {
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    const overlay = {
+        elem: document.getElementById('overlay'),
+        on: function () {
+            overlay.elem.classList.add('d-block')
+        },
+        off: function () {
+            overlay.elem.classList.remove('d-block')
+        }
+    }
+
+    function signUp() {
+        {% if type == "dealer" %}
+            location.href = "{% url 'car_cms_app:signup' %}"
+        {% else %}
+            location.href = "{% url 'car_cms_fc_app:signup' %}"
+        {% endif %}
+    }
+
+    function index() {
+        {% if type == "dealer" %}
+            location.href = "{% url 'car_cms_app:index' %}"
+        {% else %}
+            location.href = "{% url 'car_cms_fc_app:index' %}"
+        {% endif %}
+    }
+
+    function notice() {
+        {% if type == "dealer" %}
+            location.href = `/carcms/notice/`
+        {% else %}
+            location.href = `/carcms_fc/notice/`
+        {% endif %}
+    }
+
+    function noticeDetail(notice_id) {
+        {% if type == "dealer" %}
+            location.href = `/carcms/notice/${notice_id}/`
+        {% else %}
+            location.href = `/carcms_fc/notice/${notice_id}/`
+        {% endif %}
+    }
+
+    function compare() {
+        {% if type == "dealer" %}
+            location.href = "{% url 'car_cms_app:compare_create' %}"
+        {% else %}
+            location.href = "{% url 'car_cms_fc_app:compare_create' %}"
+        {% endif %}
+    }
+
+    function compareList() {
+        {% if type == "dealer" %}
+            location.href = "{% url 'car_cms_app:compare_list' %}"
+        {% else %}
+            location.href = "{% url 'car_cms_fc_app:compare_list' %}"
+        {% endif %}
+    }
+
+    function compareDetail(compare_id) {
+        {% if type == "dealer" %}
+            location.href = `/carcms/compare/${compare_id}/`
+        {% else %}
+            location.href = `/carcms_fc/compare/${compare_id}/`
+        {% endif %}
+    }
+
+    function isNumber(char) {
+        return !isNaN(parseInt(char));
+    }
+
+    function isEmail(value) {
+        return value.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/) !== null
+    }
+
+    function isCellphone(value) {
+        return value.match(/^01([0|1|6|7|8|9])?([0-9]{7,8})$/) !== null
+    }
+
+    function imageSize(url) {
+        const img = document.createElement("img");
+        const promise = new Promise((resolve, reject) => {
+            img.onload = () => {
+                // Natural size is the actual image size regardless of rendering.
+                // The 'normal' `width`/`height` are for the **rendered** size.
+                const width = img.naturalWidth;
+                const height = img.naturalHeight;
+                // Resolve promise with the width and height
+                resolve({width, height});
+            };
+            // Reject promise on error
+            img.onerror = reject;
+        });
+        // Setting the source makes it start downloading and eventually call `onload`
+        img.src = url;
+        return promise;
+    }
+
+    function showContact() {
+        $("#contactModal").modal('show')
+    }
+
+
+    function showPrivacyPolicyModal() {
+        $("#contactModal").modal('hide')
+        $("#privacyPolicyModal").modal('show')
+    }
+
+
+    function showServicePolicyModal() {
+        $("#contactModal").modal('hide')
+        $("#servicePolicyModal").modal('show')
+    }
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').then(
+            () => {
+                console.log('Service Worker Registered')
+            }
+        ).catch((e) => {
+            console.log(e)
+        })
+        var modalQuery = getParameterByName('modal')
+        if (modalQuery === 'servicePolicy') {
+            showServicePolicyModal()
+        } else if (modalQuery === 'privacyPolicy') {
+            showPrivacyPolicyModal()
+        }
+    }
+</script>
+<script>
+    function numberWithCommas(x) {
+        x = x.replace(/[^0-9]/g, '');
+        x = x.replace(/,/g, '');
+        $("#money").val(x.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+    }
+
+    function inputNumberFormat(obj) {
+        obj.value = comma(uncomma(obj.value));
+    }
+
+    function comma(str) {
+        str = String(str);
+        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    }
+
+    function uncomma(str) {
+        str = String(str);
+        return str.replace(/[^\d]+/g, '');
+    }
+
+</script>
+{% block extrascript %}
+{% endblock %}
+</body>
+</html>

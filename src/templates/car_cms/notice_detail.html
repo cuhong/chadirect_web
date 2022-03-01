@@ -1,0 +1,38 @@
+{% extends 'car_cms/base.html' %}
+{% load static %}
+
+{% block title %}차다이렉트{% endblock %}
+
+{% block extrastyle %}
+{% endblock %}
+
+{% block outerbody %}
+    {% include 'car_cms/partials/navbar.html' with title="차다이렉트" %}
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column justify-content-center p-3">
+        <div class="h5 mt-3 mb-3">{{ notice.title }}</div>
+        <div class="mb-5">
+            <span class="font-weight-light">{{ notice.registered_at }}</span>
+        </div>
+        <div>
+            {% autoescape off %}
+                {{ notice.body }}
+            {% endautoescape %}
+        </div>
+    </div>
+    <div class="fixed-bottom p-2">
+        <button type="button" class="btn btn-cc-primary-outline btn-block" onclick="notice()">목록으로</button>
+    </div>
+{% endblock %}
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function (event) {
+        //overlay.off()
+    })
+</script>
+
+{% block extrascript %}
+{% endblock %}

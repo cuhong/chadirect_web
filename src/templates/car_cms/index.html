@@ -1,0 +1,93 @@
+{% extends 'car_cms/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}차다이렉트{% endblock %}
+
+{% block extrastyle %}
+{% endblock %}
+
+{% block outerbody %}
+    {% include 'car_cms/partials/navbar.html' with title="차다이렉트" %}
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column justify-content-center p-3 pb-5 mb-5">
+        <div class="header_title">안녕하세요,<br><span class="h3 font-weight-bolder">{{ cms_user.name }}</span>님<br>좋은 하루
+            보내세요
+        </div>
+        <div class="mb-5">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">{{ month }}월 견적현황</span>
+                <div class="d-flex align-items-center color-primary cursor-pointer" onclick="compareList()">
+                    <div class="font-weight-normal">내 견적</div>
+                    <i class="bi bi-chevron-right ml-2" style="font-size: 0.5rem"></i>
+                </div>
+            </div>
+            <div class="">
+                <div class="d-flex flex-row justify-content-between mb-2">
+                    <div>견적 요청</div>
+                    <div class="font-weight-light">{{ summary.request|intcomma }}건</div>
+                </div>
+                <div class="d-flex flex-row justify-content-between mb-2">
+                    <div>견적 산출중</div>
+                    <div class="font-weight-light">{{ summary.calculating|intcomma }}건</div>
+                </div>
+                <div class="d-flex flex-row justify-content-between">
+                    <div>체결</div>
+                    <div class="font-weight-light">{{ summary.contract_success|intcomma }}건</div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">최근 공지사항</span>
+                <div class="d-flex align-items-center color-primary cursor-pointer" onclick="notice()">
+                    <div class="font-weight-normal">전체보기</div>
+                    <i class="bi bi-chevron-right ml-2" style="font-size: 0.5rem"></i>
+                </div>
+            </div>
+            {% if notice_list %}
+                {% if notice_list.count == 0 %}
+                    <div class="text-center font-weight-light">
+                        등록된 공지사항이 없습니다.
+                    </div>
+                {% else %}
+                    <div class="">
+                        {% for notice in notice_list %}
+                            <div data-notice-id="{{ notice.id }}"
+                                 class="d-flex flex-row justify-content-between mb-2 cursor-pointer"
+                                 onclick="noticeDetail(this.dataset.noticeId)">
+                                <div class="pr-2">{{ notice.title|slice:":30" }}</div>
+                                <div class="font-weight-lighter">{{ notice.registered_at|date:"Y/m/d" }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="text-center font-weight-light">
+                    등록된 공지사항이 없습니다.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="small mb-5 px-3 pb-5">
+        주식회사 폼 | 대표자 최용성 | 서울 광진구 군자로 176-1 동부빌딩 5층 군자동 476-5 | Email: advisor@directin.co.kr
+        Phone: 02-2275-1220 | 법인사업자번호 : 558-88-01054 | 통신판매업신고 : 서울 노원 제 20-1320호 |
+        <span style="cursor: pointer" onclick="showPrivacyPolicyModal()">개인정보처리방침</span> |
+        <span style="cursor: pointer" onclick="showServicePolicyModal()">서비스 이용약관</span>
+    </div>
+    <div class="fixed-bottom p-2">
+        <button type="button" class="btn btn-cc-primary btn-block" onclick="compare()">견적요청</button>
+    </div>
+{% endblock %}
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function (event) {
+        //overlay.off()
+    })
+</script>
+
+{% block extrascript %}
+{% endblock %}

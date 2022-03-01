@@ -1,0 +1,289 @@
+{% extends 'car_cms/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}차다이렉트{% endblock %}
+
+{% block extrastyle %}
+    <style>
+        .compareImage {
+            border-radius: 1.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block outerbody %}
+    {% include 'car_cms/partials/navbar.html' with title="차다이렉트" %}
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column justify-content-center p-3">
+        <div class="header_title" style="line-height: 2.5rem">
+            <span class="h3 font-weight-bolder" id="customerNameTitle">{{ compare.customer_name }}</span> 고객님의<br>
+            {% if compare.car_type == 0 %}
+                <span class="h3 font-weight-bolder" id="carNameTitle">{{ compare.car_name }}</span> 차량 견적요청
+            {% else %}
+                <span class="h3 font-weight-bolder" id="carNoTitle">{{ compare.car_no }}</span> 차량 견적요청
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">견적 상태</span>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">견적 상태</div>
+                <div id="compareStatusTitle">{{ compare.get_status_display }}</div>
+            </div>
+
+            {% if compare.status == 2 %}
+                <div class="mb-2 px-3">
+                    <button class="btn btn-cc-primary btn-block" onclick="showRequestContractModal()">계약요청</button>
+                    {#                    <button class="btn btn-cc-primary btn-block" onclick="requestContract()">계약요청</button>#}
+                </div>
+            {% endif %}
+            {% if compare.status == 5 %}
+                <div class="mb-2 px-3">
+                    <button class="btn btn-cc-primary btn-block" onclick="showPolicy()">가입증명서</button>
+                </div>
+            {% endif %}
+            {% if compare.status == 0 or compare.status == 1 %}
+            {% else %}
+                <div class="mb-2 px-3">
+                    <button class="btn btn-cc-primary btn-block" onclick="showEstimate()">비교 견적서</button>
+                </div>
+            {% endif %}
+
+        </div>
+        {% if compare.status == 5 %}
+            <div class="mb-3">
+                <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                    <span class="font-weight-bold">계약</span>
+                </div>
+                <div class="d-flex flex-row justify-content-between mb-2">
+                    <div class="font-weight-light">확정보험사</div>
+                    <div id="fixedInsurerTitle">{{ compare.get_insurer_display }}</div>
+                </div>
+                <div class="d-flex flex-row justify-content-between mb-2">
+                    <div class="font-weight-light">보험료</div>
+                    <div id="fixedPremiumTitle">{{ compare.premium|intcomma }}원</div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="mb-3">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">고객정보</span>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">고객타입</div>
+                <div id="customerTypeTitle">{{ compare.get_customer_type_display }}</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">고객명</div>
+                <div id="customerNameTitle2">{{ compare.customer_name }}</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">연락처</div>
+                <div id="customerContactTitle">{{ compare.customer_cellphone }}</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">주민/사업자번호</div>
+                {% if compare.customer_type == 0 %}
+                    <div id="customerIdentificationTitle">{{ compare.customer_identification|slice:"6" }}-*******</div>
+                {% else %}
+                    <div id="customerIdentificationTitle">{{ compare.customer_identification }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">보험정보</span>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">운전자 범위</div>
+                <div id="driverRangeTitle">{{ compare.get_driver_range_display }}</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                <span class="font-weight-bold">차량정보</span>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">신차구분</div>
+                <div id="newCartType">{{ compare.get_car_type_display }}</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">차명</div>
+                <div id="carNameTitle2">{{ compare.car_name }}</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between mb-2">
+                <div class="font-weight-light">차량/차대번호</div>
+                <div id="carIdentificationTitle">{{ compare.car_identification }}</div>
+            </div>
+        </div>
+        {% if compare.attach_1 %}
+            <div class="mb-3">
+                <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                    <span class="font-weight-bold">차량 견적서</span>
+                </div>
+                <div>
+                    <img class="compareImage" src="{{ compare.attach_1.url }}" width="100%">
+                </div>
+            </div>{% endif %}
+        {% if compare.attach_2 %}
+            <div class="mb-3">
+                <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                    <span class="font-weight-bold">첨부파일 1</span>
+                </div>
+                <div>
+                    <img class="compareImage" src="{{ compare.attach_2.url }}" width="100%">
+                </div>
+            </div>
+        {% endif %}
+        {% if compare.attach_3 %}
+            <div class="mb-3">
+                <div class="d-flex flex-row justify-content-between align-items-center mb-3">
+                    <span class="font-weight-bold">첨부파일 2</span>
+                </div>
+                <div>
+                    <img class="compareImage" src="{{ compare.attach_3.url }}" width="100%">
+                </div>
+            </div>
+        {% endif %}
+        <div>
+            <button type="button" class="btn btn-cc-primary-outline btn-block" onclick="compareList()">견적목록</button>
+        </div>
+    </div>
+    <input value="{{ compare.id }}" id="compareId" hidden>
+
+    <div class="modal fade" id="requestContractModal" tabindex="-1" role="dialog"
+         aria-labelledby="requestContractModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="requestContractModalLabel">계약요청</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="email" class="sr-only"></label>
+                        <textarea class="form-control" id="requestMemo" placeholder="보험사, 개시일 등 요청사항을 적어주세요"
+                                  rows="5"></textarea>
+                    </div>
+                    <button class="btn btn-phone-primary btn-block mb-2" onclick="requestContract()">계약요청
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascript %}
+    <script>
+        const compareId = document.getElementById('compareId').value
+        const requestMemoInput = document.getElementById('requestMemo')
+        let contractDataTemp
+
+        function showRequestContractModal() {
+            requestMemoInput.value = ''
+            $("#requestContractModal").modal('show')
+        }
+
+        function renderContractData() {
+            contractData = contractDataTemp
+            console.log(contractData)
+            document.getElementById('compareStatusTitle').innerText = contractData.status_display
+            document.getElementById('customerNameTitle').innerText = contractData.customer_name
+            if (contractData.car_type === 0) {
+                document.getElementById('carNameTitle').innerText = contractData.car_name
+            } else {
+                document.getElementById('carNoTitle').innerText = contractData.car_no
+            }
+            if (contractData.status === 5) {
+                document.getElementById('fixedInsurerTitle').innerText = contractData.insurer_display
+                document.getElementById('fixedPremiumTitle').innerText = contractData.premium
+            }
+            document.getElementById('customerTypeTitle').innerText = contractData.customer_type_display
+            document.getElementById('customerNameTitle2').innerText = contractData.customer_name
+            document.getElementById('customerContactTitle').innerText = contractData.customer_cellphone
+            document.getElementById('customerIdentificationTitle').innerText = contractData.customer_identification
+            document.getElementById('driverRangeTitle').innerText = contractData.driver_range_display
+            document.getElementById('newCartType').innerText = contractData.car_type_display
+            document.getElementById('carNameTitle2').innerText = contractData.car_name
+            document.getElementById('carIdentificationTitle').innerText = contractData.car_identification
+        }
+
+        function requestContractData() {
+            $.ajax({
+                type: "POST",
+                data: {
+                    'action': 'getContractData', 'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: "json",
+                success: function (response) {
+                    if (response.result) {
+                        contractDataTemp = response
+                        console.log(response.customer_name)
+                        renderContractData()
+                        console.log(response)
+                    } else {
+                        alert(response.msg)
+                    }
+                },
+                error: function (request, status, error) {
+                    alert("서버 오류")
+                },
+            });
+        }
+
+        function requestContract() {
+            if (confirm('계약 진행을 요청하시겠습니까?')) {
+                $.ajax({
+                    type: "POST",
+                    data: {
+                        'action': 'requestContract', 'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'memo': requestMemoInput.value
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.result) {
+                            $("#requestContractModal").modal('hide')
+                            alert('요청되었습니다.')
+                            location.reload()
+                        } else {
+                            alert(response.msg)
+                        }
+                    },
+                    error: function (request, status, error) {
+                        alert("서버 오류")
+                    },
+                });
+            }
+        }
+
+        function showPolicy() {
+            {% if type == "dealer" %}
+                location.href = `/carcms/compare/${compareId}/policy/`
+            {% else %}
+                location.href = `/carcms_fc/compare/${compareId}/policy/`
+            {% endif %}
+        }
+
+        function showEstimate() {
+            {% if type == "dealer" %}
+                location.href = `/carcms/compare/${compareId}/estimate/`
+            {% else %}
+                location.href = `/carcms_fc/compare/${compareId}/estimate/`
+            {% endif %}
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            requestContractData()
+        })
+        window.onfocus = () => {
+            requestContractData()
+        }
+    </script>
+{% endblock %}

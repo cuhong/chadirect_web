@@ -1,0 +1,159 @@
+{% load static %}
+<!doctype html>
+<html lang="ko">
+<head>
+{#    <link rel="manifest" href="{% url 'manifest' %}">#}
+    <meta name="theme-color" content="#EBB8A4">
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, maximum-scale=1.0, minimum-scale=1, user-scalable=no,initial-scale=1.0"/>
+    <link rel="stylesheet" href="{% static 'vender/bootstrap/css/bootstrap.min.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
+    <!-- 주소창 등의 웹 브라우저 UI를 표시하지 않기 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- 상태 바의 스타일을 지정 -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- 홈 화면에서 표시되는 앱 이름을 지정 -->
+    <meta name="apple-mobile-web-app-title" content="Hong's Coffee">
+    <!-- 홈 화면에서 표시되는 앱 아이콘을 지정 -->
+    <link rel="apple-touch-icon" href="{% static 'pwa/icons/icon-192x192.png' %}">
+    <title>{% block title %}{% endblock %}</title>
+    <style>
+        @import url(http://fonts.googleapis.com/earlyaccess/nanummyeongjo.css);
+
+        body, html {
+            background-color: #F4EBE9;
+            color: #003B4A;
+            font-family: 'Nanum Myeongjo', serif;
+        }
+
+        .notoSans {
+            font-family: 'Noto Sans KR', sans-serif !important;
+        }
+
+        .overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #FFF9F9;
+            z-index: 2;
+        }
+
+        .spinner {
+            position: fixed;
+            z-index: 1031; /* High z-index so it is on top of the page */
+            top: calc(50% - (32px / 2));
+            right: calc(50% - (32px / 2)); /* or: left: 50%; */
+        }
+
+        .container-restrict {
+            max-width: 600px;
+            min-height: 100vh;
+            max-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+            color: #003B4A !important;
+        }
+
+        .bg-chat-primary {
+            background-color: #F4EBE9;
+        }
+
+        .bg-chat-secondary {
+            background-color: #EBB8A4;
+        }
+
+        .modal-dialog {
+            position: relative;
+            width: auto;
+            margin: .5rem;
+            pointer-events: none;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .modal-content {
+            position: relative;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            width: 100%;
+            pointer-events: auto;
+            background-color: #F4EBE9;
+            background-clip: padding-box;
+            border: 0;
+            border-radius: .3rem;
+            outline: 0;
+        }
+
+        .modal-body {
+            position: relative;
+            -ms-flex: 1 1 auto;
+            flex: 1 1 auto;
+            padding: 1rem;
+        }
+
+        .btn-chat-primary {
+            color: #003B4A !important;
+            background-color: #e8e4da;
+            border-color: #e8e4da;
+        }
+
+        .btn-chat-primary {
+        }
+    </style>
+    {% block extrastyle %}
+    {% endblock %}
+</head>
+<body>
+<div class="container container-restrict" id="mainContainer">
+    <div class="overlay" id="overlay">
+        <div class="row d-flex align-items-center">
+            <div class="col-12">
+                <div class="spinner-grow spinner" role="status">
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block body %}
+    {% endblock %}
+</div>
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="{% static 'vender/jquery/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'vender/popper/popper.min.js' %}"></script>
+<script src="{% static 'vender/bootstrap/js/bootstrap.min.js' %}"></script>
+<script>
+    const overlay = {
+        elem: document.getElementById('overlay'),
+        on: function () {
+            overlay.elem.classList.add('d-block')
+        },
+        off: function () {
+            overlay.elem.classList.remove('d-block')
+        }
+    }
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').then(
+            () => {
+                console.log('Service Worker Registered')
+            }
+        ).catch((e) => {
+            console.log(e)
+        })
+    }
+</script>
+{% block extrascript %}
+{% endblock %}
+</body>
+</html>
