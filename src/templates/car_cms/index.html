@@ -118,6 +118,8 @@
                 const {outcome} = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') {
                     deferredPrompt = null;
+                    $("#installModal").modal('hide')
+                    alert('잠시만 기다리시면 앱 설치가 완료됩니다.')
                 }
             }
         }
