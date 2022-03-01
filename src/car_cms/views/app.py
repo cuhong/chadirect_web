@@ -96,7 +96,7 @@ class CmsUserPermissionMixin(UserPassesTestMixin):
 
     def test_func(self):
         if self.request.user.is_authenticated is True:
-            return self.request.user.is_admin or self.request.user.is_superuser
+            return self.request.user.is_active
         return False
 
     def dispatch(self, request, *args, **kwargs):
@@ -198,7 +198,7 @@ class SignupView(AppTypeCheck, View):
                     data['username'], data['name'], password=data['password'],
                     cellphone=data['cellphone'], name_card=data['namecard'],
                     referer_code=data['referer_code'], user_type=self.app_type,
-                    is_admin=True
+                    is_admin=False, is_superuser=False
                 )
         except Exception as e:
             context = dict(
