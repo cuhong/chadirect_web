@@ -119,7 +119,6 @@ linkhub==1.2.0
 livereload==2.6.3
 location==0.0.7
 locust==1.0.2
-logging==0.4.9.6
 lunr==0.5.8
 lxml==4.6.1
 Markdown==3.3.2
