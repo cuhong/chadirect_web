@@ -105,9 +105,10 @@
         })
         // 설치유도 팝업
         let deferredPrompt;
+
         window.addEventListener('beforeinstallprompt', (e) => {
-            deferredPrompt = e;
             $("#installApp").modal('show')
+            deferredPrompt = e;
         });
 
         async function installApp() {
