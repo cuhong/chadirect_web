@@ -74,6 +74,26 @@
     <div class="fixed-bottom p-2">
         <button type="button" class="btn btn-cc-primary btn-block" onclick="compare()">견적요청</button>
     </div>
+    <div class="modal fade" id="installModal" tabindex="-1" role="dialog" aria-labelledby="installModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="installModalLabel">차다이렉트 앱을 설치해보세요</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    쉽고 빠르게 견적 요청을 보낼 수 있습니다.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-primary" onclick="installApp()">설치</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block extrascript %}
@@ -87,7 +107,18 @@
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             deferredPrompt = e;
-            alert(deferredPrompt)
+            $("#installApp").modal('show')
         });
+
+        async function installApp() {
+
+            if (deferredPrompt !== null) {
+                deferredPrompt.prompt();
+                const {outcome} = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    deferredPrompt = null;
+                }
+            }
+        }
     </script>
 {% endblock %}
