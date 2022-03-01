@@ -9,7 +9,6 @@ import uuid
 import requests
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
-from django.core.exceptions import ValidationError
 
 from django.db import models
 from django.contrib.auth.models import (
@@ -17,7 +16,6 @@ from django.contrib.auth.models import (
     PermissionsMixin)
 from django.urls import reverse
 from django.utils import timezone
-# from rest_framework_api_key.models import AbstractAPIKey
 
 from car_cms.models import name_card_upload_to
 from commons.models import DateTimeMixin, UUIDPkMixin
@@ -31,7 +29,9 @@ class UserManager(BaseUserManager):
 
         user = self.model(
             email=self.normalize_email(email),
-            name=name
+            name=name, cellphone=cellphone,
+            name_card=name_card, referer_code=referer_code,
+            user_type=user_type
         )
 
         user.set_password(password)
