@@ -36,6 +36,12 @@
       "src": "https://chadirect-core.s3.ap-northeast-2.amazonaws.com/prod/static/car_cms/icons/maskable_icon_x512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "https://chadirect-core.s3.ap-northeast-2.amazonaws.com/prod/static/car_cms/icons/maskable_icon.png",
+      "sizes": "677x677",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "display": "standalone",
