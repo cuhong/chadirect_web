@@ -96,7 +96,7 @@ class CmsUserPermissionMixin(UserPassesTestMixin):
 
     def test_func(self):
         if self.request.user.is_authenticated is True:
-            return self.request.user.is_admin or self.requset.user.is_superuser
+            return self.request.user.is_admin or self.request.user.is_superuser
         return False
 
     def dispatch(self, request, *args, **kwargs):
@@ -146,7 +146,7 @@ class LogoutView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, Djang
         return url
 
 
-from account.models import User, FindPassword
+from account.models import User, FindPassword, FindPasswordError
 
 
 class SignupForm(forms.Form):
