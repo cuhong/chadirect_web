@@ -6,7 +6,7 @@ After=network.target
 User=ubuntu
 Group=www-data
 WorkingDirectory=/home/ubuntu/chadirect_web/src
-ExecStart=/home/ubuntu/chadirect_web/.env/bin/gunicorn --workers 4 --worker-class gevent --worker-connections 1000 --timeout 300 --reload --bind unix:/home/ubuntu/chadirect_web/config/gunicorn/itechs.sock itechs.wsgi:application --access-logfile /home/ubuntu/chadirect_web_config/log/gunicorn-access.log --error-logfile /home/ubuntu/chadirect_web_config/log/gunicorn-error.log
+ExecStart=/home/ubuntu/chadirect_web/.env/bin/gunicorn --workers 4 --worker-class gevent --worker-connections 1000 --timeout 300 --reload --bind unix:/home/ubuntu/chadirect_web/config/gunicorn/itechs.sock itechs.wsgi:application --access-logfile /home/ubuntu/chadirect_web/config/log/gunicorn-access.log --error-logfile /home/ubuntu/chadirect_web/config/log/gunicorn-error.log
 ExecReload=/bin/kill -s HUP $MAINPID
 
 [Install]
