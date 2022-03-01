@@ -3,8 +3,6 @@ const CACHE_NAME = "cache-v1";
 
 // 캐싱할 파일
 const FILES_TO_CACHE = [
-    "/offline.html",
-    "/favicon.ico"
 ];
 
 // 상술한 파일 캐싱
