@@ -13,6 +13,7 @@ class CompareStatus(models.IntegerChoices):
     REQUEST = 0, '견적요청'
     CALCULATE = 1, '견적 산출중'
     CALCULATE_COMPLETE = 2, '견적완료'
+    CALCULATE_DENY = 7, '견적산출 불가'
     DENY = 3, '견적거절'
     CONTRACT = 4, '계약진행중'
     CONTRACT_SUCCESS = 5, '계약체결'
@@ -365,6 +366,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         choices=CompareStatus.choices, null=False, blank=False, default=CompareStatus.REQUEST,
         verbose_name='상태'
     )
+    reject_reason = models.TextField(null=True, blank=True, verbose_name='견적산출 실패사유')
     customer_name = models.CharField(max_length=100, null=False, blank=False, verbose_name='고객명')
     customer_cellphone = models.CharField(max_length=100, null=False, blank=False, verbose_name='고객 연락처')
     customer_type = models.IntegerField(
@@ -467,6 +469,28 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         body = f"""차다이렉트 안내
 안녕하세요 {self.account.name}님, 차다이렉트입니다.
 요청하신 {self.customer_name} 님의 자동차보험 견적 산출이 완료되었습니다.
+차다이렉트 앱에서 상세 내용을 확인하세요."""
+        message = Message.objects.create(
+            receiver=self.account.cellphone,
+            msg=body, msg_type="LMS", title="차다이렉트 안내"
+        )
+        message.send()
+
+    def _deny_calculate(self):
+        # 견적 완료 상태로 변경
+        if self.reject_reason in [None, ""]:
+            raise Exception('견적산출 실패사유를 입력하세요')
+        if self.status != CompareStatus.REQUEST:
+            raise Exception('견적요청 상태의 건만 거절 가능합니다.')
+        self.status = CompareStatus.CALCULATE_DENY
+        self.save()
+        from car_cms.models import Message
+        body = f"""차다이렉트 안내
+안녕하세요 {self.account.name}님, 차다이렉트입니다.
+요청하신 {self.customer_name} 님의 자동차보험 견적 산출은 진행이 불가능합니다.
+
+불가사유 : {self.reject_reason}
+
 차다이렉트 앱에서 상세 내용을 확인하세요."""
         message = Message.objects.create(
             receiver=self.account.cellphone,

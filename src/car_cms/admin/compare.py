@@ -229,6 +229,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
                         ('estimate_insurer_10', 'estimate_premium_10', 'estimate_memo_10'),
                         ('estimate_insurer_11', 'estimate_premium_11', 'estimate_memo_11'),
                         ('estimate_insurer_12', 'estimate_premium_12', 'estimate_memo_12'),
+                        'reject_reason'
                     )
                 }),
                 ('체결정보', {
@@ -275,6 +276,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
         if obj:
             if obj.status == CompareStatus.CALCULATE:
                 actions.append('_complete_calculate')
+                actions.append('_deny_calculate')
             if obj.status == CompareStatus.CALCULATE_COMPLETE:
                 actions.append('_start_contract')
                 actions.append('_deny_estimate')
@@ -308,6 +310,14 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
             messages.error(request, str(e))
         else:
             messages.success(request, '견적완료 처리 되었습니다.')
+
+    def _deny_calculate(self, request, obj, parent_obj=None):
+        try:
+            result = obj._deny_calculate()
+        except Exception as e:
+            messages.error(request, str(e))
+        else:
+            messages.success(request, '견적산출 불가 처리 되었습니다.')
 
     def _deny_estimate(self, request, obj, parent_obj=None):
         try:
@@ -347,3 +357,4 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     _success_contract.short_description = '체결'
     _fail_contract.short_description = '체결 실패'
     show_estimate.short_description = '비교견적서'
+    _deny_calculate.short_description = '견적산출 불가'
