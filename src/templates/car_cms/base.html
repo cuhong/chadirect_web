@@ -1108,20 +1108,27 @@
         $("#servicePolicyModal").modal('show')
     }
 
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') {
+            console.log('app resumed')
+            window.location.reload()
+        }
+    })
+
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js/').then(
+        navigator.serviceWorker.register('/sw.js').then(
             () => {
                 console.log('Service Worker Registered')
             }
         ).catch((e) => {
             console.log(e)
         })
-        var modalQuery = getParameterByName('modal')
-        if (modalQuery === 'servicePolicy') {
-            showServicePolicyModal()
-        } else if (modalQuery === 'privacyPolicy') {
-            showPrivacyPolicyModal()
-        }
+    }
+    var modalQuery = getParameterByName('modal')
+    if (modalQuery === 'servicePolicy') {
+        showServicePolicyModal()
+    } else if (modalQuery === 'privacyPolicy') {
+        showPrivacyPolicyModal()
     }
 </script>
 <script>

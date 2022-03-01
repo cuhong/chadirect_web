@@ -740,21 +740,6 @@
         $("#servicePolicyModal").modal('show')
     }
 
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').then(
-            () => {
-                console.log('Service Worker Registered')
-            }
-        ).catch((e) => {
-            console.log(e)
-        })
-        var modalQuery = getParameterByName('modal')
-        if (modalQuery === 'servicePolicy') {
-            showServicePolicyModal()
-        } else if (modalQuery === 'privacyPolicy') {
-            showPrivacyPolicyModal()
-        }
-    }
 </script>
 <script>
     function numberWithCommas(x) {
