@@ -1109,7 +1109,7 @@
     }
 
     document.addEventListener('visibilitychange', function () {
-        if (document.visibilityState === 'visible') {
+        if (document.visibilityState === 'visible' && autoRefresh === true) {
             window.location.reload()
         }
     })
