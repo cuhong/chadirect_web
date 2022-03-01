@@ -79,15 +79,15 @@
 {% block extrascript %}
 
 
-<script>
-    document.addEventListener('DOMContentLoaded', function (event) {
-        //overlay.off()
-    })
-    // 설치유도 팝업
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-    deferredPrompt = e;
-        console.log(deferredPrompt)
-});
-</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function (event) {
+            //overlay.off()
+        })
+        // 설치유도 팝업
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            deferredPrompt = e;
+            alert(deferredPrompt)
+        });
+    </script>
 {% endblock %}
