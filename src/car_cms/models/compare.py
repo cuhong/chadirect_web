@@ -465,7 +465,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     def send_complete_calculate(self):
         from car_cms.models import Message
         body = f"""차다이렉트 안내
-안녕하세요 {self.account.name}, 차다이렉트입니다.
+안녕하세요 {self.account.name}님, 차다이렉트입니다.
 요청하신 {self.customer_name} 님의 자동차보험 견적 산출이 완료되었습니다.
 차다이렉트 앱에서 상세 내용을 확인하세요."""
         message = Message.objects.create(
@@ -503,7 +503,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     def send_success_contract(self):
         from car_cms.models import Message
         body = f"""차다이렉트 안내
-안녕하세요 {self.account.name}, 차다이렉트입니다.
+안녕하세요 {self.account.name}님, 차다이렉트입니다.
 요청하신 {self.customer_name} 님의 자동차보험 계약 체결이 완료되었습니다.
 차다이렉트 앱에서 상세 내용을 확인하세요."""
         message = Message.objects.create(
@@ -523,7 +523,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     def send_fail_contract(self):
         from car_cms.models import Message
         body = f"""차다이렉트 안내
-안녕하세요 {self.account.name}, 차다이렉트입니다.
+안녕하세요 {self.account.name}님, 차다이렉트입니다.
 요청하신 {self.customer_name} 님의 자동차보험 계약 체결이 실패했습니다.
 차다이렉트 앱에서 상세 내용을 확인하세요."""
         message = Message.objects.create(
