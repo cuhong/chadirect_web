@@ -25,7 +25,7 @@ def manifest_view(request):
 
 def sw_view(request):
     with open(os.path.join(settings.BASE_DIR, 'itechs', 'pwa', 'sw.js'), 'r') as file:
-        return HttpResponse(file, content_type='application/js')
+        return HttpResponse(file, content_type='application/javascript')
 
 
 urlpatterns = [
