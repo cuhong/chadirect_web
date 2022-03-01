@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 from inline_actions.admin import InlineActionsModelAdminMixin
 
-from car_cms.models import Notice
+from car_cms.models import Notice, Message
 
 
 @admin.register(Notice)
@@ -26,3 +26,7 @@ class NoticeAdmin(InlineActionsModelAdminMixin, admin.ModelAdmin):
             messages.success(request, '공지가 공개 처리 되었습니다.')
 
     _toggle.short_description = '공개상태 변경'
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    pass
