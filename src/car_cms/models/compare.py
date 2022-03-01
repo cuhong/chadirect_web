@@ -480,7 +480,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         # 견적 완료 상태로 변경
         if self.reject_reason in [None, ""]:
             raise Exception('견적산출 실패사유를 입력하세요')
-        if self.status != CompareStatus.REQUEST:
+        if self.status != CompareStatus.CALCULATE:
             raise Exception('견적요청 상태의 건만 거절 가능합니다.')
         self.status = CompareStatus.CALCULATE_DENY
         self.save()
