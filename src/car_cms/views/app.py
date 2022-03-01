@@ -197,7 +197,8 @@ class SignupView(AppTypeCheck, View):
                 user = User.objects.create_user(
                     data['username'], data['name'], password=data['password'],
                     cellphone=data['cellphone'], name_card=data['namecard'],
-                    referer_code=data['referer_code'], user_type=self.app_type
+                    referer_code=data['referer_code'], user_type=self.app_type,
+                    is_admin=True
                 )
         except Exception as e:
             context = dict(
