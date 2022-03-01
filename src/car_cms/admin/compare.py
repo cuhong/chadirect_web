@@ -262,7 +262,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
         if obj is None:
             return True
         if obj.manager:
-            return obj.manager.user == request.user
+            return obj.manager == request.user
         else:
             return False
 
