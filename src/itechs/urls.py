@@ -20,8 +20,12 @@ def elb_status(request):
     return HttpResponse(status=200)
 
 def manifest_view(request):
-    with open(os.path.join(settings.BASE_DIR, 'itechs', 'manifest.json'), 'r') as file:
+    with open(os.path.join(settings.BASE_DIR, 'itechs', 'pwa', 'manifest.json'), 'r') as file:
         return HttpResponse(file, content_type='application/json; charset=utf8')
+
+def sw_view(request):
+    with open(os.path.join(settings.BASE_DIR, 'itechs', 'pwa', 'sw.js'), 'r') as file:
+        return HttpResponse(file, content_type='application/js')
 
 
 urlpatterns = [
@@ -30,5 +34,6 @@ urlpatterns = [
                   path('carcompare/', include('carcompare.urls', namespace='carcompare')),
                   path('sentry-debug/', trigger_error),
                   path('elb-status/', elb_status),
-                  path('manifest.json/', manifest_view)
+                  path('manifest.json/', manifest_view),
+                  path('sw/', sw_view)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
