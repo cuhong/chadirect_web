@@ -35,5 +35,5 @@ urlpatterns = [
                   path('sentry-debug/', trigger_error),
                   path('elb-status/', elb_status),
                   path('manifest.json/', manifest_view),
-                  path('sw/', sw_view)
+                  path('sw.js/', sw_view)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
