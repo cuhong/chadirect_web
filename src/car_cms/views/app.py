@@ -81,7 +81,7 @@ class PasswordChangeRequestView(AppTypeCheck, View):
     def post(self, request):
         try:
             email = request.POST.get('email')
-            user = User.objects.get(user__email=email)
+            user = User.objects.get(email=email)
             FindPassword.request_change(user, app_type=self.app_type)
             response_data = {"result": True}
         except User.DoesNotExist:
