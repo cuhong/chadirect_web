@@ -130,8 +130,8 @@ class FindPassword(DateTimeMixin, UUIDPkMixin, models.Model):
         return urllib.parse.urljoin(base_url, uri)
 
     @classmethod
-    def request_change(cls, account, app_type):
-        find_password = cls.objects.create(account=account, is_complete=False)
+    def request_change(cls, user, app_type):
+        find_password = cls.objects.create(account=user, is_complete=False)
         find_password.send_email(app_type=app_type)
         return find_password
 
