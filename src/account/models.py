@@ -95,7 +95,7 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     @property
     def is_staff(self):
-        return self.is_admin
+        return self.is_admin or self.is_superuser
 
     @property
     def has_account(self):

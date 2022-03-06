@@ -1,3 +1,4 @@
+import pickle
 import random
 import time
 
@@ -96,6 +97,9 @@ class CompareView(View):
         })
 
     def post(self, request, compare_id):
+        post = request.POST
+        with open('ipasd.txt', 'wb') as file:
+            pickle.dump(post, file)
         compare = Compare.object.get(id=compare_id)
         r = random.randint(8, 14)
         time.sleep(r)
