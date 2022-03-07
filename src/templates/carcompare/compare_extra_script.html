@@ -10,9 +10,9 @@
         const maxDateValue = `${year - 19}-${month}-${day2}`
         console.log(maxDateValue)
         driver_1_birthdate.max = maxDateValue
-        driver_1_birthdate.value = maxDateValue
+        //driver_1_birthdate.value = maxDateValue
         driver_2_birthdate.max = maxDateValue
-        driver_2_birthdate.value = maxDateValue
+        //driver_2_birthdate.value = maxDateValue
         start_date.min = minDateValue
         start_date.value = minDateValue
     }
@@ -51,7 +51,6 @@
         detail_car_name.innerHTML = '<option value="" disabled selected>선택</option>'
         detail_option.innerHTML = '<option value="" disabled selected>선택</option>'
     }
-
 
 
     manufacturer.addEventListener('change', async function (event) {
@@ -154,7 +153,7 @@
         const targetElemOptions = event.target.options
         const selectedOption = targetElemOptions[targetElemOptions.selectedIndex]
         driver_2_birthdate.parentElement.hidden = selectedOption.dataset.driverTwoBirthdateShow === 'false'
-        pubtrans.hidden = selectedOption.dataset.discountPubtrans === 'false'
+        setDriverBirthdate()
 
     })
 
@@ -178,7 +177,8 @@
     })
 
     discount_bb.addEventListener('change', function (event) {
-        if (event.target.value === "가입") {
+        console.log('ch')
+        if (event.target.value === "YES") {
             discount_bb_year.parentElement.hidden = false
             discount_bb_month.parentElement.hidden = false
             discount_bb_price.parentElement.hidden = false
@@ -193,19 +193,15 @@
         // TODO
     }
 
-    discount_mileage.addEventListener('change', function (event) {
-        if (event.target.value === "가입") {
-            discount_dist.parentElement.hidden = false
-            discount_dist.parentElement.hidden = false
-            discount_dist.parentElement.hidden = false
-        } else {
-            discount_dist.parentElement.hidden = true
-            discount_dist.parentElement.hidden = true
-            discount_dist.parentElement.hidden = true
-        }
-    })
-
     document.addEventListener('DOMContentLoaded', function () {
         setToday()
+        setDriverBirthdate()
     })
+
+    window.onbeforeunload = async function () {
+        await shutDownSession()
+        if (isSessionLive === true) {
+            return "Leaving this page will reset the wizard";
+        }
+    };
 </script>

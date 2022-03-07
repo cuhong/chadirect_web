@@ -21,6 +21,7 @@ class VehicleInsurerChoices(models.TextChoices):
     CARROT = 'carrot', '캐롯 손해보험'
     AXA = 'axa', 'AXA 손해보험'
     HANA = 'hana', '하나 손해보험'
+    ETC = 'etc', '기타/미분류'
 
 
 class SerialMixin(models.Model):

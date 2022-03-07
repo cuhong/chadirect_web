@@ -3,7 +3,8 @@
 
 {% block body %}
     <div class="row p-3">
-        <div class="col-md-6">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
             <form class="form">
                 <div class="form-group">
                     <label for="name">고객명</label>
@@ -66,6 +67,7 @@
                 <button class="btn btn-primary btm-block" id="requestAuthBtn" onclick="requestAuth()">인증 요청</button>
             </div>
         </div>
+        <div class="col-md-4"></div>
     </div>
 {% endblock %}
 
@@ -193,14 +195,21 @@
         }
 
         function testData() {
-            name.value = '홍찬의'
-            ssn_prefix.value = '860906'
-            ssn_suffix.value = '1020710'
+            //name.value = '홍찬의'
+            //ssn_prefix.value = '860906'
+            //ssn_suffix.value = '1020710'
+            //phone1.value = '010'
+            //phone2.value = '2484'
+            //phone3.value = '6313'
+
+            name.value = '오명진'
+            ssn_prefix.value = '810213'
+            ssn_suffix.value = '1953914'
             phone1.value = '010'
-            phone2.value = '2484'
-            phone3.value = '6313'
+            phone2.value = '7192'
+            phone3.value = '4180'
         }
 
-        //testData()
+        testData()
     </script>
 {% endblock %}

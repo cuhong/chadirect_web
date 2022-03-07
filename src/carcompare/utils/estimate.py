@@ -154,9 +154,9 @@ def generate_estimate_image(data):
             ), text_value, fill=text_position.get('color'), font=font, spacing=0
         )
 
-    # base_image.show()
+    base_image.show()
     return base_image
-
-base_image = generate_estimate_image(data)
-
-base_image.show()
+#
+# base_image = generate_estimate_image(data)
+#
+# base_image.show()

@@ -2,36 +2,41 @@
 {% load static %}
 
 {% block body %}
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>보험사</th>
-                <th>차량번호</th>
-                <th>차명</th>
-                <th>만기일</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for contract in compare.legacycontract_set.all %}
-                <tr>
-                    <td>{{ contract.company_name }}</td>
-                    <td>{{ contract.car_no }}</td>
-                    <td>{{ contract.car_name }}</td>
-                    <td>{{ contract.due_date }}</td>
-                    <td>
-                        <button type="button" class="btn btn-info btn-sm" data-car-no="{{ contract.car_no }}" data-due-date="{{ contract.due_date }}"
-                                onclick="lookupCar(this.dataset.carNo, expireDate=this.dataset.dueDate)">조회
-                        </button>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>보험사</th>
+                        <th>차량번호</th>
+                        <th>차명</th>
+                        <th>만기일</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for contract in compare.legacycontract_set.all %}
+                        <tr>
+                            <td>{{ contract.company_name }}</td>
+                            <td>{{ contract.car_no }}</td>
+                            <td>{{ contract.car_name }}</td>
+                            <td>{{ contract.due_date }}</td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm" data-car-no="{{ contract.car_no }}"
+                                        data-due-date="{{ contract.due_date_date_instance|date:'Y-m-d' }}"
+                                        onclick="lookupCar(this.dataset.carNo, expireDate=this.dataset.dueDate)">조회
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
     <div class="row p-3">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -41,7 +46,14 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="start_date">보험 개시일</label>
+                        <label for="customerBirthdate">고객 생년월일</label>
+                        <input id="customerBirthdate" name="customerBirthdate" type="date" class="form-control" disabled
+                               value="{{ compare.birthdate|date:'Y-m-d' }}">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="start_date" class="text-danger font-weight-bold">보험 개시일</label>
                         <input id="start_date" name="start_date" type="date" class="form-control">
                     </div>
                 </div>
@@ -52,8 +64,10 @@
                     <div class="form-group">
                         <label for="carno">차량번호</label>
                         <input id="carno" name="carno" type="text" class="form-control">
+                        <small>* 모를 경우 공란으로 두세요.</small>
                     </div>
-                    <button type="button" class="btn btn-info btn-block mb-2" onclick="lookupCar(carno.value)">차량번호 조회</button>
+                    <button type="button" class="btn btn-info btn-block mb-2" onclick="lookupCar(carno.value)">차량번호 조회
+                    </button>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
@@ -108,9 +122,9 @@
             <div class="form-group">
                 <label for="treaty_range">운전자 범위</label>
                 <select class="form-control" id="treaty_range" name="treaty_range">
-                    <option value="" disabled selected data-driver-two-birthdate-show="false"
-                            data-discount-pubtrans="false">선택
-                    </option>
+                    {#                    <option value="" disabled selected data-driver-two-birthdate-show="false"#}
+                    {#                            data-discount-pubtrans="false">선택#}
+                    {#                    </option>#}
                     <option value="피보험자1인" data-driver-two-birthdate-show="false" data-discount-pubtrans="true">피보험자1인
                     </option>
                     <option value="피보험자1인+지정1인 누구나" data-driver-two-birthdate-show="true"
@@ -134,15 +148,17 @@
                 <label for="driver_2_birthdate">배우자/지정1인 생년월일</label>
                 <input class="form-control" id="driver_2_birthdate" name="driver_2_birthdate" type="date">
             </div>
-            <hr>
+
+        </div>
+        <div class="col-md-4">
 
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="coverage_bil">대인배상 2</label>
                         <select class="form-control" id="coverage_bil" name="coverage_bil">
-                            <option value="YES" selected>가입</option>
-                            <option value="NO">미가입</option>
+                            <option value="가입" selected>가입</option>
+                            <option value="미가입">미가입</option>
                         </select>
                     </div>
                 </div>
@@ -154,9 +170,9 @@
                             <option value="3천만원">3천만원</option>
                             <option value="5천만원">5천만원</option>
                             <option value="1억원">1억원</option>
-                            <option value="2억원" selected>2억원</option>
+                            <option value="2억원">2억원</option>
                             <option value="3억원">3억원</option>
-                            <option value="5억원">5억원</option>
+                            <option value="5억원" selected>5억원</option>
                         </select>
                     </div>
                 </div>
@@ -202,9 +218,6 @@
                     </div>
                 </div>
             </div>
-
-        </div>
-        <div class="col-md-6">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -219,10 +232,10 @@
                     <div class="form-group">
                         <label for="treaty_charge">물적사고 할증기준</label>
                         <select class="form-control" id="treaty_charge" name="treaty_charge">
-                            <option value="50만원" selected>50만원</option>
+                            <option value="50만원">50만원</option>
                             <option value="100만원">100만원</option>
                             <option value="150만원">150만원</option>
-                            <option value="200만원">200만원</option>
+                            <option value="200만원" selected>200만원</option>
                         </select>
                     </div>
                 </div>
@@ -232,13 +245,13 @@
                     <div class="form-group">
                         <label for="discount_bb">블랙박스 할인</label>
                         <select class="form-control" id="discount_bb" name="discount_bb">
-                            <option value="YES" selected>가입</option>
-                            <option value="NO">미가입</option>
+                            <option value="YES">가입</option>
+                            <option value="NO" selected>미가입</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="form-group">
+                    <div class="form-group" hidden>
                         <label for="discount_bb_year">구입연도</label>
                         <select class="form-control" id="discount_bb_year" name="discount_bb_year">
                             <option value="2022">2022</option>
@@ -257,7 +270,7 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="form-group">
+                    <div class="form-group" hidden>
                         <label for="discount_bb_month">구입월</label>
                         <select class="form-control" id="discount_bb_month" name="discount_bb_month">
                             <option value="01">1월</option>
@@ -276,93 +289,54 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="form-group">
+                    <div class="form-group" hidden>
                         <label for="discount_bb_price">구입금액(만원)</label>
                         <input class="form-control" id="discount_bb_price" name="discount_bb_price" type="number"
-                               min="1">
+                               min="1" value="10">
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="discount_mileage">마일리지할인</label>
-                        <select class="form-control" id="discount_mileage" name="discount_mileage">
-                            <option value="YES" selected>가입</option>
-                            <option value="NO">미가입</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="discount_dist">마일리지할인 거리</label>
-                        <select class="form-control" id="discount_dist" name="discount_dist">
-                            <option value="2,00000km" selected>2,000km</option>
-                            <option value="3,00000km">3,000km</option>
-                            <option value="4,00000km">4,000km</option>
-                            <option value="5,00000km">5,000km</option>
-                            <option value="6,00000km">6,000km</option>
-                            <option value="7,00000km">7,000km</option>
-                            <option value="8,00000km">8,000km</option>
-                            <option value="9,00000km">9,000km</option>
-                            <option value="10,00000km">10,000km</option>
-                            <option value="11,00000km">11,000km</option>
-                            <option value="12,00000km">12,000km</option>
-                            <option value="13,00000km">13,000km</option>
-                            <option value="14,00000km">14,000km</option>
-                            <option value="15,00000km">15,000km</option>
-                            <option value="16,00000km">16,000km</option>
-                            <option value="17,00000km">17,000km</option>
-                            <option value="18,00000km">18,000km</option>
-                            <option value="19,00000km">19,000km</option>
-                            <option value="20,00000km">20,000km</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
             <div class="row" hidden>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="discount_child">자녀할인</label>
+                        <label for="discount_c원hild">자녀할인</label>
                         <Input class="form-control" id="discount_child" name="discount_child" value="NO">
                     </div>
                 </div>
             </div>
+            <div class="row">
 
-            <div class="row" id="pubtrans" hidden>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="discount_pubtrans">대중교통할인</label>
-                        <select class="form-control" id="discount_pubtrans" name="discount_pubtrans">
-                            <option value="NO" selected>미가입</option>
-                            <option value="YES">가입</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="discount_pubtrans_cost">대중교통할인 금액</label>
-                        <select class="form-control" id="discount_pubtrans_cost" name="discount_pubtrans_cost">
-                            <option value="" readonly="" selected>금액선택</option>
-                            <option value="6만원 이상">6만원 이상</option>
-                            <option value="12만원 이상">12만원 이상</option>
-                            <option value="24만원 이상">12만원 이상</option>
+                        <label for="treaty_ers">긴급출동서비스</label>
+                        <select class="form-control" id="treaty_ers" name="treaty_ers">
+                            <option value="가입" selected>가입</option>
+                            <option value="미가입">미가입</option>
                         </select>
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-12">
 
-            <hr>
-            <h5 style="font-weight: bolder">보험료 조회 전입니다</h5>
+                    <button type="button" class="btn btn-primary btn-block" id="calculateBtn"
+                            onclick="calculatePremium()">보험료 계산
+                    </button>
+
+                    <button type="button" class="btn btn-danger btn-block" id="endSessionBtn"
+                            onclick="shutDownSession()">계산종료
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-block" id="retryBtn" onclick="retry()" hidden>다시 계산
+                    </button>
+                </div>
+            </div>
 
         </div>
-        <button type="button" class="btn btn-primary btn-block" id="calculateBtn" onclick="calculatePremium()">보험료 계산
-        </button>
-        <button type="button" class="btn btn-secondary btn-block" id="calculateBtn" onclick="retry()">다시 계산
-        </button>
+        <div class="col-md-4" id="compareList">
+
+        </div>
     </div>
+    <input hidden id="compareId" value="{{ compare_id }}">
 {% endblock %}
 
 
@@ -370,6 +344,10 @@
     {% include 'carcompare/compare_extra_script.html' %}
 
     <script>
+        $('#start_date').attr('min', '{{ min_start_date|date:"Y-m-d" }}')
+        $('#start_date').attr('max', '{{ max_start_date|date:"Y-m-d" }}')
+        const customerBirthdateString = '{{ compare.birthdate|date:"Y-m-d" }}'
+        const compareId = document.getElementById('compareId').value
         const carno = document.getElementById('carno')
         const start_date = document.getElementById('start_date')
         const manufacturer = document.getElementById('manufacturer')
@@ -386,22 +364,29 @@
         const coverage_mp = document.getElementById('coverage_mp')
         const coverage_umbi = document.getElementById('coverage_umbi')
         const coverage_cac = document.getElementById('coverage_cac')
+        const treaty_ers = document.getElementById('treaty_ers')
         const treaty_charge = document.getElementById('treaty_charge')
         const discount_bb = document.getElementById('discount_bb')
         const discount_bb_year = document.getElementById('discount_bb_year')
         const discount_bb_month = document.getElementById('discount_bb_month')
         const discount_bb_price = document.getElementById('discount_bb_price')
-        const discount_mileage = document.getElementById('discount_mileage')
-        const discount_dist = document.getElementById('discount_dist')
         const discount_child = document.getElementById('discount_child')
-        const pubtrans = document.getElementById('pubtrans')
         const calculateBtn = document.getElementById('calculateBtn')
+        const endSessionBtn = document.getElementById('endSessionBtn')
+        const retryBtn = document.getElementById('retryBtn')
+        const compareList = document.getElementById('compareList')
+        let isSessionLive = true
 
-        function lookupCar(car_no, expireDate=null) {
+        function setDriverBirthdate() {
+            driver_1_birthdate.value = customerBirthdateString
+            driver_2_birthdate.value = customerBirthdateString
+        }
+
+        function lookupCar(car_no, expireDate = null) {
             if (expireDate !== null) {
                 var tempDate = new Date(expireDate)
                 tempDate.setDate(tempDate.getDate() + 1)
-                start_date.value = tempDate.toISOString().slice(0, 10)
+                //start_date.value = tempDate.toISOString().slice(0, 10)
                 dateSelectCallback()
             }
             carno.value = car_no
@@ -432,14 +417,60 @@
             });
         }
 
-        function retry() {
-            location.replace('/carcompare/')
+        async function shutDownSession() {
+            const shutdownUrl = `/carcompare/${compareId}/shutdown/`
+            const response = await fetch(shutdownUrl, {
+                method: 'POST', data: {}, headers: {
+                    'Content-Type': 'application/json',
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            })
+            isSessionLive = false
+            calculateBtn.innerText = '종료된 세션입니다.'
+            calculateBtn.disabled = true
+            retryBtn.hidden = false
+            endSessionBtn.hidden = true
+        }
+
+        async function retry() {
+            if (confirm('종료하시겠습니까?')) {
+                if (isSessionLive === true) {
+                    await shutDownSession()
+                }
+                location.replace('/carcompare/')
+            }
+
+        }
+
+        function showCompareDetail(compareDetailId) {
+            alert(compareDetailId)
         }
 
         function calculatePremium() {
+            if (manufacturer.value.trim() === '') {
+                alert('제조사를 선택하세요')
+                return null
+            }
+            if (car_name.value.trim() === '') {
+                alert('차종을 선택하세요')
+                return null
+            }
+            if (car_register_year.value.trim() === '') {
+                alert('등록년월을 선택하세요')
+                return null
+            }
+            if (detail_car_name.value.trim() === '') {
+                alert('세부차종을 선택하세요')
+                return null
+            }
+            if (detail_option.value.trim() === '') {
+                alert('세부옵션을 선택하세요')
+                return null
+            }
             calculateBtn.innerText = '보험료 계산 중'
             calculateBtn.disabled = true
             const data = {
+                carno: carno.value.trim(),
                 start_date: start_date.value,
                 manufacturer: manufacturer.value,
                 car_name: car_name.value,
@@ -455,13 +486,12 @@
                 coverage_mp: coverage_mp.value,
                 coverage_umbi: coverage_umbi.value,
                 coverage_cac: coverage_cac.value,
+                treaty_ers: treaty_ers.value,
                 treaty_charge: treaty_charge.value,
                 discount_bb: discount_bb.value,
                 discount_bb_year: discount_bb_year.value,
                 discount_bb_month: discount_bb_month.value,
                 discount_bb_price: discount_bb_price.value,
-                discount_mileage: discount_mileage.value,
-                discount_dist: discount_dist.value,
                 discount_child: discount_child.value,
                 csrfmiddlewaretoken: '{{ csrf_token }}'
             }
@@ -473,9 +503,16 @@
                 success: function (response) {
                     console.log(response)
                     if (response.result) {
-                        successCallback()
+                        //var response = {}
+                        //response.data={compare_detail_id: 111, car_no: "asdfasdf", start_date:"12321-123", manufacturer: "현대", car_name:"Tsdf"}
+                        //successCallback()
+                        const compareElem = `<button class="btn btn-primary btn-block" type="button" onclick="showCompareDetail(this.dataset.compareDetailId)" data-compare-detail-id="${response.data.compare_detail_id}">[${response.data.car_no}/${response.data.start_date}] ${response.data.manufacturer} ${response.data.car_name}</button>`
+                        compareList.insertAdjacentHTML('beforeend', compareElem);
+                        showCompareDetail(this.dataset.compareDetailId)
+                        calculateBtn.innerText = '보험료 계산'
+                        calculateBtn.disabled = false
                     } else {
-                        alert(response.error)
+                        alert('보험료 산출중 오류가 발생했습니다.')
                         calculateBtn.innerText = '보험료 계산'
                         calculateBtn.disabled = false
                     }
@@ -486,5 +523,7 @@
                 },
             });
         }
+
+
     </script>
 {% endblock %}
