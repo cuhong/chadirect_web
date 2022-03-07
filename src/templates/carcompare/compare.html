@@ -326,7 +326,8 @@
                     <button type="button" class="btn btn-danger btn-block" id="endSessionBtn"
                             onclick="shutDownSession()">계산종료
                     </button>
-                    <button type="button" class="btn btn-secondary btn-block" id="retryBtn" onclick="retry()" hidden>다시 계산
+                    <button type="button" class="btn btn-secondary btn-block" id="retryBtn" onclick="retry()" hidden>다시
+                        계산
                     </button>
                 </div>
             </div>
@@ -334,7 +335,9 @@
         </div>
         <div class="col-md-4" id="compareList">
             {% for cd in compare.comparedetail_set.all %}
-                <button class="btn btn-primary btn-block" type="button" onclick="showCompareDetail(this.dataset.compareDetailId)" data-compare-detail-id="{{ cd.id }}">[{{ cd.car_no }}/{{ cd.start_date|date:"Y-m-d" }}] {{ cd.manufacturer }} {{ cd.car_name }}</button>
+                <button class="btn btn-primary btn-block" type="button"
+                        onclick="showCompareDetail(this.dataset.compareDetailId)" data-compare-detail-id="{{ cd.id }}">
+                    [{{ cd.car_no }}/{{ cd.start_date|date:"Y-m-d" }}] {{ cd.manufacturer }} {{ cd.car_name }}</button>
             {% endfor %}
         </div>
     </div>
@@ -449,29 +452,42 @@
         }
 
         async function showCompareDetail(compareDetailId) {
-            const url = `/carcompare/detail/${compareDetailId}/`
-            const response = await fetch(url)
-            const responseData = await response.json()
-            const imgSrc = responseData.data
-            var image = new Image();
-            image.crossOrigin = "anonymous";
-            image.src = imgSrc;
-            var fileName = image.src.split("/").pop();
-            image.onload = function () {
-                var canvas = document.createElement('canvas');
-                canvas.width = this.width;
-                canvas.height = this.height;
-                canvas.getContext('2d').drawImage(this, 0, 0);
-                if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                    window.navigator.msSaveBlob(dataURLtoBlob(canvas.toDataURL()), fileName);
-                } else {
-                    var link = document.createElement('a');
-                    link.href = canvas.toDataURL();
-                    link.download = fileName;
-                    link.click();
+            $.ajax({
+                type: "GET",
+                url: `/carcompare/detail/${compareDetailId}/`,
+                dataType: "json",
+                success: function (response) {
+                    console.log(response)
+                    if (response.result) {
+                        var image = new Image();
+                        image.crossOrigin = "anonymous";
+                        image.src = imgSrc;
+                        var fileName = image.src.split("/").pop();
+                        image.onload = function () {
+                            var canvas = document.createElement('canvas');
+                            canvas.width = this.width;
+                            canvas.height = this.height;
+                            canvas.getContext('2d').drawImage(this, 0, 0);
+                            if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                                window.navigator.msSaveBlob(dataURLtoBlob(canvas.toDataURL()), fileName);
+                            } else {
+                                var link = document.createElement('a');
+                                link.href = canvas.toDataURL();
+                                link.download = fileName;
+                                link.click();
+                            }
+                        };
+                    } else {
+                        alert('보험료 산출중 오류가 발생했습니다.')
+                        calculateBtn.innerText = '보험료 계산'
+                        calculateBtn.disabled = false
+                    }
+                },
+                error: function (request, status, error) {
+                    alert('서버오류. 인증요청 실패.')
+                    location.reload()
                 }
-            };
-
+            })
         }
 
         function calculatePremium() {
