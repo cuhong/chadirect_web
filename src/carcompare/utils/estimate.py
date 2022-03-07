@@ -64,7 +64,7 @@ def generate_estimate_image(data):
     draw = ImageDraw.Draw(base_image)
 
     text_position_list = [
-        {"attr_name": "manager_name", "placeholder_position": (1002, 992, 2940, 1163), "color": color_black_transparent,
+        {"attr_name": "manager_name", "placeholder_position": (1002, 992, 2940, 1163), "color": color_black,
          "align": "center", "font": kor_font},
         {"attr_name": "manager_contact", "placeholder_position": (3912, 992, 4863, 1163), "color": color_black,
          "align": "center", "font": kor_font},
@@ -154,7 +154,7 @@ def generate_estimate_image(data):
             ), text_value, fill=text_position.get('color'), font=font, spacing=0
         )
 
-    base_image.show()
+    # base_image.show()
     return base_image
 #
 # base_image = generate_estimate_image(data)

@@ -13,7 +13,7 @@ class CompareDetailSerializer(serializers.ModelSerializer):
             'treaty_range',
             'youngest_driver_birthdate',
             'coverage_bil', 'coverage_pdl', 'coverage_mp_list', 'coverage_mp', 'coverage_umbi', 'coverage_cac',
-            'treaty_ers', 'discount_bb'
+            'treaty_ers', 'discount_bb', 'image'
         ]
 
     youngest_driver_birthdate = serializers.SerializerMethodField()

@@ -34,6 +34,8 @@ class ProtectedFileStorageLocal(DefaultStorage):
     location = f"{settings.STAGE}/protected"
 
 
+
+
 def MediaStorage():
     if settings.STAGE == 'local':
         return MediaStorageLocal()

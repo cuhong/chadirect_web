@@ -333,7 +333,9 @@
 
         </div>
         <div class="col-md-4" id="compareList">
-
+            {% for cd in compare.comparedetail_set.all %}
+                <button class="btn btn-primary btn-block" type="button" onclick="showCompareDetail(this.dataset.compareDetailId)" data-compare-detail-id="{{ cd.id }}">[{{ cd.car_no }}/{{ cd.start_date|date:"Y-m-d" }}] {{ cd.manufacturer }} {{ cd.car_name }}</button>
+            {% endfor %}
         </div>
     </div>
     <input hidden id="compareId" value="{{ compare_id }}">
@@ -383,6 +385,10 @@
         }
 
         function lookupCar(car_no, expireDate = null) {
+            if (car_no.trim() === '') {
+                alert('올바른 차량번호를 입력하세요')
+                return null
+            }
             if (expireDate !== null) {
                 var tempDate = new Date(expireDate)
                 tempDate.setDate(tempDate.getDate() + 1)
@@ -442,8 +448,30 @@
 
         }
 
-        function showCompareDetail(compareDetailId) {
-            alert(compareDetailId)
+        async function showCompareDetail(compareDetailId) {
+            const url = `/carcompare/detail/${compareDetailId}/`
+            const response = await fetch(url)
+            const responseData = await response.json()
+            const imgSrc = responseData.data
+            var image = new Image();
+            image.crossOrigin = "anonymous";
+            image.src = imgSrc;
+            var fileName = image.src.split("/").pop();
+            image.onload = function () {
+                var canvas = document.createElement('canvas');
+                canvas.width = this.width;
+                canvas.height = this.height;
+                canvas.getContext('2d').drawImage(this, 0, 0);
+                if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                    window.navigator.msSaveBlob(dataURLtoBlob(canvas.toDataURL()), fileName);
+                } else {
+                    var link = document.createElement('a');
+                    link.href = canvas.toDataURL();
+                    link.download = fileName;
+                    link.click();
+                }
+            };
+
         }
 
         function calculatePremium() {
@@ -508,7 +536,7 @@
                         //successCallback()
                         const compareElem = `<button class="btn btn-primary btn-block" type="button" onclick="showCompareDetail(this.dataset.compareDetailId)" data-compare-detail-id="${response.data.compare_detail_id}">[${response.data.car_no}/${response.data.start_date}] ${response.data.manufacturer} ${response.data.car_name}</button>`
                         compareList.insertAdjacentHTML('beforeend', compareElem);
-                        showCompareDetail(this.dataset.compareDetailId)
+                        showCompareDetail(response.data.compare_detail_id)
                         calculateBtn.innerText = '보험료 계산'
                         calculateBtn.disabled = false
                     } else {

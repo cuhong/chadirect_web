@@ -15,7 +15,7 @@ from sequences import get_next_value
 
 from carcompare.utils.estimate import generate_estimate_image
 from commons.models import UUIDPkMixin, DateTimeMixin, VehicleInsurerChoices
-from itechs.storages import ProtectedFileStorageRemote
+from itechs.storages import ProtectedFileStorageRemote, ProtectedFileStorageLocal
 
 
 def generate_compare_serial():
@@ -470,8 +470,9 @@ class CompareDetail(models.Model):
             pil_image = generate_estimate_image(data)
             pil_image.save(fp=bytes_io, format='PNG')
             content = ContentFile(bytes_io.getvalue(), 'estimagte.png')
-            self.image = content
-            self.save()
+        self.image = content
+        self.save()
+        return self.image.url
 
     @property
     def driver_birthdate(self):

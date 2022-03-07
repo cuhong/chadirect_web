@@ -17,6 +17,7 @@ from django import forms
 from django.views.decorators.csrf import csrf_exempt
 
 from carcompare.models import Compare, StatusChoice, CarNo, CompareDetail
+from carcompare.serializers import CompareDetailSerializer
 
 
 class AdminUserMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -128,7 +129,7 @@ class CompareAuthView(AdminUserMixin, View):
 
 class CompareView(AdminUserMixin, View):
     def get(self, request, compare_id):
-        compare = Compare.object.prefetch_related('legacycontract_set').get(id=compare_id)
+        compare = Compare.object.prefetch_related('legacycontract_set', 'comparedetail_set').get(id=compare_id)
         name = compare.name
         now_date = timezone.localdate()
         min_start_date = now_date + relativedelta(days=1)
@@ -203,13 +204,17 @@ class CompareView(AdminUserMixin, View):
             }}, status=200)
         return response
 
+
 class CompareDetailView(AdminUserMixin, View):
     def get(self, request, compare_detail_id):
         try:
-            compare_detail = CompareDetail.objects.get(id=CompareDetail, is_success=True)
-        except CompareDetail.DoesNotExist:
+            compare_detail = CompareDetail.objects.get(id=compare_detail_id, is_success=True)
+            # serializer = CompareDetailSerializer(instance=compare_detail)
+            response = JsonResponse(data={"result": True, "data": compare_detail.image.url})
+        except Exception as e:
+            print(e)
             response = JsonResponse(data={"result": False, "msg": "존재하지 않는 견적 id"})
-
+        return response
 
 
 class CarnoView(AdminUserMixin, View):
