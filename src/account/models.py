@@ -17,7 +17,7 @@ from django.contrib.auth.models import (
 from django.urls import reverse
 from django.utils import timezone
 
-from car_cms.models import name_card_upload_to
+from car_cms.models.upload import name_card_upload_to
 from commons.models import DateTimeMixin, UUIDPkMixin
 from itechs.storages import ProtectedFileStorage
 
