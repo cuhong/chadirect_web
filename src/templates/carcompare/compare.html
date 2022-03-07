@@ -461,9 +461,7 @@
                     if (response.result) {
                         window.open(response.data, '_blank').focus();
                     } else {
-                        alert('보험료 산출중 오류가 발생했습니다.')
-                        calculateBtn.innerText = '보험료 계산'
-                        calculateBtn.disabled = false
+                        alert('견적서 다운로드 실패')
                     }
                 },
                 error: function (request, status, error) {
