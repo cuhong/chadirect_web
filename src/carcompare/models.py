@@ -435,6 +435,10 @@ class CompareDetail(models.Model):
                 "dc_list": _data.get('dc_list'),
                 "is_cheapest": expect_cost == min_cost
             }
+        insurer_1 = insurance_data.get(VehicleInsurerChoices.HYUNDAI.value, None)
+        insurer_2 = insurance_data.get(VehicleInsurerChoices.DB.value, None)
+        insurer_3 = insurance_data.get(VehicleInsurerChoices.KB.value, None)
+        insurer_4 = insurance_data.get(VehicleInsurerChoices.HANHWA.value, None)
         data = {
             "manager_name": self.compare.user.name,
             "manager_contact": self.compare.user.cellphone,
@@ -446,17 +450,17 @@ class CompareDetail(models.Model):
             "driver_range": self.treaty_range,
             "min_driver_birthdate": self.youngest_driver_birthdate.strftime("%Y-%m-%d"),
             "insure_1": "현대해상 다이렉트",
-            "insure_1_premium": insurance_data.get(VehicleInsurerChoices.HYUNDAI.value).get('expect_cost_string'),
-            "insure_1_memo": "최저" if insurance_data.get(VehicleInsurerChoices.HYUNDAI.value).get('is_cheapest') is True else None,
+            "insure_1_premium": insurer_1.get('expect_cost_string') if insurer_1 else "산출불가",
+            "insure_1_memo": "최저" if insurer_1.get('is_cheapest') is True else None,
             "insure_2": "DB손해보험 다이렉트",
-            "insure_2_premium": insurance_data.get(VehicleInsurerChoices.DB.value).get('expect_cost_string'),
-            "insure_2_memo": "최저" if insurance_data.get(VehicleInsurerChoices.DB.value).get('is_cheapest') is True else None,
+            "insure_2_premium": insurer_2.get('expect_cost_string') if insurer_2 else "산출불가",
+            "insure_2_memo": "최저" if insurer_2.get('is_cheapest') is True else None,
             "insure_3": "KB손해보험 다이렉트",
-            "insure_3_premium": insurance_data.get(VehicleInsurerChoices.KB.value).get('expect_cost_string'),
-            "insure_3_memo": "최저" if insurance_data.get(VehicleInsurerChoices.KB.value).get('is_cheapest') is True else None,
+            "insure_3_premium": insurer_3.get('expect_cost_string') if insurer_3 else "산출불가",
+            "insure_3_memo": "최저" if insurer_3.get('is_cheapest') is True else None,
             "insure_4": "한화손해보험 다이렉트",
-            "insure_4_premium": insurance_data.get(VehicleInsurerChoices.HANHWA.value).get('expect_cost_string'),
-            "insure_4_memo": "최저" if insurance_data.get(VehicleInsurerChoices.HANHWA.value).get('is_cheapest') is True else None,
+            "insure_4_premium": insurer_4.get('expect_cost_string') if insurer_4 else "산출불가",
+            "insure_4_memo": "최저" if insurer_4.get('is_cheapest') is True else None,
             "p_1": "의무",
             "p_2": self.coverage_pdl,
             "p_3": "무한",
