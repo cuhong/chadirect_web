@@ -459,24 +459,7 @@
                 success: function (response) {
                     console.log(response)
                     if (response.result) {
-                        var image = new Image();
-                        image.crossOrigin = "anonymous";
-                        image.src = response.data;
-                        var fileName = image.src.split("/").pop();
-                        image.onload = function () {
-                            var canvas = document.createElement('canvas');
-                            canvas.width = this.width;
-                            canvas.height = this.height;
-                            canvas.getContext('2d').drawImage(this, 0, 0);
-                            if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                                window.navigator.msSaveBlob(dataURLtoBlob(canvas.toDataURL()), fileName);
-                            } else {
-                                var link = document.createElement('a');
-                                link.href = canvas.toDataURL();
-                                link.download = fileName;
-                                link.click();
-                            }
-                        };
+                        window.open(response.data, '_blank').focus();
                     } else {
                         alert('보험료 산출중 오류가 발생했습니다.')
                         calculateBtn.innerText = '보험료 계산'
