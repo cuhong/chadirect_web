@@ -461,7 +461,7 @@
                     if (response.result) {
                         var image = new Image();
                         image.crossOrigin = "anonymous";
-                        image.src = imgSrc;
+                        image.src = response.data;
                         var fileName = image.src.split("/").pop();
                         image.onload = function () {
                             var canvas = document.createElement('canvas');
