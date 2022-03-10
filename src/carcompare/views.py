@@ -134,10 +134,10 @@ class CompareAuthView(AdminUserMixin, View):
 class CompareView(AdminUserMixin, View):
     def get(self, request, compare_id):
         compare = Compare.object.prefetch_related('legacycontract_set', 'comparedetail_set').get(id=compare_id)
-        manager_list = User.objects.values(
-            'name', 'cellphone', 'id', 'is_me'
-        ).filter(is_staff=True).annotate(
+        manager_list = User.objects.filter(is_staff=True).annotate(
             is_me=Case(When(id=request.user.id, then=True), default=False, output_field=models.BooleanField())
+        ).values(
+            'name', 'cellphone', 'id', 'is_me'
         )
         name = compare.name
         now_date = timezone.localdate()
