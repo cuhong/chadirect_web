@@ -344,6 +344,7 @@ class CompareDetail(models.Model):
         verbose_name = '비교 상세'
         verbose_name_plural = verbose_name
 
+    manager = models.ForeignKey(User, null=True, blank=True, related_name='cd_user', on_delete=models.PROTECT, verbose_name='산출 담당자')
     compare = models.ForeignKey(Compare, null=False, blank=False, verbose_name='비교', on_delete=models.PROTECT)
     start_date = models.DateField(null=True, blank=True, verbose_name='보험개시일')
     car_no = models.CharField(max_length=200, null=True, blank=True, verbose_name='차량번호')
@@ -439,9 +440,10 @@ class CompareDetail(models.Model):
         insurer_2 = insurance_data.get(VehicleInsurerChoices.DB.value, None)
         insurer_3 = insurance_data.get(VehicleInsurerChoices.KB.value, None)
         insurer_4 = insurance_data.get(VehicleInsurerChoices.HANHWA.value, None)
+        manager = self.manager or self.compare.user
         data = {
-            "manager_name": self.compare.user.name,
-            "manager_contact": self.compare.user.cellphone,
+            "manager_name": manager.name,
+            "manager_contact": manager.cellphone,
             "insured_name": self.compare.name,
             "insured_birthdate": self.compare.birthdate.strftime("%Y-%m-%d"),
             "car_name": self.car_title,

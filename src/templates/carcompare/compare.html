@@ -362,6 +362,7 @@
     <script>
         $('#start_date').attr('min', '{{ min_start_date|date:"Y-m-d" }}')
         $('#start_date').attr('max', '{{ max_start_date|date:"Y-m-d" }}')
+        const manager = document.getElementById('manager')
         const customerBirthdateString = '{{ compare.birthdate|date:"Y-m-d" }}'
         const compareId = document.getElementById('compareId').value
         const carno = document.getElementById('carno')
@@ -506,6 +507,7 @@
             calculateBtn.innerText = '보험료 계산 중'
             calculateBtn.disabled = true
             const data = {
+                manager: manager.value,
                 carno: carno.value.trim(),
                 start_date: start_date.value,
                 manufacturer: manufacturer.value,

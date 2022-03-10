@@ -171,6 +171,7 @@ class CompareView(AdminUserMixin, View):
             compare_data.get('driver_2_birthdate'), "%Y-%m-%d"
         ).date() if compare_data.get('driver_2_birthdate') not in ['', None] else None
         compare_detail = CompareDetail.objects.create(
+            manager_id=compare_data.get('manager'),
             compare=compare,
             car_no=compare_data.get('carno'),
             start_date=datetime.datetime.strptime(compare_data.get('start_date'), "%Y-%m-%d").date(),
