@@ -4,6 +4,9 @@ from django.conf import settings
 
 from PIL import Image, ImageDraw, ImageFont
 
+def parse_manager_contact(manager_contact):
+    manager_contact = "".join([s for s in manager_contact if s.isdigit()])
+    return f"{manager_contact[:3]}-{manager_contact[3:7]}-{manager_contact[7:]}"
 
 data = {
     "manager_name": "최용성",
@@ -132,6 +135,8 @@ def generate_estimate_image(data):
 
     # manager_name_position = (x_start, y_start, x_end, y_end)
     pad = font_size / 5
+
+    data['manager_contact'] = parse_manager_contact(data.get('manager_contact'))
 
     for text_position in text_position_list:
         placeholder_position = text_position.get('placeholder_position')
