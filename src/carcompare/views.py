@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db import models
-from django.db.models import Case, When
+from django.db.models import Case, When, Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
@@ -134,7 +134,7 @@ class CompareAuthView(AdminUserMixin, View):
 class CompareView(AdminUserMixin, View):
     def get(self, request, compare_id):
         compare = Compare.object.prefetch_related('legacycontract_set', 'comparedetail_set').get(id=compare_id)
-        manager_list = User.objects.filter(is_staff=True).annotate(
+        manager_list = User.objects.filter(Q(is_admin=True) | Q(is_superuser=True)).annotate(
             is_me=Case(When(id=request.user.id, then=True), default=False, output_field=models.BooleanField())
         ).values(
             'name', 'cellphone', 'id', 'is_me'
