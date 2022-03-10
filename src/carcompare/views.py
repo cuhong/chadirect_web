@@ -4,7 +4,10 @@ import random
 import time
 
 from dateutil.relativedelta import relativedelta
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db import models
+from django.db.models import Case, When
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
@@ -19,6 +22,7 @@ from django.views.decorators.csrf import csrf_exempt
 from carcompare.models import Compare, StatusChoice, CarNo, CompareDetail
 from carcompare.serializers import CompareDetailSerializer
 
+User = get_user_model()
 
 class AdminUserMixin(LoginRequiredMixin, UserPassesTestMixin):
     login_url = '/admin/login'
@@ -130,6 +134,11 @@ class CompareAuthView(AdminUserMixin, View):
 class CompareView(AdminUserMixin, View):
     def get(self, request, compare_id):
         compare = Compare.object.prefetch_related('legacycontract_set', 'comparedetail_set').get(id=compare_id)
+        manager_list = User.objects.values(
+            'name', 'cellphone', 'id', 'is_me'
+        ).filter(is_staff=True).annotate(
+            is_me=Case(When(id=request.user.id, then=True), default=False, output_field=models.BooleanField())
+        )
         name = compare.name
         now_date = timezone.localdate()
         min_start_date = now_date + relativedelta(days=1)
@@ -138,6 +147,7 @@ class CompareView(AdminUserMixin, View):
             "name": name, "compare_id": str(compare_id), "compare": compare,
             "min_start_date": min_start_date,
             "max_start_date": max_start_date,
+            "manager_list": manager_list
         })
 
     def post(self, request, compare_id):
