@@ -195,6 +195,7 @@ API_KEY_CUSTOM_HEADER = "HTTP_X_ITECHS_API_KEY"
 # User Model
 AUTH_USER_MODEL = 'account.User'
 
+SESSION_COOKIE_AGE = None
 # Static and Media
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
