@@ -19,7 +19,7 @@ class UserAdmin(BaseUserAdmin):
         ('권한', {
             'fields': (
                 'is_active', 'is_admin', 'is_superuser',
-                # 'groups', 'user_permissions'
+                'groups', 'user_permissions'
             ),
         }),
         # ('Important dates', {'fields': ('last_login', 'date_joined')}),
