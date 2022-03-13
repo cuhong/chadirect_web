@@ -286,6 +286,7 @@ class EstimateMixin(models.Model):
                 for i in range(1, 13):
                     estimate_insurer = getattr(self, f"estimate_insurer_{i}")
                     estimate_premium = getattr(self, f"estimate_premium_{i}")
+                    estimate_memo = getattr(self, f"estimate_memo{i}")
                     if estimate_insurer in [
                         VehicleInsurerChoices.HYUNDAI, VehicleInsurerChoices.KB, VehicleInsurerChoices.DB,
                         VehicleInsurerChoices.HANHWA
@@ -294,7 +295,7 @@ class EstimateMixin(models.Model):
                         insurance_data[estimate_insurer] = {
                             "expect_cost": estimate_premium,
                             "expect_cost_string": "산출불가" if estimate_premium is None else f"{estimate_premium:,}원",
-                            "dc_list": []
+                            "dc_list": [] if estimate_memo is None else [estimate_memo]
                         }
                 for key, value in insurance_data.items():
                     value['is_cheapest'] = value['expect_cost'] == min(_min_cost)

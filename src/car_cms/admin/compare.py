@@ -207,6 +207,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
                 }),
                 ('견적요청', {
                     'fields': (
+                        'estimate_image',
                         'account', 'manager', 'status', 'customer_name', 'career', 'customer_cellphone', 'customer_type',
                         'customer_identification', 'car_price', 'ssn', 'car_name', 'car_type', 'car_identification',
                         'attach_1', 'attach_2', 'attach_3', 'driver_range', 'memo'
