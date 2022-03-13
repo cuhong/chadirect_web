@@ -454,14 +454,22 @@ class CompareDetailView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
 
 class CompareEstimateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, View):
     def get(self, request, compare_id):
-        template_name = 'car_cms/estimate_detail.html'
+        template_name = 'car_cms/estimate_detail_view.html'
         compare = Compare.objects.exclude(status__in=[CompareStatus.REQUEST, CompareStatus.CALCULATE]).get(
             id=compare_id
         )
         context = dict(
-            compare=compare, type=self.app_type
+            compare=compare, url=compare.estimate_image.url
         )
         return render(request, template_name, context=context)
+        # template_name = 'car_cms/estimate_detail.html'
+        # compare = Compare.objects.exclude(status__in=[CompareStatus.REQUEST, CompareStatus.CALCULATE]).get(
+        #     id=compare_id
+        # )
+        # context = dict(
+        #     compare=compare, type=self.app_type
+        # )
+        # return render(request, template_name, context=context)
 
 
 class CompareEstimateAdminView(View):

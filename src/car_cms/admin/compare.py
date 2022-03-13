@@ -16,31 +16,31 @@ class CompareAllAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     ]
     list_filter = ['manager', 'insurer', 'status']
     search_fields = ['serial__icontains', 'customer_name__icontains', 'customer_cellphone__icontains']
+    #
+    # def get_inline_actions(self, request, obj=None):
+    #     actions = super(CompareAllAdmin, self).get_inline_actions(request, obj)
+    #     if obj:
+    #         if obj.status in [CompareStatus.CALCULATE_COMPLETE, CompareStatus.DENY, CompareStatus.CONTRACT,
+    #                           CompareStatus.CONTRACT_FAIL, CompareStatus.CONTRACT_SUCCESS]:
+    #             actions.append('show_estimate')
+    #     return actions
 
-    def get_inline_actions(self, request, obj=None):
-        actions = super(CompareAllAdmin, self).get_inline_actions(request, obj)
-        if obj:
-            if obj.status in [CompareStatus.CALCULATE_COMPLETE, CompareStatus.DENY, CompareStatus.CONTRACT,
-                              CompareStatus.CONTRACT_FAIL, CompareStatus.CONTRACT_SUCCESS]:
-                actions.append('show_estimate')
-        return actions
-
-    def show_estimate(self, request, obj, parent_obj=None):
-        # 1. has the form been submitted?
-        if '_save' in request.POST:
-            return None  # return back to list view
-        # 2. has the back button been pressed?
-        elif '_back' in request.POST:
-            return None  # return back to list view
-        # 3. simply display the form
-        else:
-            return render(
-                request,
-                'car_cms/admin/estimate_detail_admin.html',
-                context={'compare': obj}
-            )
-
-    show_estimate.short_description = '비교견적서'
+    # def show_estimate(self, request, obj, parent_obj=None):
+    #     # 1. has the form been submitted?
+    #     if '_save' in request.POST:
+    #         return None  # return back to list view
+    #     # 2. has the back button been pressed?
+    #     elif '_back' in request.POST:
+    #         return None  # return back to list view
+    #     # 3. simply display the form
+    #     else:
+    #         return render(
+    #             request,
+    #             'car_cms/admin/estimate_detail_admin.html',
+    #             context={'compare': obj}
+    #         )
+    #
+    # show_estimate.short_description = '비교견적서'
 
 
 @admin.register(ComparePending)
@@ -284,25 +284,25 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
             if obj.status == CompareStatus.CONTRACT:
                 actions.append('_success_contract')
                 actions.append('_fail_contract')
-            if obj.status in [CompareStatus.CALCULATE_COMPLETE, CompareStatus.DENY, CompareStatus.CONTRACT,
-                              CompareStatus.CONTRACT_FAIL, CompareStatus.CONTRACT_SUCCESS]:
-                actions.append('show_estimate')
+            # if obj.status in [CompareStatus.CALCULATE_COMPLETE, CompareStatus.DENY, CompareStatus.CONTRACT,
+            #                   CompareStatus.CONTRACT_FAIL, CompareStatus.CONTRACT_SUCCESS]:
+            #     actions.append('show_estimate')
         return actions
-
-    def show_estimate(self, request, obj, parent_obj=None):
-        # 1. has the form been submitted?
-        if '_save' in request.POST:
-            return None  # return back to list view
-        # 2. has the back button been pressed?
-        elif '_back' in request.POST:
-            return None  # return back to list view
-        # 3. simply display the form
-        else:
-            return render(
-                request,
-                'car_cms/admin/estimate_detail_admin.html',
-                context={'compare': obj}
-            )
+    #
+    # def show_estimate(self, request, obj, parent_obj=None):
+    #     # 1. has the form been submitted?
+    #     if '_save' in request.POST:
+    #         return None  # return back to list view
+    #     # 2. has the back button been pressed?
+    #     elif '_back' in request.POST:
+    #         return None  # return back to list view
+    #     # 3. simply display the form
+    #     else:
+    #         return render(
+    #             request,
+    #             'car_cms/admin/estimate_detail_admin.html',
+    #             context={'compare': obj}
+    #         )
 
     def _complete_calculate(self, request, obj, parent_obj=None):
         try:
@@ -357,5 +357,5 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     _start_contract.short_description = '계약 진행'
     _success_contract.short_description = '체결'
     _fail_contract.short_description = '체결 실패'
-    show_estimate.short_description = '비교견적서'
     _deny_calculate.short_description = '견적산출 불가'
+    # show_estimate.short_description = '비교견적서'
