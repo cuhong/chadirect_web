@@ -66,7 +66,7 @@
                     const data = await fetchResponse.blob();
                     const filename = '{{ compare.customer_name }}.png'
                     const a = document.createElement('a')
-                    const url = URL.createObjectURL(blob)
+                    const url = URL.createObjectURL(data)
                     a.setAttribute('href', url)
                     a.setAttribute('download', filename)
                     a.click()
@@ -80,7 +80,6 @@
                     alert('다운로드 실패')
                 },
             });
-
         }
     </script>
 {% endblock %}
