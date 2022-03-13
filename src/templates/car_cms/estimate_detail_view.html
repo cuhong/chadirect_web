@@ -62,8 +62,16 @@
                 data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
                 dataType: "json",
                 success: function (response) {
-                    const url = response.url
-                    FileSaver.saveAs(url, `{{ compare.customer_name }}.png`)
+                    var a = document.createElement("a");
+                    a.href = response.url;
+                    a.download = '{{ compare.customer_name }}.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(result.url);
+                    }, 0);
+                    //FileSaver.saveAs(url, ``)
                 },
                 error: function (request, status, error) {
                     alert('다운로드 실패')
