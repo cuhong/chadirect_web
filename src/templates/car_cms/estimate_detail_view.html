@@ -32,12 +32,12 @@
         <div class="header_title" style="line-height: 2.5rem">
             <span class="h3 font-weight-bolder">{{ compare.customer_name }}</span> 고객님의<br>보험 비교견적
         </div>
-        <div class="w-100">
+        <div class="w-100 mb-3">
             <img src="{{ url }}" width="100%">
         </div>
         <div>
             <button type="button" class="btn btn-cc-primary btn-block" id="captureBtn"
-                    onclick="capture('{{ compare.id }}')">다운로드
+                    onclick="capture()">다운로드
             </button>
             <button type="button" class="btn btn-cc-primary-outline btn-block" id="compareDetailBtn"
                     onclick="compareDetail('{{ compare.id }}')">이전
@@ -55,5 +55,21 @@
         const compareDetailBtn = document.getElementById('compareDetailBtn')
 
         const autoRefresh = true
+
+        function capture() {
+            $.ajax({
+                type: "POST",
+                data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                dataType: "json",
+                success: function (response) {
+                    const url = response.url
+                    FileSaver.saveAs(url, `{{ compare.customer_name }}.png`)
+                },
+                error: function (request, status, error) {
+                    alert('다운로드 실패')
+                },
+            });
+
+        }
     </script>
 {% endblock %}

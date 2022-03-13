@@ -462,6 +462,15 @@ class CompareEstimateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMix
             compare=compare, url=compare.estimate_image.url
         )
         return render(request, template_name, context=context)
+
+    def post(self, request, compare_id):
+        compare = Compare.objects.exclude(status__in=[CompareStatus.REQUEST, CompareStatus.CALCULATE]).get(
+            id=compare_id
+        )
+        context = dict(
+            url=compare.estimate_image.url
+        )
+        return JsonResponse(context)
         # template_name = 'car_cms/estimate_detail.html'
         # compare = Compare.objects.exclude(status__in=[CompareStatus.REQUEST, CompareStatus.CALCULATE]).get(
         #     id=compare_id
