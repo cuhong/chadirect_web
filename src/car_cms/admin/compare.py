@@ -120,7 +120,8 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
         # 1. has the form been submitted?
         if '_save' in request.POST:
             try:
-                manager = request.user
+                manager_id = request.POST.get('user')
+                manager = User.objects.get(id=manager_id)
                 obj.set_manager(manager=manager)
             except Exception as e:
                 print(e)
