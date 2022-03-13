@@ -61,17 +61,20 @@
                 type: "POST",
                 data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
                 dataType: "json",
-                success: function (response) {
-                    var a = document.createElement("a");
-                    a.href = response.url;
-                    a.download = '{{ compare.customer_name }}.png';
-                    document.body.appendChild(a);
-                    a.click();
-                    setTimeout(() => {
-                        document.body.removeChild(a);
-                        window.URL.revokeObjectURL(url);
-                    }, 0);
-                    //FileSaver.saveAs(url, ``)
+                success: async function (response) {
+                    const fetchResponse = await fetch(url);
+                    const data = await fetchResponse.blob();
+                    const filename = '{{ compare.customer_name }}.png'
+                    const a = document.createElement('a')
+                    const url = URL.createObjectURL(blob)
+                    a.setAttribute('href', url)
+                    a.setAttribute('download', filename)
+                    a.click()
+                    a.remove()
+                    //const ext = 'png'
+
+                    //const metadata = { type: `image/${ext}` };
+                    //return new File([data], filename, metadata);
                 },
                 error: function (request, status, error) {
                     alert('다운로드 실패')
