@@ -298,7 +298,8 @@ class EstimateMixin(models.Model):
                             "dc_list": [] if estimate_memo is None else [estimate_memo]
                         }
                 for key, value in insurance_data.items():
-                    value['is_cheapest'] = value['expect_cost'] == min(_min_cost)
+                    _cheapest = value['expect_cost'] == min(_min_cost)
+                    value['is_cheapest'] = "최저" if _cheapest is True else None
                 insurer_1 = insurance_data.get(VehicleInsurerChoices.HYUNDAI.value, None)
                 insurer_2 = insurance_data.get(VehicleInsurerChoices.DB.value, None)
                 insurer_3 = insurance_data.get(VehicleInsurerChoices.KB.value, None)
