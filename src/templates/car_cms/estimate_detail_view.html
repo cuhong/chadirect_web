@@ -69,7 +69,7 @@
                     a.click();
                     setTimeout(() => {
                         document.body.removeChild(a);
-                        window.URL.revokeObjectURL(result.url);
+                        window.URL.revokeObjectURL(url);
                     }, 0);
                     //FileSaver.saveAs(url, ``)
                 },
