@@ -62,6 +62,7 @@
                 data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
                 dataType: "json",
                 success: async function (response) {
+                    console.log(response.url)
                     const fetchResponse = await fetch(response.url);
                     const data = await fetchResponse.blob();
                     const filename = '{{ compare.customer_name }}.png'
