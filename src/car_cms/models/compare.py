@@ -1,12 +1,28 @@
+import io
+import os
+import uuid
+from traceback import print_exc
+
+from django.core.files.base import ContentFile
 from django.db import models, transaction
 from django.utils import timezone
 from sequences import get_next_value
 
 from car_cms.exceptions.compare import CarCMSCompareError
 from car_cms.models.upload import compare_attach_upload_to
+from carcompare.utils.estimate import generate_estimate_image
 from commons.models import DateTimeMixin, UUIDPkMixin, VehicleInsurerChoices
-from itechs.storages import ProtectedFileStorage
+from itechs.storages import ProtectedFileStorage, ProtectedFileStorageRemote
 from simple_history.models import HistoricalRecords
+
+
+class PhoneCompanyChoice(models.TextChoices):
+    SKT = '01', 'SKT'
+    KT = '02', 'KT'
+    LGU = '03', 'LGU+'
+    SKT_A = '04', 'SKT 알뜰폰'
+    KT_A = '05', 'KT 알뜰폰'
+    LGU_A = '06', 'LGU+ 알뜰폰'
 
 
 class CompareStatus(models.IntegerChoices):
@@ -238,31 +254,99 @@ class EstimateMixin(models.Model):
     def validate_calculate_complete(self):
         # 견적완료 가능 여부를 확인한다.
         messages = []
-        if self.insured_name is None:
-            messages.append('피보험자명')
-        if self.birthdate is None:
-            messages.append('피보험자 생년월일')
-        if self.car_type == CarTypeChoices.NEW:
-            # 신차
-            pass
+        if self.estimate_image.name == '':
+            if self.insured_name is None:
+                messages.append('피보험자명')
+            if self.birthdate is None:
+                messages.append('피보험자 생년월일')
+            if self.car_type == CarTypeChoices.NEW:
+                # 신차
+                pass
+            else:
+                # 중고차
+                if all([self.car_no is None, self.vin is None]):
+                    messages.append('차량번호와 차대번호 중 하나')
+            if self.car_name_fixed is None:
+                messages.append('차량모델')
+            if self.start_at is None:
+                messages.append('개시일자')
+            est_count = 0
+            for i in range(1, 13):
+                estimate_insurer = getattr(self, f"estimate_insurer_{i}")
+                estimate_premium = getattr(self, f"estimate_premium_{i}")
+                est = all([estimate_insurer is not None, estimate_premium is not None])
+                if est:
+                    est_count += 1
+            if est_count == 0:
+                messages.append('보험사와 보험료')
+            if len(messages) == 0:
+                # 견적서 이미지 생성 위한 데이터
+                insurance_data = {}
+                _min_cost = []
+                for i in range(1, 13):
+                    estimate_insurer = getattr(self, f"estimate_insurer_{i}")
+                    estimate_premium = getattr(self, f"estimate_premium_{i}")
+                    if estimate_insurer in [
+                        VehicleInsurerChoices.HYUNDAI, VehicleInsurerChoices.KB, VehicleInsurerChoices.DB,
+                        VehicleInsurerChoices.HANHWA
+                    ]:
+                        _min_cost.append(estimate_premium)
+                        insurance_data[estimate_insurer] = {
+                            "expect_cost": estimate_premium,
+                            "expect_cost_string": "산출불가" if estimate_premium is None else f"{estimate_premium:,}원",
+                            "dc_list": []
+                        }
+                for key, value in insurance_data.items():
+                    value['is_cheapest'] = value['expect_cost'] == min(_min_cost)
+                insurer_1 = insurance_data.get(VehicleInsurerChoices.HYUNDAI.value, None)
+                insurer_2 = insurance_data.get(VehicleInsurerChoices.DB.value, None)
+                insurer_3 = insurance_data.get(VehicleInsurerChoices.KB.value, None)
+                insurer_4 = insurance_data.get(VehicleInsurerChoices.HANHWA.value, None)
+                manager = self.manager
+                data = {
+                    "manager_name": manager.name,
+                    "manager_contact": manager.cellphone,
+                    "insured_name": self.insured_name,
+                    "insured_birthdate": self.birthdate.strftime("%Y-%m-%d"),
+                    "car_name": self.car_name_fixed,
+                    "car_detail": f"차명코드 : -",
+                    "start_date": self.start_at.strftime("%Y-%m-%d"),
+                    "driver_range": self.get_driver_range_fixed_display(),
+                    "min_driver_birthdate": "-" if self.min_age is None else self.min_age,
+                    "insure_1": "현대해상 다이렉트",
+                    "insure_1_premium": insurer_1.get('expect_cost_string') if insurer_1 else "산출불가",
+                    "insure_1_memo": "최저" if insurance_data.get(VehicleInsurerChoices.HYUNDAI.value, {}).get(
+                        'is_cheapest', False) is True else None,
+                    "insure_2": "DB손해보험 다이렉트",
+                    "insure_2_premium": insurer_2.get('expect_cost_string') if insurer_2 else "산출불가",
+                    "insure_2_memo": "최저" if insurance_data.get(VehicleInsurerChoices.DB.value, {}).get('is_cheapest',
+                                                                                                        False) is True else None,
+                    "insure_3": "KB손해보험 다이렉트",
+                    "insure_3_premium": insurer_3.get('expect_cost_string') if insurer_3 else "산출불가",
+                    "insure_3_memo": "최저" if insurance_data.get(VehicleInsurerChoices.KB.value, {}).get('is_cheapest',
+                                                                                                        False) is True else None,
+                    "insure_4": "한화손해보험 다이렉트",
+                    "insure_4_premium": insurer_4.get('expect_cost_string') if insurer_4 else "산출불가",
+                    "insure_4_memo": "최저" if insurance_data.get(VehicleInsurerChoices.HANHWA.value, {}).get(
+                        'is_cheapest', False) is True else None,
+                    "p_1": "의무",
+                    "p_2": self.get_li_display(),
+                    "p_3": "무한",
+                    "p_4": f"{self.get_self_injury_display()}",
+                    "p_5": self.get_uninsured_display(),
+                    "p_6": self.get_self_damage_display(),
+                    "p_7": self.get_emergency_display(),
+                    "p_8": self.get_blackbox_display(),
+                }
+                with io.BytesIO() as bytes_io:
+                    pil_image = generate_estimate_image(data)
+                    pil_image.save(fp=bytes_io, format='PNG')
+                    content = ContentFile(bytes_io.getvalue(), 'estimagte.png')
+                self.estimate_image = content
+                self.save()
+            return messages
         else:
-            # 중고차
-            if all([self.car_no is None, self.vin is None]):
-                messages.append('차량번호와 차대번호 중 하나')
-        if self.car_name_fixed is None:
-            messages.append('차량모델')
-        if self.start_at is None:
-            messages.append('개시일자')
-        est_count = 0
-        for i in range(1, 13):
-            estimate_insurer = getattr(self, f"estimate_insurer_{i}")
-            estimate_premium = getattr(self, f"estimate_premium_{i}")
-            est = all([estimate_insurer is not None, estimate_premium is not None])
-            if est:
-                est_count += 1
-        if est_count == 0:
-            messages.append('보험사와 보험료')
-        return messages
+            return messages
 
 
 class ChannelChoices(models.TextChoices):
@@ -345,6 +429,12 @@ class ManufacturerChoices(models.TextChoices):
     F54 = 'f54', '에스턴마틴'
 
 
+def compare_detail_upload_to(instance, filename):
+    extension = filename.split(".")[-1]
+    filename = f"{str(uuid.uuid4())}.{extension}"
+    return os.path.join(timezone.localdate().strftime("%Y/%m/%d"), filename)
+
+
 class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     class Meta:
         verbose_name = '02. 내 견적'
@@ -368,6 +458,9 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     )
     reject_reason = models.TextField(null=True, blank=True, verbose_name='견적산출 실패사유')
     customer_name = models.CharField(max_length=100, null=False, blank=False, verbose_name='고객명')
+    career = models.CharField(
+        max_length=30, null=True, blank=True, verbose_name='통신사', choices=PhoneCompanyChoice.choices
+    )
     customer_cellphone = models.CharField(max_length=100, null=False, blank=False, verbose_name='고객 연락처')
     customer_type = models.IntegerField(
         choices=CustomerTypeChoices.choices, null=False, blank=False, default=CustomerTypeChoices.PERSONAL,
@@ -378,7 +471,8 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     car_price = models.IntegerField(null=True, blank=True, verbose_name='차량가액')
     channel = models.CharField(choices=ChannelChoices.choices, null=False, blank=False, default=ChannelChoices.DIRECT,
                                max_length=10, verbose_name='채널')
-    manufacturer = models.CharField(max_length=5, null=True, blank=True, choices=ManufacturerChoices.choices, verbose_name='제조사')
+    manufacturer = models.CharField(max_length=5, null=True, blank=True, choices=ManufacturerChoices.choices,
+                                    verbose_name='제조사')
     car_name = models.CharField(max_length=300, null=False, blank=False, verbose_name='차량모델')
     car_type = models.IntegerField(
         choices=CarTypeChoices.choices, null=False, blank=False, default=CarTypeChoices.NEW,
@@ -411,6 +505,10 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     payed_at = models.DateTimeField(null=True, blank=True, verbose_name='수수료 지급일')
     bank = models.CharField(max_length=300, null=True, blank=True, verbose_name='은행')
     bank_account_no = models.CharField(max_length=300, null=True, blank=True, verbose_name='계좌번호')
+    estimate_image = models.ImageField(
+        null=True, blank=True, storage=ProtectedFileStorageRemote(), upload_to=compare_detail_upload_to,
+        verbose_name='견적서 이미지'
+    )
 
     def request_pay(self):
         if self.status != CompareStatus.CONTRACT_SUCCESS:
@@ -566,6 +664,7 @@ class ComparePending(Compare):
         verbose_name = '01. 견적요청 대기'
         verbose_name_plural = verbose_name
         proxy = True
+
 
 class CompareAll(Compare):
     class Meta:

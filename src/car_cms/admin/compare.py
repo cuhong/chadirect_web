@@ -82,7 +82,7 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
                 }),
                 ('견적요청', {
                     'fields': (
-                        'account', 'manager', 'status', 'channel', 'customer_name', 'customer_cellphone',
+                        'account', 'manager', 'status', 'channel', 'customer_name', 'career', 'customer_cellphone',
                         'customer_type',
                         'customer_identification', 'ssn', 'car_name', 'car_type', 'car_identification', 'car_price',
                         'attach_1', 'attach_2', 'attach_3', 'driver_range', 'memo'
@@ -93,7 +93,7 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
             fieldsets = (
                 ('견적요청', {
                     'fields': (
-                        'account', 'customer_name', 'channel', 'customer_cellphone', 'customer_type',
+                        'account', 'customer_name', 'channel', 'career', 'customer_cellphone', 'customer_type',
                         'customer_identification', 'ssn', 'car_name', 'car_type', 'car_identification',
                         'attach_1', 'attach_2', 'attach_3', 'driver_range', 'memo'
                     )
@@ -105,7 +105,7 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
         if obj:
             rf = [
                 'id', 'registered_at', 'updated_at', 'serial', 'account', 'manager', 'status', 'channel',
-                'customer_name',
+                'customer_name', 'career',
                 'customer_cellphone', 'customer_type', 'customer_identification', 'ssn', 'car_name', 'car_type',
                 'car_identification', 'attach_1', 'attach_2', 'attach_3', 'driver_range', 'memo'
                                                                                           'request_msg', 'deny_msg',
@@ -166,7 +166,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj:
             rf = [
-                'id', 'registered_at', 'updated_at', 'serial', 'account', 'manager', 'status', 'customer_name',
+                'id', 'registered_at', 'updated_at', 'serial', 'account', 'manager', 'status', 'customer_name', 'career',
                 'customer_cellphone', 'customer_type', 'customer_identification', 'ssn', 'car_name', 'car_type',
                 'car_identification', 'attach_1', 'attach_2', 'attach_3', 'driver_range', 'memo',
                 'request_msg', 'deny_msg', 'contract_fail_msg'
@@ -207,7 +207,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
                 }),
                 ('견적요청', {
                     'fields': (
-                        'account', 'manager', 'status', 'customer_name', 'customer_cellphone', 'customer_type',
+                        'account', 'manager', 'status', 'customer_name', 'career', 'customer_cellphone', 'customer_type',
                         'customer_identification', 'car_price', 'ssn', 'car_name', 'car_type', 'car_identification',
                         'attach_1', 'attach_2', 'attach_3', 'driver_range', 'memo'
                     )

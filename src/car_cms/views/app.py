@@ -24,7 +24,6 @@ from car_cms.models import Notice, Compare, CompareStatus
 
 
 
-
 class AppTypeCheck():
     @property
     def app_type(self):
@@ -275,6 +274,7 @@ class CompareForm(forms.Form):
     customer_type = forms.IntegerField(required=True)
     customer_name = forms.CharField(required=True)
     customer_identification = forms.CharField(required=True)
+    career = forms.CharField(required=True)
     customer_cellphone = forms.CharField(required=False)
     channel = forms.CharField(required=False)
     # channelCheck = forms.CharField(required=False)
@@ -293,13 +293,9 @@ class CompareForm(forms.Form):
 
 
 class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, View):
-    def get(self, request):
-        contractor_type = request.GET.get('type', '')
-        car_type = request.GET.get('carType', '')
-        context = dict(
-            form=CompareForm(),
-            type=self.app_type
-        )
+    def get_template(self):
+        contractor_type = self.request.GET.get('type', '')
+        car_type = self.request.GET.get('carType', '')
         if contractor_type == '0' and car_type == '0':
             template_name = 'car_cms/compare_create_newcar_personal.html'
         elif contractor_type == '1' and car_type == '0':
@@ -310,6 +306,14 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
             template_name = 'car_cms/compare_create_usedcar_biz.html'
         else:
             template_name = 'car_cms/compare_type.html'
+        return template_name
+
+    def get(self, request):
+        context = dict(
+            form=CompareForm(),
+            type=self.app_type
+        )
+        template_name = self.get_template()
         return render(request, template_name=template_name, context=context)
 
     def post(self, request):
@@ -324,6 +328,7 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
             compare = Compare.objects.create(
                 account=request.user,
                 customer_name=data['customer_name'],
+                career=data.get('career'),
                 customer_cellphone=data.get('customer_cellphone'),
                 customer_type=data['customer_type'],
                 customer_identification=data['customer_identification'],
@@ -354,7 +359,7 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 compare_url = reverse('car_cms_fc_app:compare_detail', args=[compare.id])
             return HttpResponseRedirect(compare_url)
         else:
-            template_name = 'car_cms/compare_create.html'
+            template_name = self.get_template()
             context = dict(form=form, type=self.app_type)
             return render(request, template_name=template_name, context=context)
 

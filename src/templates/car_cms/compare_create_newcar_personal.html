@@ -48,15 +48,34 @@
                            value="{{ form.customer_identification.value|default_if_none:'' }}">
                     <div class="invalid-feedback">주민번호 값을 확인하세요.</div>
                 </div>
-                <div class="form-group">
-                    <label>휴대전화</label>
-                    <input autofocus placeholder="휴대전화(- 제외)" class="form-control-cc form-control-lg is-valid"
-                           type="text"
-                           id="id_customer_cellphone"
-                           pattern="[0-9]*"
-                           inputmode="numeric"
-                           name="customer_cellphone" value="{{ form.customer_cellphone.value|default_if_none:'' }}">
-                    <div class="invalid-feedback">휴대전화 번호 형식이 올바르지 않습니다.</div>
+                <div class="form-row">
+                    <div class="col-4">
+
+                        <div class="form-group">
+                            <label for="id_career">통신사</label>
+                            <select class="form-control-cc form-control-lg" id="id_career" name="career">
+                                <option value="01">SKT</option>
+                                <option value="02">KT</option>
+                                <option value="03">LGU+</option>
+                                <option value="04">SKT(알뜰)</option>
+                                <option value="05">KT(알뜰)</option>
+                                <option value="06">LGU+(알뜰)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-8">
+                        <div class="form-group">
+                            <label>휴대전화 <span class="color-danger">*</span></label>
+                            <input autofocus placeholder="휴대전화(- 제외)" class="form-control-cc form-control-lg is-valid"
+                                   type="text"
+                                   id="id_customer_cellphone"
+                                   pattern="[0-9]*"
+                                   inputmode="numeric"
+                                   name="customer_cellphone"
+                                   value="{{ form.customer_cellphone.value|default_if_none:'' }}">
+                            <div class="invalid-feedback">휴대전화 번호 형식이 올바르지 않습니다.</div>
+                        </div>
+                    </div>
                 </div>
                 <input id="id_car_type" name="car_type" value="0" hidden placeholder="차량유형">
                 <div class="form-group mb-1">
@@ -168,6 +187,7 @@
         const car_type = document.getElementById('id_car_type')
         const car_identification = document.getElementById('id_car_identification')
         const car_price = document.getElementById('id_car_price')
+        const customer_cellphone = document.getElementById('id_customer_cellphone')
 
         car_price.addEventListener('keyup', function () {
             //car_price.value = comma(car_price.value)
@@ -220,6 +240,10 @@
             }
             if (car_name.value === '') {
                 alert('차량모델을 입력하세요.')
+                return false
+            }
+            if (customer_cellphone.value === '') {
+                alert('휴대전화번호는 필수 항목입니다.')
                 return false
             }
             if (min_age.value === '') {
