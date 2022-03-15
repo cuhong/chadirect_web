@@ -36,14 +36,14 @@
             {% render_inline_action_fields %}
             <div class="form-group">
             <label for="id_user">배정할 담당자</label>
-            <input class="form-control form-control-lg" id="id_user" name="user" list="user-list">
-{#                <select class="form-control form-control-lg" id="id_user" name="user" autocomplete="on">#}
-                    <datalist id="user-list">
+{#            <input class="form-control form-control-lg" id="id_user" name="user" list="user-list">#}
+                <select class="form-control form-control-lg" id="id_user" name="user" autocomplete="on">
+{#                    <datalist id="user-list">#}
                         {% for chatuser in chatuser_queryset %}
                         <option value="{{ chatuser.id }}">{{ chatuser.name }}({{ chatuser.email }})</option>
                     {% endfor %}
-                    </datalist>
-{#                </select>#}
+{#                    </datalist>#}
+                </select>
             </div>
             <input type="submit" class="btn btn-primary btn-block" name="_save" value="배정"/>
             <input type="submit" class="btn btn-warning btn-block" name="_back" value="취소"/>
