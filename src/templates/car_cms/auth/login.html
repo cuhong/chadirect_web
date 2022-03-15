@@ -97,13 +97,14 @@
         }
 
         function requestChangePassword() {
-            if (emailInput.value === '') {
+            const emailValue = emailInput.value.trim()
+            if (emailValue === '') {
                 alert('이메일을 입력해주세요')
                 return
             } else {
                 $.ajax({
                     type: "POST",
-                    data: {'email': emailInput.value, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                    data: {'email': emailValue, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
                     url: passwordChangeUrl,
                     dataType: "json",
                     success: function (response) {
