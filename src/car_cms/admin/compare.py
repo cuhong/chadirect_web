@@ -16,6 +16,7 @@ class CompareAllAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     ]
     list_filter = ['manager', 'insurer', 'status']
     search_fields = ['serial__icontains', 'customer_name__icontains', 'customer_cellphone__icontains']
+    autocomplete_fields = ['manager']
     #
     # def get_inline_actions(self, request, obj=None):
     #     actions = super(CompareAllAdmin, self).get_inline_actions(request, obj)
