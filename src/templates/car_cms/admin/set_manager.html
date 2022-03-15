@@ -36,7 +36,7 @@
             {% render_inline_action_fields %}
             <div class="form-group">
             <label for="id_user">배정할 담당자</label>
-                <select class="form-control form-control-lg" id="id_user" name="user">
+                <select class="form-control form-control-lg" id="id_user" name="user" autocomplete="on">
                     {% for chatuser in chatuser_queryset %}
                         <option value="{{ chatuser.id }}">{{ chatuser.name }}({{ chatuser.email }})</option>
                     {% endfor %}
