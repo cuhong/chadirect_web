@@ -141,7 +141,7 @@ def generate_estimate_image(data):
     for text_position in text_position_list:
         placeholder_position = text_position.get('placeholder_position')
         attr_name = text_position.get('attr_name')
-        text_value = str(data.get(attr_name))
+        text_value = "" if data.get(attr_name) is None else str(data.get(attr_name))
         # font = data.get('font')
         font = kor_font
         if text_value is None:
