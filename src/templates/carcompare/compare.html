@@ -364,7 +364,7 @@
 
     <script>
         $('#start_date').attr('min', '{{ min_start_date|date:"Y-m-d" }}')
-        $('#start_date').attr('max', '{{ max_start_date|date:"Y-m-d" }}')
+        //$('#start_date').attr('max', '{{ max_start_date|date:"Y-m-d" }}')
         const manager = document.getElementById('manager')
         const customerBirthdateString = '{{ compare.birthdate|date:"Y-m-d" }}'
         const compareId = document.getElementById('compareId').value
