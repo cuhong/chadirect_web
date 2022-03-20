@@ -286,7 +286,7 @@ class EstimateMixin(models.Model):
                 for i in range(1, 13):
                     estimate_insurer = getattr(self, f"estimate_insurer_{i}")
                     estimate_premium = getattr(self, f"estimate_premium_{i}")
-                    estimate_memo = getattr(self, f"estimate_memo{i}")
+                    estimate_memo = getattr(self, f"estimate_memo_{i}")
                     if estimate_insurer in [
                         VehicleInsurerChoices.HYUNDAI, VehicleInsurerChoices.KB, VehicleInsurerChoices.DB,
                         VehicleInsurerChoices.HANHWA
