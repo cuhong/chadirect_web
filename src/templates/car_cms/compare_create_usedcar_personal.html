@@ -103,11 +103,12 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>최저운전자 생년월일 <span class="color-danger">*</span></label>
+                    <label>최저운전자 생년월일</label>
                     <input autofocus placeholder="19860906 형태" class="form-control-cc form-control-lg is-valid"
                            type="text"
-                           id="id_min_age"
-                           name="min_age" value="{{ form.min_age.value|default_if_none:'' }}">
+                           oninput="birthdateOnInput(this)"
+                           id="id_min_age_birthdate"
+                           name="min_age_birthdate" value="{{ form.min_age_birthdate.value|default_if_none:'' }}">
                 </div>
                 <div class="form-group">
                     <label>메모</label>
@@ -153,7 +154,6 @@
         const attach_1 = document.getElementById('id_attach_1')
         const attach_2 = document.getElementById('id_attach_2')
         const attach_3 = document.getElementById('id_attach_3')
-        const min_age = document.getElementById('id_min_age')
         const attach1PreviewWrapper = document.getElementById('attach_1')
         const attach2PreviewWrapper = document.getElementById('attach_2')
         const attach3PreviewWrapper = document.getElementById('attach_3')
@@ -162,6 +162,11 @@
         const car_type = document.getElementById('id_car_type')
         const car_identification = document.getElementById('id_car_identification')
         const customer_cellphone = document.getElementById('id_customer_cellphone')
+        const min_age_birthdate = document.getElementById('id_min_age_birthdate')
+
+        const birthdateOnInput = (elem) => {
+            elem.value = onlyDigit(elem.value)
+        }
 
         function showImageInput(id) {
             var inputElem = document.getElementById(`id_${id}`)
@@ -208,9 +213,11 @@
                 alert('주민번호를 입력하세요.')
                 return false
             }
-            if (min_age.value === '') {
-                alert('최저연령 운전자 생년월일을 입력해주세요.')
+            if (min_age_birthdate.value !== '') {
+                if (isValideDateString(min_age_birthdate.value) !== true) {
+                alert('최저연령 운전자 생년월일 형식이 올바르지 않습니다. yyyymmdd 형태 8자리로 입력해주세요.')
                 return false
+                }
             }
             if (car_type.value === "1") {
                 // 중고차

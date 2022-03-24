@@ -993,6 +993,7 @@
 <script src="{% static 'vendor/jquery/jquery-3.6.0.min.js' %}"></script>
 <script src="{% static 'vendor/popper/popper.min.js' %}"></script>
 <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'vendor/momentJs/moment.min.js' %}"></script>
 <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
 <script>
 
@@ -1161,6 +1162,25 @@
         return str.replace(/[^\d]+/g, '');
     }
 
+    const onlyDigit = (value) => {
+        return value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+    }
+
+    const isValideDateString = (dateString) => {
+        var dateStringValue = onlyDigit(dateString)
+        let date = moment(`${dateStringValue.slice(0, 4)}-${dateStringValue.slice(4, 6)}-${dateStringValue.slice(6, 8)}`)
+        return date.isValid()
+    }
+
+    const stringToDate = (dateString) => {
+        var dateStringValue = onlyDigit(dateString)
+        let date = moment(`${dateStringValue.slice(0, 4)}-${dateStringValue.slice(4, 6)}-${dateStringValue.slice(6, 8)}`)
+        if (date.isValid() === true) {
+            return date
+        } else {
+            return null
+        }
+    }
 </script>
 {% block extrascript %}
 {% endblock %}

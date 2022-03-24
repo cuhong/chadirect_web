@@ -124,6 +124,9 @@ class EstimateMixin(models.Model):
         verbose_name='운전자 한정'
     )
     min_age = models.IntegerField(
+        null=True, blank=True, verbose_name='최저운전자 나이', help_text='값이 없을 경우 미지정'
+    )
+    min_age_birthdate = models.DateField(
         null=True, blank=True, verbose_name='최저운전자 생년월일', help_text='값이 없을 경우 미지정'
     )
     bi_2 = models.IntegerField(

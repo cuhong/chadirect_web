@@ -148,8 +148,9 @@
                     <label>최저운전자 생년월일</label>
                     <input autofocus placeholder="19860906 형태" class="form-control-cc form-control-lg is-valid"
                            type="text"
-                           id="id_min_age"
-                           name="min_age" value="{{ form.min_age.value|default_if_none:'' }}">
+                           oninput="birthdateOnInput(this)"
+                           id="id_min_age_birthdate"
+                           name="min_age_birthdate" value="{{ form.min_age_birthdate.value|default_if_none:'' }}">
                 </div>
                 <div class="form-group">
                     <label>차량/차대번호</label>
@@ -217,6 +218,11 @@
         const ssn = document.getElementById('id_ssn')
         const bizType = document.getElementById('bizType')
         const driver_range = document.getElementById('id_driver_range')
+        const min_age_birthdate = document.getElementById('id_min_age_birthdate')
+
+        const birthdateOnInput = (elem) => {
+            elem.value = onlyDigit(elem.value)
+        }
 
         function showImageInput(id) {
             var inputElem = document.getElementById(`id_${id}`)
@@ -282,6 +288,12 @@
             if (manufacturerInput.value === '') {
                 alert('제조사를 선택하세요.')
                 return false
+            }
+            if (min_age_birthdate.value !== '') {
+                if (isValideDateString(min_age_birthdate.value) !== true) {
+                alert('최저연령 운전자 생년월일 형식이 올바르지 않습니다. yyyymmdd 형태 8자리로 입력해주세요.')
+                return false
+                }
             }
             if (car_name.value === '') {
                 alert('차량모델을 입력하세요.')

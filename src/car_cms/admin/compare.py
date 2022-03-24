@@ -85,7 +85,7 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
                     'fields': (
                         'account', 'manager', 'status', 'channel', 'customer_name', 'career', 'customer_cellphone',
                         'customer_type',
-                        'customer_identification', 'ssn', 'car_name', 'car_type', 'car_identification', 'car_price',
+                        'customer_identification', 'ssn', 'min_age', 'min_age_birthdate', 'car_name', 'car_type', 'car_identification', 'car_price',
                         'attach_1', 'attach_2', 'attach_3', 'driver_range', 'memo'
                     )
                 }),
@@ -176,7 +176,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
             if obj.status != 1:
                 estimate = [
                     'insured_name', 'birthdate', 'car_no', 'vin', 'car_name_fixed',
-                    'start_at', 'driver_range_fixed', 'min_age',
+                    'start_at', 'driver_range_fixed', 'min_age', 'min_age_birthdate',
                     'bi_2', 'self_injury', 'uninsured', 'li', 'self_damage', 'emergency', 'blackbox',
                     'estimate_insurer_1', 'estimate_premium_1', 'estimate_memo_1',
                     'estimate_insurer_2', 'estimate_premium_2', 'estimate_memo_2',
@@ -218,7 +218,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
                     'fields': (
                         'estimate_image',
                         ('insured_name', 'birthdate'), ('car_no', 'vin', 'car_name_fixed'),
-                        ('start_at', 'driver_range_fixed', 'min_age'),
+                        ('start_at', 'driver_range_fixed', 'min_age', 'min_age_birthdate',),
                         ('bi_2', 'self_injury', 'uninsured'), ('li', 'self_damage'), ('emergency', 'blackbox'),
                         ('estimate_insurer_1', 'estimate_premium_1', 'estimate_memo_1'),
                         ('estimate_insurer_2', 'estimate_premium_2', 'estimate_memo_2'),

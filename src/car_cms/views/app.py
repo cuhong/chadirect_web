@@ -21,7 +21,7 @@ from sentry_sdk import capture_exception
 
 from car_cms.exceptions.compare import CarCMSCompareError
 from car_cms.models import Notice, Compare, CompareStatus
-
+from commons.utils.age import lunar_age
 
 
 class AppTypeCheck():
@@ -284,7 +284,8 @@ class CompareForm(forms.Form):
     car_price = forms.IntegerField(required=False)
     car_identification = forms.CharField(required=False)
     ssn = forms.CharField(required=False)
-    min_age = forms.IntegerField(required=False)
+    # min_age = forms.IntegerField(required=False)
+    min_age_birthdate = forms.DateField(required=False, input_formats=["%Y%m%d", "%Y-%m-%d"])
     driver_range = forms.IntegerField(required=True)
     memo = forms.CharField(required=False)
     attach_1 = forms.ImageField(required=False)
@@ -325,6 +326,9 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 birthdate = datetime.datetime.strptime(birthdate_string[:6], '%y%m%d').date()
             except:
                 birthdate = None
+            min_age_birthdate = data.get('min_age_birthdate', None)
+            min_age = None if min_age_birthdate is None else lunar_age(min_age_birthdate)
+            print(form.cleaned_data)
             compare = Compare.objects.create(
                 account=request.user,
                 customer_name=data['customer_name'],
@@ -343,7 +347,8 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 attach_1=data['attach_1'],
                 attach_2=data['attach_2'],
                 attach_3=data['attach_3'],
-                min_age=data.get('min_age', None),
+                min_age=min_age,
+                min_age_birthdate=min_age_birthdate,
                 driver_range=data['driver_range'],
                 memo=data['memo'],
                 insured_name=data['customer_name'],
