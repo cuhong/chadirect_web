@@ -328,7 +328,7 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 birthdate = None
             min_age_birthdate = data.get('min_age_birthdate', None)
             min_age = None if min_age_birthdate is None else lunar_age(min_age_birthdate)
-            print(form.cleaned_data)
+            # print(form.cleaned_data)
             compare = Compare.objects.create(
                 account=request.user,
                 customer_name=data['customer_name'],
