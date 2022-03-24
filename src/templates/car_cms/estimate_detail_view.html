@@ -52,8 +52,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
     <script src="https://unpkg.com/pinch-zoom-js"></script>
     <script>
-        const estimateImage = document.getElementById('estimateImage')
-        let pz = new PinchZoom(estimateImage);
+        const estimateImage = document.getElementById('estimateImage');
 
         (function (root, factory) {
             if (typeof define === 'function' && define.amd) {
@@ -224,7 +223,7 @@
 
         const autoRefresh = true
 
-        function capture() {
+        function capture2() {
             $.ajax({
                 type: "POST",
                 data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
@@ -245,6 +244,36 @@
 
                     //const metadata = { type: `image/${ext}` };
                     //return new File([data], filename, metadata);
+                },
+                error: function (request, status, error) {
+                    alert('다운로드 실패')
+                },
+            });
+        }
+
+        function capture() {
+            $.ajax({
+                type: "POST",
+                data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                dataType: "json",
+                success: async function (response) {
+                    const url = response.url
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', url, true);
+                    xhr.responseType = 'blob';
+                    xhr.onload = function (e) {
+                        if (this.status === 200) {
+                            var myBlob = this.response;
+                            var link = document.createElement('a');
+                            link.href = window.URL.createObjectURL(myBlob);
+                            link.download = "yourname.pdf";
+                            link.click();
+                        } else {
+                            alert('다운로드 실패')
+                            )
+                        }
+                    };
+                    xhr.send();
                 },
                 error: function (request, status, error) {
                     alert('다운로드 실패')
