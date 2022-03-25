@@ -259,7 +259,7 @@
                 success: function (response) {
                     const url = response.url
                     var xhr = new XMLHttpRequest();
-                    xhr.open('GET', url, false);
+                    xhr.open('GET', url, true);
                     xhr.responseType = 'blob';
                     xhr.onload = function (e) {
                         if (this.status === 200) {
