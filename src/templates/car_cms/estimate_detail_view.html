@@ -220,7 +220,7 @@
     <script>
         const captureBtn = document.getElementById('captureBtn')
         const compareDetailBtn = document.getElementById('compareDetailBtn')
-
+        const customerName = "{{ compare.customer_name }}"
         const autoRefresh = true
 
         function capture2() {
@@ -256,21 +256,20 @@
                 type: "POST",
                 data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
                 dataType: "json",
-                success: async function (response) {
+                success: function (response) {
                     const url = response.url
                     var xhr = new XMLHttpRequest();
-                    xhr.open('GET', url, true);
+                    xhr.open('GET', url, false);
                     xhr.responseType = 'blob';
                     xhr.onload = function (e) {
                         if (this.status === 200) {
                             var myBlob = this.response;
                             var link = document.createElement('a');
                             link.href = window.URL.createObjectURL(myBlob);
-                            link.download = "yourname.pdf";
+                            link.download = `${customerName}.png`;
                             link.click();
                         } else {
                             alert('다운로드 실패')
-
                         }
                     };
                     xhr.send();
