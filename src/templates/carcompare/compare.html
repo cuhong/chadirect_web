@@ -412,6 +412,10 @@
                 tempDate.setDate(tempDate.getDate() + 1)
                 //start_date.value = tempDate.toISOString().slice(0, 10)
                 dateSelectCallback()
+            } else if (start_date.value.trim() === '') {
+                alert('보험 개시일을 입력하세요')
+            } else {
+                var tempDate = new Date(expireDate)
             }
             carno.value = car_no
             const data = {
