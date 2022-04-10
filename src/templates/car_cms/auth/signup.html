@@ -67,31 +67,47 @@
                        name="password2">
                 <div class="invalid-feedback">비밀번호가 일치하지 않습니다.</div>
             </div>
-{#            <div class="form-group">#}
-{#                <label>추천인 코드</label>#}
-{#                <input placeholder="추천인 코드" class="form-control-cc form-control-lg is-valid" type="text"#}
-{#                       id="id_referer_code"#}
-{#                       name="referer_code">#}
-{#            </div>#}
+            <div class="form-group dropdown">
+                <label>소속 <span class="cc-login-asterisk">*</span></label>
+                <input placeholder="소속" class="form-control-cc form-control-lg is-valid"
+                       type="text"
+                       id="id_organization"
+                       name="organization" autocomplete="off" data-toggle="dropdown">
+                <div id="orgDropdown" class="dropdown-menu w-100">
+                    {% for organization in organization_list %}
+                        <div class="dropdown-item mb-2" data-value="{{ organization }}" hidden onclick="setOrg(this)">{{ organization }}</div>
+                    {% endfor %}
+                        <div class="dropdown-item addOrg" data-value="" onclick="setOrg(this)"></div>
+                </div>
+                <div class="invalid-feedback">소속 조직을 입력하세요.</div>
+            </div>
+            {#            <div class="form-group">#}
+            {#                <label>추천인 코드</label>#}
+            {#                <input placeholder="추천인 코드" class="form-control-cc form-control-lg is-valid" type="text"#}
+            {#                       id="id_referer_code"#}
+            {#                       name="referer_code">#}
+            {#            </div>#}
             <label>명함 <span class="cc-login-asterisk">*</span></label>
             <input id="id_namecard" class="form-control is-valid" name="namecard" type="file" accept="image/*" hidden>
             <div class="invalid-feedback">명함을 등록해주세요.</div>
             <div id="nameCardWrapper" class="nameCardWrapper d-flex justify-content-center align-items-center"
                  onclick="namecardInput.click()">
                 {% if type == "dealer" %}
-                <div>딜러 인증을 위해<br>명함 사진을 올려주세요.</div>
+                    <div>딜러 인증을 위해<br>명함 사진을 올려주세요.</div>
                 {% elif type == "fc" %}
-                <div>설계사 인증을 위해<br>명함 사진을 올려주세요.</div>
+                    <div>설계사 인증을 위해<br>명함 사진을 올려주세요.</div>
                 {% endif %}
             </div>
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="policyCheck">
-            <label class="form-check-label" for="" onclick="showServicePolicyModal()" style="cursor: pointer;">이용약관 동의</label>
-        </div>
-        <div class="form-check mb-3">
-            <input type="checkbox" class="form-check-input" id="privacyPolicyCheck">
-            <label class="form-check-label" for="" onclick="showPrivacyPolicyModal()" style="cursor: pointer">개인정보처리방침 동의</label>
-        </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="policyCheck">
+                <label class="form-check-label" for="" onclick="showServicePolicyModal()" style="cursor: pointer;">이용약관
+                    동의</label>
+            </div>
+            <div class="form-check mb-3">
+                <input type="checkbox" class="form-check-input" id="privacyPolicyCheck">
+                <label class="form-check-label" for="" onclick="showPrivacyPolicyModal()" style="cursor: pointer">개인정보처리방침
+                    동의</label>
+            </div>
         </form>
         <button class="btn btn-cc-primary btn-block mb-3" onclick="register()">회원가입</button>
         <button type="button" class="btn btn-cc-primary-outline btn-block" onclick="index()">취소</button>
@@ -129,11 +145,14 @@
         const usernameInput = document.getElementById('id_username')
         const passwordInput = document.getElementById('id_password')
         const password2Input = document.getElementById('id_password2')
+        const organizationInput = document.getElementById('id_organization')
         const namecardInput = document.getElementById('id_namecard')
         const refererCodeInput = document.getElementById('id_referer_code')
         const nameCardWrapper = document.getElementById('nameCardWrapper')
         const privacyPolicyCheck = document.getElementById('privacyPolicyCheck')
         const policyCheck = document.getElementById('policyCheck')
+        const orgDropdown = document.getElementById('orgDropdown')
+        const autoRefresh = false
 
         function validateName() {
             var target = nameInput
@@ -154,6 +173,23 @@
 
         function validatePassword() {
             var target = passwordInput
+            if (target.value === '') {
+                if (target.classList.contains('is-valid')) {
+                    target.classList.remove('is-valid')
+                }
+                target.classList.add('is-invalid')
+                return false
+            } else {
+                if (target.classList.contains('is-invalid')) {
+                    target.classList.remove('is-invalid')
+                }
+                target.classList.add('is-valid')
+                return true
+            }
+        }
+
+        function validateOrganization() {
+            var target = organizationInput
             if (target.value === '') {
                 if (target.classList.contains('is-valid')) {
                     target.classList.remove('is-valid')
@@ -258,6 +294,9 @@
             if (validateNamecard() === false) {
                 tempValid = false
             }
+            if (validateOrganization() === false) {
+                tempValid = false
+            }
             isValid = tempValid
             return isValid
         }
@@ -305,9 +344,54 @@
             nameCardWrapper.style.backgroundImage = `url('${imageUrl}')`
             nameCardWrapper.innerHTML = ''
         }, false)
+
+
+        const temp = () => {
+            const targetDropdown = document.getElementsByClassName('dropdown-menu w-100')[0]
+            console.log(event.target.parentElement)
+            const targetDropdownBtn = document.getElementById('orgCustom')
+            if (targetDropdownBtn === null) {
+                console.log('1')
+                const html = `<button type="button" class="dropdown-item" data-value="${event.target.value}" id="orgCustom">+ <span class="text-danger">${event.target.value}</span> 추가</button>`
+                targetDropdown.insertAdjacentHTML('beforeend', html)
+            } else {
+                console.log('2')
+                targetDropdownBtn.dataset.value = event.target.value
+                targetDropdownBtn.innerHTML = `+ <span class="text-danger">${event.target.value}</span> 추가`
+            }
+        }
+
+        const setOrg = (elem) => {
+            organizationInput.value = elem.dataset.value
+        }
+        organizationInput.addEventListener('keyup', (event) => {
+            var children
+            var childrenValue
+            var position
+            if (event.target.value === '') {
+                $('#orgDropdown').dropdown('hide')
+            } else {
+                $('#orgDropdown').dropdown('show')
+                for(i=0;i<orgDropdown.children.length;i++) {
+                    children = orgDropdown.children[i]
+                    childrenValue = children.dataset.value
+                    position = childrenValue.indexOf(event.target.value)
+                    if (children.classList.contains('addOrg')) {
+                        children.innerHTML = `+ <span class="text-primary font-weight-bold">${event.target.value}</span> 추가`
+                        children.dataset.value = event.target.value
+                    } else if (position < 0) {
+                        // 일치하는거 없음
+                        children.innerText = childrenValue
+                        children.hidden = true
+                    } else {
+                        children.innerHTML = `${childrenValue.slice(0, position)}<span class="text-danger font-weight-bold">${childrenValue.slice(position, position + event.target.value.length)}</span>${childrenValue.slice(position + event.target.value.length, childrenValue.length)}`
+                        children.hidden = false
+                    }
+                }
+            }
+        })
         document.addEventListener('DOMContentLoaded', function (event) {
-
-
+            //$('#orgDropdown').dropdown('toggle')
             {% if form.errors %}
                 $("#registerFailModal").modal('show')
             {% endif %}

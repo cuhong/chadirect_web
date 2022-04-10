@@ -13,6 +13,7 @@ from django.db import models
 from django.utils import timezone
 from sequences import get_next_value
 
+from account.models import Organization
 from carcompare.utils.estimate import generate_estimate_image
 from commons.models import UUIDPkMixin, DateTimeMixin, VehicleInsurerChoices
 from itechs.storages import ProtectedFileStorageRemote, ProtectedFileStorageLocal
@@ -345,6 +346,7 @@ class CompareDetail(models.Model):
         verbose_name_plural = verbose_name
 
     manager = models.ForeignKey(User, null=True, blank=True, related_name='cd_user', on_delete=models.PROTECT, verbose_name='산출 담당자')
+    organization = models.ForeignKey(Organization, null=True, blank=True, related_name='cd_organization', on_delete=models.PROTECT, verbose_name='산출 GA')
     compare = models.ForeignKey(Compare, null=False, blank=False, verbose_name='비교', on_delete=models.PROTECT)
     start_date = models.DateField(null=True, blank=True, verbose_name='보험개시일')
     car_no = models.CharField(max_length=200, null=True, blank=True, verbose_name='차량번호')
@@ -472,8 +474,12 @@ class CompareDetail(models.Model):
             "p_7": self.treaty_ers,
             "p_8": "가입" if self.discount_bb == "YES" else "미가입",
         }
+        try:
+            backgroud_image_url = self.organization.estimate_background.url
+        except:
+            backgroud_image_url = None
         with io.BytesIO() as bytes_io:
-            pil_image = generate_estimate_image(data)
+            pil_image = generate_estimate_image(data, backgroud_image_url=backgroud_image_url)
             pil_image.save(fp=bytes_io, format='PNG')
             content = ContentFile(bytes_io.getvalue(), 'estimagte.png')
         self.image = content

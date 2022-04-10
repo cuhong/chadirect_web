@@ -19,6 +19,7 @@ from django.views import View
 from django import forms
 from django.views.decorators.csrf import csrf_exempt
 
+from account.models import Organization
 from carcompare.models import Compare, StatusChoice, CarNo, CompareDetail
 from carcompare.serializers import CompareDetailSerializer
 
@@ -139,6 +140,7 @@ class CompareView(AdminUserMixin, View):
         ).values(
             'name', 'cellphone', 'id', 'is_me'
         )
+        organization_list = Organization.objects.values('id', 'name').filter(is_searchable=True)
         name = compare.name
         now_date = timezone.localdate()
         min_start_date = now_date + relativedelta(days=1)
@@ -147,7 +149,8 @@ class CompareView(AdminUserMixin, View):
             "name": name, "compare_id": str(compare_id), "compare": compare,
             "min_start_date": min_start_date,
             "max_start_date": max_start_date,
-            "manager_list": manager_list
+            "manager_list": manager_list,
+            "organization_list": organization_list
         })
 
     def post(self, request, compare_id):
@@ -172,6 +175,7 @@ class CompareView(AdminUserMixin, View):
         ).date() if compare_data.get('driver_2_birthdate') not in ['', None] else None
         compare_detail = CompareDetail.objects.create(
             manager_id=compare_data.get('manager'),
+            organization_id=None if compare_data.get('organization') in [None, ""] else int(compare_data.get('organization')),
             compare=compare,
             car_no=compare_data.get('carno'),
             start_date=datetime.datetime.strptime(compare_data.get('start_date'), "%Y-%m-%d").date(),

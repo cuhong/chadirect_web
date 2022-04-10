@@ -13,7 +13,14 @@
 
 {% block body %}
     <div class="d-flex flex-column justify-content-center p-3 pb-5 mb-5">
-        <div class="header_title">안녕하세요,<br><span class="h3 font-weight-bolder">{{ cms_user.name }}</span>님<br>좋은 하루
+    {% if cms_user.organization %}
+        {% if cms_user.organization.small_logo %}
+            <img src="{{ cms_user.organization.small_logo.url }}" width="120px">
+            {% else %}
+            {{ cms_user.organization.name }}
+            {% endif %}
+    {% endif %}
+        <div class="header_title">안녕하세요,<br>{% if cms_user.organization %}{{ cms_user.organization.name }} {% endif %}<span class="h3 font-weight-bolder">{{ cms_user.name }}</span>님<br>좋은 하루
             보내세요
         </div>
         <div class="mb-5">

@@ -48,6 +48,15 @@
                         {% endfor %}
                     </select>
                 </div>
+
+                <div class="form-group">
+                    <label for="organization">소속 GA</label>
+                    <select id="organization" name="organization" class="form-control">
+                        {% for organization in organization_list %}
+                            <option value="{{ organization.id }}">{{ organization.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
@@ -366,6 +375,7 @@
         $('#start_date').attr('min', '{{ min_start_date|date:"Y-m-d" }}')
         //$('#start_date').attr('max', '{{ max_start_date|date:"Y-m-d" }}')
         const manager = document.getElementById('manager')
+        const organization = document.getElementById('organization')
         const customerBirthdateString = '{{ compare.birthdate|date:"Y-m-d" }}'
         const compareId = document.getElementById('compareId').value
         const carno = document.getElementById('carno')
@@ -515,6 +525,7 @@
             calculateBtn.disabled = true
             const data = {
                 manager: manager.value,
+                organization: organization.value,
                 carno: carno.value.trim(),
                 start_date: start_date.value,
                 manufacturer: manufacturer.value,

@@ -343,8 +343,12 @@ class EstimateMixin(models.Model):
                     "p_7": self.get_emergency_display(),
                     "p_8": self.get_blackbox_display(),
                 }
+                try:
+                    backgroud_image_url = self.account.organization.estimate_background.url
+                except:
+                    backgroud_image_url = None
                 with io.BytesIO() as bytes_io:
-                    pil_image = generate_estimate_image(data)
+                    pil_image = generate_estimate_image(data, backgroud_image_url=backgroud_image_url)
                     pil_image.save(fp=bytes_io, format='PNG')
                     content = ContentFile(bytes_io.getvalue(), 'estimagte.png')
                 self.estimate_image = content

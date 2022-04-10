@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ValidationError
 from django.db import transaction, models
-from django.db.models import Count, Sum, When, Case, Value
+from django.db.models import Count, Sum, When, Case, Value, Q
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.views.generic import TemplateView, ListView
@@ -145,7 +145,7 @@ class LogoutView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, Djang
         return url
 
 
-from account.models import User, FindPassword, FindPasswordError
+from account.models import User, FindPassword, FindPasswordError, Organization
 
 
 class SignupForm(forms.Form):
@@ -154,6 +154,7 @@ class SignupForm(forms.Form):
     username = forms.EmailField(required=True)
     password = forms.CharField(required=True)
     password2 = forms.CharField(required=True)
+    organization = forms.CharField(required=True)
     namecard = forms.ImageField(required=True)
     referer_code = forms.CharField(required=False)
 
@@ -176,8 +177,8 @@ class SignupForm(forms.Form):
 class SignupView(AppTypeCheck, View):
     def get(self, request):
         form = SignupForm()
-        context = dict(form=form, type=self.app_type)
-
+        organization_list = Organization.objects.values_list('name', flat=True).filter(is_searchable=True)
+        context = dict(form=form, type=self.app_type, organization_list=organization_list)
         return render(request, 'car_cms/auth/signup.html', context=context)
 
     def post(self, request):
@@ -196,7 +197,8 @@ class SignupView(AppTypeCheck, View):
                 user = User.objects.create_user(
                     data['username'], data['name'], password=data['password'],
                     cellphone=data['cellphone'], name_card=data['namecard'],
-                    referer_code=data['referer_code'], user_type=self.app_type
+                    referer_code=data['referer_code'], user_type=self.app_type,
+                    organization=data['organization']
                 )
         except Exception as e:
             context = dict(
@@ -214,6 +216,7 @@ class SignupView(AppTypeCheck, View):
                 return HttpResponseRedirect(reverse('car_cms_app:index'))
             else:
                 return HttpResponseRedirect(reverse('car_cms_fc_app:index'))
+
 
 
 class IndexView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, TemplateView):

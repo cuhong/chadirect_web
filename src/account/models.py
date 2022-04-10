@@ -19,21 +19,49 @@ from django.utils import timezone
 
 from car_cms.models.upload import name_card_upload_to
 from commons.models import DateTimeMixin, UUIDPkMixin
-from itechs.storages import ProtectedFileStorage
+from itechs.storages import ProtectedFileStorage, MediaStorage
 
+
+def temp_organization():
+    organization_list = [
+        "ABL생명",
+        "GA코리아주식회사",
+        "글로벌금융판매",
+        "메가",
+        "사랑모아금융서비스",
+        "신한금융플러스",
+        "에이플러스에셋어드바이저",
+        "엠금융서비스",
+        "유퍼스트보험마케팅",
+        "프라임에셋",
+        "한국보험금융",
+    ]
+
+    for organization in organization_list:
+        org, created = Organization.objects.get_or_create(
+            name=organization, defaults={"is_searchable": True}
+        )
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, name, cellphone=None, name_card=None, referer_code=None, user_type=None, password=None):
+    def create_user(
+            self, email, name, cellphone=None, name_card=None, referer_code=None, user_type=None, password=None,
+            organization=None
+    ):
         if not email:
             raise ValueError('Users must have an email address')
+        if organization is not None:
+            organization_instance, created = Organization.objects.get_or_create(
+                name=organization, defaults={"is_searchable": False}
+            )
+        else:
+            organization_instance = None
 
         user = self.model(
             email=self.normalize_email(email),
             name=name, cellphone=cellphone,
             name_card=name_card, referer_code=referer_code,
-            user_type=user_type
+            user_type=user_type, organization=organization_instance
         )
-
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -52,6 +80,38 @@ class UserManager(BaseUserManager):
         user.is_admin = True
         user.save(using=self._db)
         return user
+
+def small_logo_upload_to(instance, filename):
+    ext = filename.split(".")[-1]
+    file_path = f"file/car_cms/small_logo/{str(instance.id)}/{str(instance.id)}.{ext}"
+    return file_path
+
+def estimate_background_upload_to(instance, filename):
+    ext = filename.split(".")[-1]
+    file_path = f"file/car_cms/estimate_background/{str(instance.id)}/{str(instance.id)}.{ext}"
+    return file_path
+
+class Organization(models.Model):
+    class Meta:
+        verbose_name = '조직'
+        verbose_name_plural = verbose_name
+        ordering = ('name',)
+
+    name = models.CharField(
+        max_length=200, null=False, blank=False, unique=True, verbose_name='조직명'
+    )
+    small_logo = models.ImageField(
+        null=True, blank=True, verbose_name='로고', upload_to=small_logo_upload_to, storage=MediaStorage()
+    )
+    estimate_background = models.ImageField(
+        null=True, blank=True, verbose_name='견적서 배경', upload_to=estimate_background_upload_to, storage=MediaStorage()
+    )
+    is_searchable = models.BooleanField(
+        default=False, null=False, blank=False, verbose_name='검색 표시'
+    )
+
+    def __str__(self):
+        return self.name
 
 
 class User(PermissionsMixin, AbstractBaseUser):
@@ -72,6 +132,9 @@ class User(PermissionsMixin, AbstractBaseUser):
     name_card = models.ImageField(
         null=True, blank=True, upload_to=name_card_upload_to, storage=ProtectedFileStorage(),
         verbose_name='명함'
+    )
+    organization = models.ForeignKey(
+        Organization, null=True, blank=True, verbose_name='소속조직', on_delete=models.PROTECT
     )
     is_active = models.BooleanField(default=True, verbose_name='활성')
     is_admin = models.BooleanField(default=False, verbose_name='관리자(상담원)')
@@ -179,4 +242,3 @@ class FindPassword(DateTimeMixin, UUIDPkMixin, models.Model):
             raise FindPasswordError('이미 비밀번호가 변경되었습니다.')
         if timezone.now() >= self.registered_at + relativedelta(minutes=30):
             raise FindPasswordError('유효기간이 만료되었습니다.')
-

@@ -40,8 +40,13 @@ data = {
     "p_8": "미가입",
 }
 
-def generate_estimate_image(data):
-    base_estimate_image_path = os.path.join(settings.BASE_DIR, 'carcompare', 'data', 'estimate_base.png')
+def generate_estimate_image(data, backgroud_image_url=None):
+    if backgroud_image_url is None:
+        base_estimate_image_path = os.path.join(settings.BASE_DIR, 'carcompare', 'data', 'estimate_base.png')
+        base_image = Image.open(base_estimate_image_path).convert('RGBA')
+    else:
+        with requests.get(backgroud_image_url, stream=True) as response:
+            base_image = Image.open(response.raw).convert('RGBA')
 
     font_size = 90
     small_font_size = 60
@@ -60,8 +65,6 @@ def generate_estimate_image(data):
     color_black = (0, 0, 0)
     color_black_transparent = (0, 0, 0, 15)
     color_red = (255, 0, 0)
-
-    base_image = Image.open(base_estimate_image_path).convert('RGBA')
 
     base_image = base_image.copy()
     draw = ImageDraw.Draw(base_image)
