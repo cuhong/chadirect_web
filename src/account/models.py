@@ -154,7 +154,10 @@ class User(PermissionsMixin, AbstractBaseUser):
     REQUIRED_FIELDS = ['name']
 
     def __str__(self):
-        return "{}({})".format(self.name, self.email)
+        if self.organization:
+            return "[{}]{}({})".format(self.organization.name, self.name, self.email)
+        else:
+            return "{}({})".format(self.name, self.email)
 
     @property
     def is_staff(self):
