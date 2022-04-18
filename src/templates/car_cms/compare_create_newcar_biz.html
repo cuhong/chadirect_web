@@ -59,11 +59,11 @@
                     <label>대표자 주민번호 <span class="color-danger">*</span></label>
                     <input autofocus placeholder="대표자 주민번호" class="form-control-cc form-control-lg is-valid"
                            type="text"
-                           id="id_ssn"
-                           name="ssn"
+                           id="id_ssn_display"
                            pattern="[0-9]*"
                            inputmode="numeric"
                            value="{{ form.id_ssn.value|default_if_none:'' }}">
+                    <input id="id_ssn" name="ssn" type="text" value="{{ form.id_ssn.value|default_if_none:'' }}">
                     <div class="invalid-feedback">대표자 주민번호 값을 확인하세요.</div>
                 </div>
 
@@ -216,6 +216,7 @@
         const car_price = document.getElementById('id_car_price')
         const ssnWrapper = document.getElementById('ssnWrapper')
         const ssn = document.getElementById('id_ssn')
+        const ssnDisplay = document.getElementById('id_ssn_display')
         const bizType = document.getElementById('bizType')
         const driver_range = document.getElementById('id_driver_range')
         const min_age_birthdate = document.getElementById('id_min_age_birthdate')
@@ -228,6 +229,13 @@
             var inputElem = document.getElementById(`id_${id}`)
             inputElem.click()
         }
+
+        ssnDisplay.addEventListener('keyup', function (event) {
+            const ssnValue = onlyDigit(event.target.value)
+            const formatedSsn = ssnFormatter(ssnValue)
+            console.log(formatedSsn)
+            event.target.value = ssnValue
+        })
 
         bizType.addEventListener('change', function (event) {
             console.log(event.target.value)

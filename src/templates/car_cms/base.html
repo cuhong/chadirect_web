@@ -1182,6 +1182,16 @@
             return null
         }
     }
+
+    const ssnFormatter = (ssnValue) => {
+        //ssnValue 는 only digit
+        if (ssnValue.length <=6) {
+            return ssnValue
+        } else {
+            return `${ssnValue.slice(0, 6)}-${ssnValue.slice(6, 1)}`
+        }
+    }
+
 </script>
 {% block extrascript %}
 {% endblock %}
