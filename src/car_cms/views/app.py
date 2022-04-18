@@ -395,6 +395,7 @@ class CompareListView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, 
                 When(status=4, then=Value('계약진행중')),
                 When(status=5, then=Value('계약체결')),
                 When(status=6, then=Value('계약거절')),
+                When(status=7, then=Value('견적산출 불가')),
                 default=Value('기타'), output_field=models.CharField()
             )
         )

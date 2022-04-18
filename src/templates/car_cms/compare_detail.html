@@ -46,7 +46,11 @@
                     <button class="btn btn-cc-primary btn-block" onclick="showPolicy()">가입증명서</button>
                 </div>
             {% endif %}
-            {% if compare.status == 0 or compare.status == 1 %}
+            {% if compare.status == 0 or compare.status == 1 or compare.status == 3 %}
+            {% elif compare.status == 7 %}
+                <div class="d-flex flex-row justify-content-start align-items-center mb-3 text-danger mt-2">
+                    {{ compare.reject_reason }}
+                </div>
             {% else %}
                 <div class="mb-2 px-3">
                     <button class="btn btn-cc-primary btn-block" onclick="showEstimate2()">비교 견적서</button>
