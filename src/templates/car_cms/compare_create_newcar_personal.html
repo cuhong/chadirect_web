@@ -41,11 +41,13 @@
                     <label>주민번호 <span class="color-danger">*</span></label>
                     <input autofocus placeholder="주민번호" class="form-control-cc form-control-lg is-valid"
                            type="text"
-                           id="id_customer_identification"
-                           name="customer_identification"
+                           id="id_customer_identification_display"
                            pattern="[0-9]*"
                            inputmode="numeric"
-                           value="{{ form.customer_identification.value|default_if_none:'' }}">
+                           value=""
+                           data-value=""
+                    >
+                    <input id="id_customer_identification" name="customer_identification" type="text" value="{{ form.id_ssn.value|default_if_none:'' }}" hidden>
                     <div class="invalid-feedback">주민번호 값을 확인하세요.</div>
                 </div>
                 <div class="form-row">
@@ -182,6 +184,7 @@
         const attach2PreviewWrapper = document.getElementById('attach_2')
         const attach3PreviewWrapper = document.getElementById('attach_3')
         const customer_name = document.getElementById('id_customer_name')
+        const customer_identification_display = document.getElementById('id_customer_identification_display')
         const customer_identification = document.getElementById('id_customer_identification')
         const car_name = document.getElementById('id_car_name')
         const car_type = document.getElementById('id_car_type')
@@ -198,6 +201,18 @@
             //car_price.value = comma(car_price.value)
         })
 
+        customer_identification_display.addEventListener('keyup', function (event) {
+            let ssnValue = event.target.dataset.value
+            console.log(ssnValue)
+            if (event.code.slice(0, 5) === "Digit") {
+                ssnValue += event.code.slice(5, 6)
+            } else if (event.code === "Backspace") {
+                ssnValue = ssnValue.slice(0, ssnValue.length - 1)
+            }
+            event.target.dataset.value = ssnValue
+            customer_identification_display.value = ssnFormatter(event.target.dataset.value)
+            customer_identification.value = event.target.dataset.value.trim()
+        })
         function showImageInput(id) {
             var inputElem = document.getElementById(`id_${id}`)
             inputElem.click()

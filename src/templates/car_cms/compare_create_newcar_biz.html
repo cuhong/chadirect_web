@@ -62,8 +62,9 @@
                            id="id_ssn_display"
                            pattern="[0-9]*"
                            inputmode="numeric"
-                           value="{{ form.id_ssn.value|default_if_none:'' }}">
-                    <input id="id_ssn" name="ssn" type="text" value="{{ form.id_ssn.value|default_if_none:'' }}">
+                           data-value=""
+                           value="">
+                    <input id="id_ssn" name="ssn" type="text" value="{{ form.id_ssn.value|default_if_none:'' }}" hidden>
                     <div class="invalid-feedback">대표자 주민번호 값을 확인하세요.</div>
                 </div>
 
@@ -231,10 +232,15 @@
         }
 
         ssnDisplay.addEventListener('keyup', function (event) {
-            const ssnValue = onlyDigit(event.target.value)
-            const formatedSsn = ssnFormatter(ssnValue)
-            console.log(formatedSsn)
-            event.target.value = ssnValue
+            let ssnValue = event.target.dataset.value
+            if (event.code.slice(0, 5) === "Digit") {
+                ssnValue += event.code.slice(5, 6)
+            } else if (event.code === "Backspace") {
+                ssnValue = ssnValue.slice(0, ssnValue.length - 1)
+            }
+            event.target.dataset.value = ssnValue
+            ssnDisplay.value = ssnFormatter(event.target.dataset.value)
+            ssn.value = event.target.dataset.value.trim()
         })
 
         bizType.addEventListener('change', function (event) {

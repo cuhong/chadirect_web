@@ -59,11 +59,12 @@
                     <label>대표자 주민번호 <span class="color-danger">*</span></label>
                     <input autofocus placeholder="대표자 주민번호" class="form-control-cc form-control-lg is-valid"
                            type="text"
-                           id="id_ssn"
-                           name="ssn"
+                           id="id_ssn_display"
                            pattern="[0-9]*"
                            inputmode="numeric"
-                           value="{{ form.id_ssn.value|default_if_none:'' }}">
+                           data-value=""
+                           value="">
+                    <input id="id_ssn" name="ssn" type="text" value="{{ form.id_ssn.value|default_if_none:'' }}" hidden>
                     <div class="invalid-feedback">대표자 주민번호 값을 확인하세요.</div>
                 </div>
                 <div class="form-row">
@@ -186,6 +187,7 @@
         const car_identification = document.getElementById('id_car_identification')
         const ssnWrapper = document.getElementById('ssnWrapper')
         const ssn = document.getElementById('id_ssn')
+        const ssnDisplay = document.getElementById('id_ssn_display')
         const bizType = document.getElementById('bizType')
         const driver_range = document.getElementById('id_driver_range')
         const customer_cellphone = document.getElementById('id_customer_cellphone')
@@ -200,6 +202,18 @@
             var inputElem = document.getElementById(`id_${id}`)
             inputElem.click()
         }
+
+        ssnDisplay.addEventListener('keyup', function (event) {
+            let ssnValue = event.target.dataset.value
+            if (event.code.slice(0, 5) === "Digit") {
+                ssnValue += event.code.slice(5, 6)
+            } else if (event.code === "Backspace") {
+                ssnValue = ssnValue.slice(0, ssnValue.length - 1)
+            }
+            event.target.dataset.value = ssnValue
+            ssnDisplay.value = ssnFormatter(event.target.dataset.value)
+            ssn.value = event.target.dataset.value.trim()
+        })
 
         bizType.addEventListener('change', function (event) {
             console.log(event.target.value)

@@ -1185,10 +1185,11 @@
 
     const ssnFormatter = (ssnValue) => {
         //ssnValue 는 only digit
-        if (ssnValue.length <=6) {
+        const totalLength = ssnValue.length
+        if (totalLength <=6) {
             return ssnValue
         } else {
-            return `${ssnValue.slice(0, 6)}-${ssnValue.slice(6, 1)}`
+            return `${ssnValue.slice(0, 6)}-${ssnValue.slice(6, 7)}${'*'.repeat((totalLength - 7))}`
         }
     }
 
