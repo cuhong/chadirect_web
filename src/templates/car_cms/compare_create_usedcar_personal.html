@@ -179,9 +179,11 @@
         customer_identification_display.addEventListener('keyup', function (event) {
             let ssnValue = event.target.dataset.value
             console.log(ssnValue)
-            if (event.code.slice(0, 5) === "Digit") {
+            if (event.code.indexOf('Digit') === 0) {
                 ssnValue += event.code.slice(5, 6)
-            } else if (event.code === "Backspace") {
+            } else if (event.code.indexOf('Numpad') === 0) {
+                ssnValue += event.code.slice(6, 7)
+            } if (event.code === "Backspace") {
                 ssnValue = ssnValue.slice(0, ssnValue.length - 1)
             }
             event.target.dataset.value = ssnValue
