@@ -1,0 +1,28 @@
+{% extends 'new_design/base.html' %}
+{% load static %}
+
+{% block title %}고객 본인인증 성공{% endblock %}
+
+{% block body %}
+    <div class="container container-restricted d-flex flex-column align-items-center"
+         style="background-color: var(--gray-color)">
+        <div class="page" id="registerPage">
+            <div class="pageHeader">
+                <div class="pageHeaderLeftBtn">
+                </div>
+                <div class="pageHeaderTitle">
+                    고객 본인인증 성공
+                </div>
+                <div class="pageHeaderRightBtn">
+                </div>
+            </div>
+            <div class="pageBody align-items-center">
+                <div style="margin-bottom: 37px">
+                    <div class="mb-3 text-center">
+                        {{ danal.danal_name }}님의 본인인증이 성공했습니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

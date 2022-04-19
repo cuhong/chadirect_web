@@ -22,6 +22,7 @@ from sentry_sdk import capture_exception
 from car_cms.exceptions.compare import CarCMSCompareError
 from car_cms.models import Notice, Compare, CompareStatus
 from commons.utils.age import lunar_age
+from payment.models import DanalAuthStatusChoice, DanalAuth
 
 
 class AppTypeCheck():
@@ -294,6 +295,7 @@ class CompareForm(forms.Form):
     attach_1 = forms.ImageField(required=False)
     attach_2 = forms.ImageField(required=False)
     attach_3 = forms.ImageField(required=False)
+    request_auth = forms.BooleanField(required=True)
 
 
 class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, View):
@@ -332,6 +334,10 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
             min_age_birthdate = data.get('min_age_birthdate', None)
             min_age = None if min_age_birthdate is None else lunar_age(min_age_birthdate)
             # print(form.cleaned_data)
+            danal_auth = DanalAuth.objects.create(
+                title="자동차보험 견적 설계 동의",
+                phone_no=data.get('customer_cellphone')
+            ) if data.get('request_auth') is True else None
             compare = Compare.objects.create(
                 account=request.user,
                 customer_name=data['customer_name'],
@@ -359,8 +365,11 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 driver_range_fixed=data['driver_range'],
                 birthdate=birthdate,
                 car_no=data.get('car_identification', None),
-                vin=data.get('car_identification', None)
+                vin=data.get('car_identification', None),
+                danal_auth=danal_auth
             )
+            if data.get('request_auth') is True:
+                compare.send_auth_message()
             if self.app_type == "dealer":
                 compare_url = reverse('car_cms_app:compare_detail', args=[compare.id])
             else:
@@ -598,3 +607,12 @@ class BankAccountView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, 
         except Exception as e:
             response_data = {"result": False, "msg": str(e)}
         return JsonResponse(response_data)
+
+class CustomerAuthView(View):
+    def get(self, request, compare_id):
+        compare = Compare.objects.exclude(danal_auth=None).select_related('danal_auth').get(id=compare_id)
+        if compare.danal_auth.status == DanalAuthStatusChoice.COMPLETE:
+            template_name = 'new_design/car_cms/danal_auth/auth_complete.html'
+        else:
+            template_name = 'new_design/car_cms/danal_auth/danal_auth.html'
+        return render(request, template_name, context={"compare": compare})

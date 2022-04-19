@@ -22,6 +22,15 @@
                 {#                    <input type="checkbox" class="form-check-input" id="channelCheck" name="channelCheck" checked>#}
                 {#                    <label class="form-check-label" for="channelCheck">다이렉트</label>#}
                 {#                </div>#}
+
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="requestAuth" name="request_auth">
+                    <label class="form-check-label" for="requestAuth" style="cursor: pointer">고객 본인인증 요청
+                        <div>
+                            <small>본인인증을 통해 개인정보 처리 및 서비스 약관 동의를 받는 SMS가 발송됩니다.</small>
+                        </div>
+                    </label>
+                </div>
                 <div class="form-group">
                     <label>선호채널 <span class="color-danger">*</span></label>
                     <select class="form-control-cc form-control-lg" id="id_channel" name="channel">
@@ -176,6 +185,7 @@
     <script>
         const compareForm = document.getElementById('compareForm')
         const attach_1 = document.getElementById('id_attach_1')
+        const requestAuth = document.getElementById('requestAuth')
         const attach_2 = document.getElementById('id_attach_2')
         const attach_3 = document.getElementById('id_attach_3')
         const attach1PreviewWrapper = document.getElementById('attach_1')

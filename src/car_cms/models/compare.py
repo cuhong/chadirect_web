@@ -1,10 +1,13 @@
 import io
 import os
+import urllib.parse
 import uuid
 from traceback import print_exc
 
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models, transaction
+from django.urls import reverse
 from django.utils import timezone
 from sequences import get_next_value
 
@@ -14,6 +17,8 @@ from carcompare.utils.estimate import generate_estimate_image
 from commons.models import DateTimeMixin, UUIDPkMixin, VehicleInsurerChoices
 from itechs.storages import ProtectedFileStorage, ProtectedFileStorageRemote
 from simple_history.models import HistoricalRecords
+
+from payment.models import DanalAuth
 
 
 class PhoneCompanyChoice(models.TextChoices):
@@ -518,6 +523,31 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         null=True, blank=True, storage=ProtectedFileStorageRemote(), upload_to=compare_detail_upload_to,
         verbose_name='견적서 이미지'
     )
+    danal_auth = models.ForeignKey(DanalAuth, null=True, blank=True, verbose_name='본인인증', on_delete=models.PROTECT)
+
+    @property
+    def auth_url(self):
+        url = reverse('car_cms_app:customer_auth', args=[self.id])
+        return urllib.parse.urljoin(settings.BASE_URL, url)
+
+    def send_auth_message(self):
+        from car_cms.models import Message
+        body = f"""안녕하세요 {self.customer_name} 고객님, 차다이렉트입니다.
+{self.account.name}님께서 요청하신 자동차보험 설계 진행을 위해 문자 드립니다.
+
+인증링크를 통해 서비스약관 및 개인정보처리 약관에 동의해주시면 자동차보험 설계가 진행됩니다.
+
+인증링크 : {self.auth_url}
+
+문의사항은 차다이렉트 고객센터(1544-7653)로 문의 부탁드립니다.
+
+감사합니다.
+"""
+        message = Message.objects.create(
+            receiver=self.account.cellphone,
+            msg=body, msg_type="LMS", title="자동차보험 설계 안내"
+        )
+        message.send()
 
     def request_pay(self):
         if self.status != CompareStatus.CONTRACT_SUCCESS:

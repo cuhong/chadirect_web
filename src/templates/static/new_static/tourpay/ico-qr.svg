@@ -1,0 +1,12 @@
+<svg id="ico-qr" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <rect id="사각형_2562" data-name="사각형 2562" width="24" height="24" fill="none"/>
+  <g id="그룹_1574" data-name="그룹 1574" transform="translate(-149.99 -1150.033)">
+    <rect id="사각형_2557" data-name="사각형 2557" width="17.925" height="17.925" transform="translate(153.028 1153.034)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+    <rect id="사각형_2558" data-name="사각형 2558" width="4.218" height="4.218" transform="translate(155.137 1155.143)" fill="#fff"/>
+    <rect id="사각형_2559" data-name="사각형 2559" width="4.218" height="4.218" transform="translate(164.627 1155.143)" fill="#fff"/>
+    <rect id="사각형_2560" data-name="사각형 2560" width="4.218" height="4.218" transform="translate(155.137 1164.633)" fill="#fff"/>
+    <rect id="사각형_2561" data-name="사각형 2561" width="4.218" height="4.218" transform="translate(164.627 1164.633)" fill="#fff"/>
+    <line id="선_82" data-name="선 82" y2="13.707" transform="translate(161.856 1155.143)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+    <line id="선_83" data-name="선 83" x2="13.708" transform="translate(155.137 1161.996)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+  </g>
+</svg>

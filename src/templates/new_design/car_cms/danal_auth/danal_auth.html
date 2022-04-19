@@ -1,0 +1,120 @@
+{% extends 'new_design/base.html' %}
+{% load static %}
+
+{% block title %}고객 본인인증 안내{% endblock %}
+
+{% block body %}
+
+    <div class="container container-restricted d-flex flex-column align-items-center"
+         style="background-color: var(--gray-color)">
+
+        <div class="page" id="registerPage">
+            <div class="pageHeader">
+                <div class="pageHeaderLeftBtn">
+                </div>
+                <div class="pageHeaderTitle">
+                    고객 본인인증 안내
+                </div>
+                <div class="pageHeaderRightBtn">
+                </div>
+            </div>
+            <div class="pageBody">
+                <div style="text-align: left;margin-bottom: 37px">
+                    <div class="mb-1">
+                        <span class="">안녕하세요 <span
+                                style="font-size: 1.5rem">{{ compare.customer_name }}</span>고객님!</span>
+                    </div>
+                    <div>
+                        <span class="subtitle">자동차보험 견적 안내 서비스 제공을 위해 아래 동의가 필요합니다.</span>
+                    </div>
+                </div>
+                <div class="tpModal" id="agreeModal" style="margin-bottom: 56px">
+                    <div class="tpModal-header">
+                        <span class="checkboxTitle" id="agreeAll" onclick="clickCheckboxAll(this)">전체동의</span>
+                    </div>
+                    <div class="tpModal-body">
+                        <div style="display: flex;margin-bottom: 16px; align-items: center">
+                            <div style="flex:1">
+                            <span class="checkboxTitleSmall" id="agree1"
+                                  onclick="clickCheckboxSub(this)">이용약관 동의(필수)</span>
+                            </div>
+                            <div style="flex:1; text-align: right" class="blueHref" onclick="showPolicy(1)">
+                                약관보기
+                            </div>
+                        </div>
+                        <div style="display: flex;margin-bottom: 16px; align-items: center">
+                            <div style="flex:3">
+                                <span class="tp-checkbox checkboxTitleSmall" id="agree2"
+                                      onclick="clickCheckboxSub(this)">개인정보 취급방침 동의(필수)</span>
+                            </div>
+                            <div style="flex:1; text-align: right" class="blueHref" onclick="showPolicy(2)">
+                                약관보기
+                            </div>
+                        </div>
+                        <div style="display: flex;margin-bottom: 16px; align-items: center">
+                            <div style="flex:3">
+                                <span class="tp-checkbox checkboxTitleSmall" id="agree3"
+                                      onclick="clickCheckboxSub(this)">마케팅 정보 수신 동의(선택)</span>
+                            </div>
+                            <div style="flex:1; text-align: right" class="blueHref" onclick="showPolicy(3)">
+                                약관보기
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="primry-button block" style="margin-bottom: 8px" onclick="requestAgree()">본인인증으로 동의
+                </button>
+            </div>
+        </div>
+        {% include 'new_design/car_cms/danal_auth/policy.html' %}
+    </div>
+    <input hidden id="authUrl" value="{{ compare.danal_auth.return_url }}">
+{% endblock %}
+
+{% block extrascript %}
+    <script>
+        const registerPage = document.getElementById('registerPage')
+        const policyPage01 = document.getElementById('policyPage01')
+        const policyPage02 = document.getElementById('policyPage02')
+        const policyPage03 = document.getElementById('policyPage03')
+        const agree1 = document.getElementById('agree1')
+        const agree2 = document.getElementById('agree2')
+        const agree3 = document.getElementById('agree3')
+        const authUrl = document.getElementById('authUrl').value
+
+        const showPolicy = (no) => {
+            registerPage.hidden = true
+            if (no === 1) {
+                policyPage01.hidden = false
+            } else if (no === 2) {
+                policyPage02.hidden = false
+            } else if (no === 3) {
+                policyPage03.hidden = false
+            }
+        }
+
+
+        const closePolicy = () => {
+            registerPage.hidden = false
+            policyPage01.hidden = true
+            policyPage02.hidden = true
+            policyPage03.hidden = true
+        }
+        const buildAgreeParam = () => {
+            const paramString = `?agree1=${agree1.dataset.checked}&agree2=${agree2.dataset.checked}&agree3=${agree3.dataset.checked}`
+            return paramString
+        }
+        const requestAgree = () => {
+            if ((agree1.dataset.checked === 'true' && agree1.dataset.checked === 'true') === false) {
+                alert('이용약관 및 개인정보 취급방침에 동의해주셔야 합니다.')
+                return null
+            } else {
+                location.href = authUrl + buildAgreeParam()
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            overlay.off()
+        })
+    </script>
+{% endblock %}

@@ -105,7 +105,8 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'car_cms.apps.CarCmsConfig',
     'chadirect.apps.ChadirectConfig',
-    'carcompare.apps.CarcompareConfig'
+    'carcompare.apps.CarcompareConfig',
+    'payment.apps.PaymentConfig'
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,685 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="{% static 'new_static/vendor/bootstrap-5_1_3/css/bootstrap.min.css' %}" rel="stylesheet">
+</head>
+<style>
+    @font-face {
+        font-family: 'Noto Sans KR';
+        font-style: normal;
+        font-weight: 100;
+        src: url({% static 'new_static/vendor/Noto_Sans_KR/NotoSansKR-Thin.otf' %}) format('opentype');
+    }
+
+    @font-face {
+        font-family: 'Noto Sans KR';
+        font-style: normal;
+        font-weight: 300;
+        src: url({% static 'new_static/vendor/Noto_Sans_KR/NotoSansKR-Light.otf' %}) format('opentype');
+    }
+
+    @font-face {
+        font-family: 'Noto Sans KR';
+        font-style: normal;
+        font-weight: 400;
+        src: url({% static 'new_static/vendor/Noto_Sans_KR/NotoSansKR-Regular.otf' %}) format('opentype');
+    }
+
+    @font-face {
+        font-family: 'Noto Sans KR';
+        font-style: normal;
+        font-weight: 500;
+        src: url({% static 'new_static/vendor/Noto_Sans_KR/NotoSansKR-Medium.otf' %}) format('opentype');
+    }
+
+    @font-face {
+        font-family: 'Noto Sans KR';
+        font-style: normal;
+        font-weight: 700;
+        src: url({% static 'new_static/vendor/Noto_Sans_KR/NotoSansKR-Bold.otf' %}) format('opentype');
+    }
+
+    @font-face {
+        font-family: 'Noto Sans KR';
+        font-style: normal;
+        font-weight: 900;
+        src: url({% static 'new_static/vendor/Noto_Sans_KR/NotoSansKR-Black.otf' %}) format('opentype');
+    }
+
+    :root {
+        --primary-color: #2B8EFF;
+        --gray-color: #E1E3E6;
+        --gray-sub-color: #888888;
+        --black-color: #212121;
+        --red-color: #E64848;
+        --primary-light-color: #EAF4FF;
+    }
+
+    body, h1, h2, h3, h4, h5, h6, input, textarea, select, button {
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    body {
+        height: 100vh;
+    }
+
+    .container-restricted {
+        width: 100% !important;
+        max-width: 412px !important;
+        padding: 0;
+        height: 100%;
+    }
+
+    .test-border {
+        border: 1px solid black;
+    }
+
+    label {
+        font-size: 14px;
+        color: var(--black-color);
+        margin-bottom: 8px;
+    }
+
+
+    input {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        width: 100%;
+        max-width: 343px;
+        height: 48px;
+        border: 1px solid var(--gray-color);
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: normal;
+        text-align: left;
+        text-decoration: none;
+        display: inline-block;
+        color: var(--black-color);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        cursor: pointer;
+        transition: 0.5s;
+        padding-left: 16px;
+    }
+
+    input.block {
+        max-width: none;
+    }
+
+    input::placeholder {
+        font-size: 16px;
+        font-weight: normal;
+        color: #C3C4C6;
+    }
+
+    input:invalid,
+    input:invalid:active,
+    input:invalid:hover,
+    input:invalid:focus {
+        outline: none;
+        border: 1px solid var(--red-color);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 8px 16px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    input:disabled {
+        outline: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        width: 100%;
+        max-width: 343px;
+        height: 48px;
+        border: 1px solid var(--gray-color);
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: normal;
+        text-align: left;
+        text-decoration: none;
+        display: inline-block;
+        color: var(--black-color);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        cursor: pointer;
+        transition: 0.5s;
+        padding-left: 16px;
+    }
+
+    select.block {
+        max-width: none;
+    }
+
+    select::placeholder {
+        font-size: 16px;
+        font-weight: normal;
+        color: #C3C4C6;
+    }
+
+
+    select:invalid:active,
+    select:invalid:hover,
+    select:invalid:focus {
+        outline: none;
+        border: 1px solid var(--red-color);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 8px 16px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    select:invalid {
+        border: 1px solid var(--red-color);
+    }
+
+    select:disabled {
+        outline: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        width: 100%;
+        max-width: 343px;
+        height: 52px;
+        border: 1px solid var(--primary-color);
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: normal;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        /*
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        */
+        cursor: pointer;
+        transition: 0.5s;
+    }
+
+    button.block {
+        max-width: none;
+    }
+
+    button.primry-button {
+        background-color: var(--primary-color);
+        color: #FFFFFF;
+    }
+
+    button.secondary-button {
+        background-color: white;
+        color: var(--primary-color);
+    }
+
+    button:active,
+    button:hover,
+    button:focus {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 8px 16px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    span.small {
+        font-size: 14px;
+    }
+
+    span.title {
+        font-weight: bold;
+        font-size: 24px;
+        color: var(--black-color);
+    }
+
+    span.midTitle {
+        font-weight: bold;
+        font-size: 20px;
+        color: var(--black-color);
+    }
+
+    span.sub {
+        font-weight: lighter;
+        font-size: 14px;
+        color: var(--gray-sub-color);
+    }
+
+    span.subtitle {
+        font-weight: normal;
+        font-size: 16px;
+        color: var(--gray-sub-color);
+    }
+
+    span.nav {
+        font-weight: normal;
+        font-size: 10px;
+        color: var(--gray-sub-color);
+    }
+
+    .noSelect {
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .checkboxTitle {
+        font-weight: normal;
+        font-size: 16px;
+        color: var(--black-color);
+        cursor: pointer;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .checkboxTitle[data-checked="true"]:before {
+        content: url("{% static 'new_static/tourpay/icons/checkbox-checked.svg' %}");
+        margin-right: 8px;
+        display: inline;
+        height: 20px;
+    }
+
+    .checkboxTitle:before {
+        content: url("{% static 'new_static/tourpay/icons/checkbox-unchecked.svg' %}");
+        margin-right: 8px;
+    }
+
+    .checkboxTitleSmall {
+        margin-left: 0px;
+        font-weight: normal;
+        font-size: 14px;
+        color: var(--black-color);
+        cursor: pointer;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .checkboxTitleSmall[data-checked="true"]:before {
+        content: url("{% static 'new_static/tourpay/icons/checkbox-checked.svg' %}");
+        margin-right: 8px;
+        display: inline;
+        height: 20px;
+    }
+
+    .checkboxTitleSmall:before {
+        content: url("{% static 'new_static/tourpay/icons/checkbox-unchecked.svg' %}");
+        margin-right: 8px;
+    }
+
+    .blueHref {
+        text-decoration: underline;
+        font-size: 12px;
+        color: var(--primary-color);
+        cursor: pointer;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .invalidMessage {
+        font-weight: normal;
+        font-size: 14px;
+        color: var(--red-color);
+    }
+
+
+    .pageHeader {
+        width: 100%;
+        background-color: white;
+        height: 56px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .pageHeader .pageHeaderLeftBtn {
+        flex: 1;
+        text-align: left;
+        padding-left: 16px;
+        align-items: center;
+    }
+
+    .pageHeader .pageHeaderTitle {
+        flex: 2;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        align-items: center;
+    }
+
+    .pageHeader .pageHeaderRightBtn {
+        flex: 1;
+        text-align: right;
+        padding-right: 16px;
+        align-items: center;
+    }
+
+    .pageBody {
+        width: 100%;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: start;
+        padding-top: 40px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .tpModal {
+        width: 100%;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .tpModal-header {
+        border: 1px solid var(--gray-color);
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+        height: 52px;
+        padding: 10px 16px;
+    }
+
+    .tpModal-body {
+        border: 1px solid var(--gray-color);
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+        min-height: 52px;
+        padding: 10px 16px;
+    }
+
+    .tpFooter {
+        width: 100%;
+        height: 60px;
+        background-color: white;
+        position: sticky;
+        bottom: 0;
+        border-top: 1px solid var(--gray-sub-color);
+    }
+
+    .tpFooterItem {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        cursor: pointer;
+    }
+
+
+    .page {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 60px;
+        background-color: white;
+    }
+
+    a {
+        all: unset;
+        cursor: pointer;
+    }
+
+    #overlay {
+        position: fixed; /* Sit on top of the page content */
+        display: none; /* Hidden by default */
+        width: 100%; /* Full width (cover the whole page) */
+        height: 100%; /* Full height (cover the whole page) */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+        z-index: 99999999; /* Specify a stack order in case you're using a different order for other elements */
+        justify-content: center;
+        align-items: center;
+    }
+
+    .loading {
+        display: none;
+    }
+
+    .loading > img {
+        width: 100px;
+    }
+
+    .alertModal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        left: calc(50vw - 328px / 2);
+        top: calc(50vh - 200px / 2);
+        width: 328px;
+        max-height: 200px;
+        padding: 10px 10px;
+        overflow: auto; /* Enable scroll if needed */
+        background-color: white; /* Fallback color */
+        z-index: 999999990;
+        border-radius: 20px;
+    }
+
+    .alertModalHeader {
+        font-size: 20px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .alertModalBody {
+        text-align: center;
+        font-weight: normal;
+        padding: 10px 14px;
+        align-items: center;
+        justify-content: center;
+        height: 70%;
+        overflow-y: auto;
+        overflow-wrap: break-word;
+        font-size: 16px;
+    }
+
+</style>
+{% block extrastyle %}
+{% endblock %}
+<body>
+<div class="alertModal" id="alertModal">
+    <div class="alertModalHeader" style="display: flex">
+        <div style="flex:1"></div>
+        <div style="flex:3; text-align: center" id="alertModalHeaderTitle"></div>
+        <div style="flex:1; cursor: pointer; text-align: right" onclick="closeAlertModal()">
+            <svg id="icon_close" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <rect id="Boundary" width="24" height="24" fill="none"/>
+                <path id="_Color" data-name=" ↳Color"
+                      d="M14,1.41,12.59,0,7,5.59,1.41,0,0,1.41,5.59,7,0,12.59,1.41,14,7,8.41,12.59,14,14,12.59,8.41,7Z"
+                      transform="translate(5 5)" fill="#E64848"/>
+            </svg>
+        </div>
+    </div>
+    <div class="alertModalBody" id="alertModalBody">
+
+    </div>
+</div>
+
+
+<div id="overlay">
+    <div class="loading" id="loading">
+        <img src="{% static 'new_static/tourpay/animation-logo.gif' %}">
+    </div>
+</div>
+{% block body %}
+{% endblock %}
+<script src="{% static 'new_static/vendor/bootstrap-5_1_3/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'new_static/vendor/moment/moment.min.js' %}"></script>
+<script src="{% static 'new_static/vendor/moment/moment-with-locales.min.js' %}"></script>
+<script src="{% static 'new_static/vendor/axios/axios.min.js' %}"></script>
+<script src="{% static 'new_static/vendor/qs.js' %}"></script>
+<script>
+    const alertModal = document.getElementById('alertModal')
+    const alertModalHeaderTitle = document.getElementById('alertModalHeaderTitle')
+    const alertModalBody = document.getElementById('alertModalBody')
+    const showAlertModal = (body, title = "알림") => {
+        alertModalHeaderTitle.innerText = title
+        alertModalBody.innerHTML = body
+        overlay.on()
+        alertModal.style.display = 'block'
+    }
+    const closeAlertModal = () => {
+        alertModal.style.display = 'none'
+        overlay.off()
+    }
+
+    const overlayElem = document.getElementById('overlay')
+    const overlay = {
+        on: () => {
+            overlayElem.style.display = 'flex'
+        },
+        off: () => {
+            overlayElem.style.display = 'none'
+        },
+        toggle: () => {
+            console.log(overlayElem.style.display)
+            if (overlayElem.style.display === 'flex' || overlayElem.style.display === '') {
+                overlayElem.style.display = 'none'
+            } else if (overlayElem.style.display === 'none') {
+                overlayElem.style.display = 'flex'
+            }
+        },
+    }
+    const loadingElem = document.getElementById('loading')
+    const loading = {
+        on: () => {
+            overlay.on()
+            loadingElem.style.display = 'block'
+        },
+
+        off: () => {
+            overlay.off()
+            loadingElem.style.display = 'none'
+        }
+    }
+    const onlyDigit = (value) => {
+        return value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+    }
+
+    const isValideDateString = (dateString) => {
+        var dateStringValue = onlyDigit(dateString)
+        let date = moment(`${dateStringValue.slice(0, 4)}-${dateStringValue.slice(4, 6)}-${dateStringValue.slice(6, 8)}`)
+        return date.isValid()
+    }
+
+    const stringToDate = (dateString) => {
+        var dateStringValue = onlyDigit(dateString)
+        let date = moment(`${dateStringValue.slice(0, 4)}-${dateStringValue.slice(4, 6)}-${dateStringValue.slice(6, 8)}`)
+        if (date.isValid() === true) {
+            return date
+        } else {
+            return null
+        }
+    }
+
+    const getLunarAge = (birthdateString) => {
+        var birthdateStringValue = onlyDigit(birthdateString)
+        let birthday = stringToDate(birthdateStringValue)
+        let rightNow = new moment();
+        let age = rightNow.year() - birthday.year();
+        let birthMonth = birthday.month();
+        let thisMonth = rightNow.month();
+        let birthDate = birthday.date();
+        let thisDate = rightNow.date();
+        if (birthMonth < thisMonth) {
+            return age;
+        } else if (birthMonth > thisMonth) {
+            return age - 1;
+        } else {
+            if (birthDate < thisDate) {
+                return age;
+            } else {
+                return age - 1;
+            }
+        }
+    }
+
+    const clickCheckbox = (elem) => {
+        const status = elem.dataset.checked
+        if (status === undefined) {
+            elem.dataset.checked = 'true'
+        } else if (status === 'true') {
+            elem.dataset.checked = 'false'
+        } else {
+            elem.dataset.checked = 'true'
+        }
+    }
+    const clickCheckboxAll = (elem) => {
+        clickCheckbox(elem)
+        console.log(elem.dataset.checked)
+        if (elem.dataset.checked === 'true') {
+            agree1.dataset.checked = 'true'
+            agree2.dataset.checked = 'true'
+            agree3.dataset.checked = 'true'
+        } else {
+            agree1.dataset.checked = 'false'
+            agree2.dataset.checked = 'false'
+            agree3.dataset.checked = 'false'
+        }
+    }
+
+    const clickCheckboxSub = (elem) => {
+        clickCheckbox(elem)
+        console.log(elem.dataset.checked)
+        if (agree1.dataset.checked === 'true' &&
+            agree2.dataset.checked === 'true' &&
+            agree3.dataset.checked === 'true') {
+            agreeAll.dataset.checked = 'true'
+        } else {
+            agreeAll.dataset.checked = 'false'
+        }
+    }
+    const objectToQstring = (target) => {
+
+        var str = [];
+        for (var p in target)
+            if (target.hasOwnProperty(p)) {
+                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(target[p]));
+            }
+        return str.join("&");
+    }
+
+    axios.interceptors.request.use(function (config) {
+        // 요청 전에 로딩 오버레이 띄우기
+        loading.on()
+        console.log('loadiddidididid')
+        return config;
+    }, function (error) {
+        // 에라 나면 로딩 끄기
+        loading.off()
+        return Promise.reject(error);
+    });
+
+    // 응답 인터셉터
+    axios.interceptors.response.use(function (response) {
+        // 응답 받으면 로딩 끄기
+        loading.off()
+        return response;
+    }, function (error) {
+        // 응답 에러 시에도 로딩 끄기
+        loading.off()
+        return Promise.reject(error);
+    });
+    window.onbeforeunload = function (event) {
+        loading.on()
+    }
+</script>
+
+{% block extrascript %}
+{% endblock %}
+</body>
+</html>

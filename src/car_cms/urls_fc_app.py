@@ -3,7 +3,7 @@ from django.urls import path
 # from car_cms.admin.cms import cms_admin_site
 from car_cms.views.app import IndexView, LoginView, LogoutView, SignupView, NoticeDetailView, NoticeView, \
     CompareCreateView, CompareDetailView, CompareListView, CompareEstimateView, ComparePolicyView, PrivatePolicyView, \
-    UserPolicyView, PayListView, BankAccountView, PasswordChangeView, PasswordChangeRequestView
+    UserPolicyView, PayListView, BankAccountView, PasswordChangeView, PasswordChangeRequestView, CustomerAuthView
 
 app_name = 'car_cms_app'
 
@@ -23,6 +23,7 @@ urlpatterns = [
     path('compare/pay/bank/', BankAccountView.as_view(), name='bank_account'),
     path('compare/create/', CompareCreateView.as_view(), name='compare_create'),
     path('compare/<uuid:compare_id>/', CompareDetailView.as_view(), name='compare_detail'),
+    path('compare/<uuid:compare_id>/auth/', CustomerAuthView.as_view(), name='customer_auth'),
     path('compare/<uuid:compare_id>/estimate/', CompareEstimateView.as_view(), name='estimate_detail'),
     path('compare/<uuid:compare_id>/policy/', ComparePolicyView.as_view(), name='policy_detail'),
     # path('admin/', cms_admin_site.urls, name='cms_admin'),

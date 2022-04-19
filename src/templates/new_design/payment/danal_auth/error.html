@@ -1,0 +1,50 @@
+{% extends 'new_design/base.html' %}
+{% load static %}
+
+{% block title %}고객 본인인증 실패{% endblock %}
+
+{% block body %}
+    <div class="container container-restricted d-flex flex-column align-items-center"
+         style="background-color: var(--gray-color)">
+        <div class="page" id="registerPage">
+            <div class="pageHeader">
+                <div class="pageHeaderLeftBtn">
+                </div>
+                <div class="pageHeaderTitle">
+                    고객 본인인증 실패
+                </div>
+                <div class="pageHeaderRightBtn">
+                </div>
+            </div>
+            <div class="pageBody align-items-center">
+                <div style="margin-bottom: 37px">
+                    <div class="mb-3 text-center">
+                        <span class="subtitle">아래 사유로 본인인증이 실패했습니다.</span>
+                    </div>
+                    <div class="text-center">
+                        {{ error_msg }}
+                    </div>
+                </div>
+                {% if danal %}
+                <button type="button" class="primry-button block" style="margin-bottom: 8px" onclick="retry()">재시도</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% if danal %}
+        <input hidden id="retryUrl" value="{{ danal.return_url }}">
+    {% else %}
+        <input hidden id="retryUrl" value="">
+    {% endif %}
+{% endblock %}
+
+{% block extrascript %}
+    <script>
+    const retryUrl = document.getElementById('retryUrl').value
+    const retry = () => {
+        if (retryUrl !== "") {
+            location.href = retryUrl
+        }
+    }
+    </script>
+{% endblock %}

@@ -30,6 +30,7 @@ def sw_view(request):
 
 urlpatterns = [
                   path('', include('car_cms.urls_fc_app', namespace='car_cms_fc_app')),
+                  path('payment/', include('payment.urls', namespace='payment')),
                   path('admin/', admin.site.urls),
                   path('carcompare/', include('carcompare.urls', namespace='carcompare')),
                   path('sentry-debug/', trigger_error),

@@ -7,6 +7,7 @@ from inline_actions.admin import InlineActionsModelAdminMixin
 
 from car_cms.admin.inline_mixin import CustomInlineActionsModelAdminMixin
 from car_cms.models import Compare, CompareStatus, ComparePending, CompareAll
+from payment.models import DanalAuthStatusChoice
 
 User = get_user_model()
 
@@ -48,7 +49,7 @@ class CompareAllAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
 @admin.register(ComparePending)
 class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     list_display = [
-        'serial', 'account', 'manager', 'customer_name', 'customer_cellphone', 'driver_range', 'status'
+        'serial', 'account', 'manager', 'customer_name', 'customer_cellphone', 'driver_range', 'status', '_auth_status'
     ]
     list_filter = ['status']
     search_fields = [
@@ -64,8 +65,15 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     def get_inline_actions(self, request, obj=None):
         actions = super(ComparePendingAdmin, self).get_inline_actions(request, obj)
         if obj:
-            if obj.status == 0 and obj.manager is None:
-                actions.append('_set_manager')
+            if obj.danal_auth is None:
+                if obj.status == 0 and obj.manager is None:
+                    actions.append('_set_manager')
+            elif obj.danal_auth.status == DanalAuthStatusChoice.COMPLETE:
+                if obj.status == 0 and obj.manager is None:
+                    actions.append('_set_manager')
+            elif obj.danal_auth.status == DanalAuthStatusChoice.READY:
+                    actions.append('_send_auth_sms')
+
         return actions
 
     def save_model(self, request, obj, form, change):
@@ -146,6 +154,30 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
 
     _set_manager.short_description = '담당자 배정'
 
+
+    def _send_auth_sms(self, request, obj, parent_obj=None):
+        try:
+            obj.send_auth_message()
+        except Exception as e:
+            messages.error(request, f'발송중 오류 : {str(e)}')
+        else:
+            messages.success(request, '발송요청 되었습니다.')
+
+    _send_auth_sms.short_description = '인증문자 재발송'
+    def _auth_status(self, obj):
+        if obj.danal_auth is None:
+            html = "<span>미요청</san>"
+        else:
+            # READY = 'ready', '준비'
+            # COMPLETE = 'complete', '완료'
+            if obj.danal_auth.status == DanalAuthStatusChoice.READY:
+                html = "<span style='color:red'>인증대기</san>"
+            else:
+                html = "<span style='color:blue'>인증성공</san>"
+        return mark_safe(html)
+
+    _auth_status.short_description = '인증'
+
     def has_delete_permission(self, request, obj=None):
         return False
 
@@ -156,7 +188,7 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
 @admin.register(Compare)
 class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     list_display = [
-        'serial', 'account', 'manager', 'customer_name', 'customer_cellphone', 'driver_range', 'status_display'
+        'serial', 'account', 'manager', 'customer_name', 'customer_cellphone', 'driver_range', '_status_display',
     ]
     list_filter = ['status']
     search_fields = [
@@ -355,13 +387,13 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
         else:
             messages.success(request, '체결 실패 처리 되었습니다.')
 
-    def status_display(self, obj):
+    def _status_display(self, obj):
         color = "red" if obj.status == 4 else "black"
         weight = "bold" if obj.status == 4 else "normal"
         html = f"<span style='color: {color}; font-weight: {weight}'>{obj.get_status_display()}</span>"
         return mark_safe(html)
 
-    status_display.short_description = '상태'
+    _status_display.short_description = '상태'
     _complete_calculate.short_description = '견적완료'
     _deny_estimate.short_description = '거절'
     _start_contract.short_description = '계약 진행'
