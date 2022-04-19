@@ -354,7 +354,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
         else:
             messages.success(request, '체결 실패 처리 되었습니다.')
 
-    _complete_calculate.short_description = '견적요청'
+    _complete_calculate.short_description = '견적완료'
     _deny_estimate.short_description = '거절'
     _start_contract.short_description = '계약 진행'
     _success_contract.short_description = '체결'
