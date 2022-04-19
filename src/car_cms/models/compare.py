@@ -465,7 +465,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         choices=CompareStatus.choices, null=False, blank=False, default=CompareStatus.REQUEST,
         verbose_name='상태'
     )
-    reject_reason = models.TextField(null=True, blank=True, verbose_name='메모', help_text='견적 실패시 설계사 화면에 노출됩니다.')
+    reject_reason = models.TextField(null=True, blank=True, verbose_name='견적 실패 사유', help_text='견적 실패시 설계사 화면에 노출됩니다.')
     customer_name = models.CharField(max_length=100, null=False, blank=False, verbose_name='고객명')
     career = models.CharField(
         max_length=30, null=True, blank=True, verbose_name='통신사', choices=PhoneCompanyChoice.choices
