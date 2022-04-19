@@ -2,6 +2,7 @@ from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.shortcuts import render
+from django.utils.safestring import mark_safe
 from inline_actions.admin import InlineActionsModelAdminMixin
 
 from car_cms.admin.inline_mixin import CustomInlineActionsModelAdminMixin
@@ -155,7 +156,7 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
 @admin.register(Compare)
 class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     list_display = [
-        'serial', 'account', 'manager', 'customer_name', 'customer_cellphone', 'driver_range', 'status'
+        'serial', 'account', 'manager', 'customer_name', 'customer_cellphone', 'driver_range', 'status_display'
     ]
     list_filter = ['status']
     search_fields = [
@@ -168,7 +169,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj:
             rf = [
-                'id', 'registered_at', 'updated_at', 'serial', 'account', 'manager', 'status', 'customer_name', 'career',
+                'id', 'registered_at', 'updated_at', 'serial', 'account', 'manager', 'display', 'customer_name', 'career',
                 'customer_cellphone', 'customer_type', 'customer_identification', 'ssn', 'car_name', 'car_type',
                 'car_identification', 'attach_1', 'attach_2', 'attach_3', 'driver_range', 'memo',
                 'request_msg', 'deny_msg', 'contract_fail_msg'
@@ -354,6 +355,13 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
         else:
             messages.success(request, '체결 실패 처리 되었습니다.')
 
+    def status_display(self, obj):
+        color = "blue" if obj.status == 4 else "black"
+        weight = "bold" if obj.status == 4 else "normal"
+        html = f"<span style='color: {color}; font-weight: {weight}'>{obj.get_status_display()}</span>"
+        return mark_safe(html)
+
+    status_display.short_description = '상태'
     _complete_calculate.short_description = '견적완료'
     _deny_estimate.short_description = '거절'
     _start_contract.short_description = '계약 진행'
