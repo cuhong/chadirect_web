@@ -232,7 +232,17 @@
         }
 
         ssnDisplay.addEventListener('keyup', function (event) {
+            let digit = getNumberFromKeyEvent(event)
             let ssnValue = event.target.dataset.value
+            if (digit !== null) {
+                ssnValue += event.code.slice(5, 6)
+            } else if (event.code === "Backspace") {
+                ssnValue = ssnValue.slice(0, ssnValue.length - 1)
+            }
+            console.log(ssnValue)
+            event.target.dataset.value = ssnValue
+            ssnDisplay.value = ssnFormatter(event.target.dataset.value)
+            ssn.value = event.target.dataset.value.trim()
             //if (event.code.indexOf('Digit') === 0) {
             //    ssnValue += event.code.slice(5, 6)
             //} else if (event.code.indexOf('Numpad') === 0) {
@@ -240,14 +250,9 @@
             //} if (event.code === "Backspace") {
             //    ssnValue = ssnValue.slice(0, ssnValue.length - 1)
             //}
-            if (onlyDigit(event.code) !== '') {
-                ssnValue += onlyDigit(event.code)
-            } else if (event.code === "Backspace") {
-                ssnValue = ssnValue.slice(0, ssnValue.length - 1)
-            }
-            event.target.dataset.value = ssnValue
-            ssnDisplay.value = ssnFormatter(event.target.dataset.value)
-            ssn.value = event.target.dataset.value.trim()
+            //event.target.dataset.value = ssnValue
+            //ssnDisplay.value = ssnFormatter(event.target.dataset.value)
+            //ssn.value = event.target.dataset.value.trim()
         })
 
         bizType.addEventListener('change', function (event) {

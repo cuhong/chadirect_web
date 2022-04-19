@@ -1208,13 +1208,12 @@
     }
 
     function getNumberFromKeyEvent(event) {
-        if (event.code.indexOf('Numpad') === 0) {
-            var number = parseInt(event.code.replace('Numpad', ''), 10);
-            if (number >= 0 && number <= 9) {
-                // numbers from numeric keyboard
-
-            }
+        if (event.keyCode >= 96 && event.keyCode <= 105) {
+            return event.keyCode - 96;
+        } else if (event.keyCode >= 48 && event.keyCode <= 57) {
+            return event.keyCode - 48;
         }
+        return null;
     }
 
 </script>
