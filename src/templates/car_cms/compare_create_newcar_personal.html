@@ -123,7 +123,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>최저운전자 생년월일</label>
+                    <label>최저운전자 생년월일 <span class="color-danger">*</span></label>
                     <input autofocus placeholder="19860906 형태" class="form-control-cc form-control-lg is-valid"
                            type="text"
                            oninput="birthdateOnInput(this)"
@@ -272,12 +272,13 @@
             return false
         }
 
-        if (min_age_birthdate.value !== '') {
-            if (isValideDateString(min_age_birthdate.value) !== true) {
+            if (min_age_birthdate.value.trim() === '') {
+                alert('최저연령 운전자 생년월일을 입력하세요')
+                return false
+            } else if (isValideDateString(min_age_birthdate.value) !== true) {
                 alert('최저연령 운전자 생년월일 형식이 올바르지 않습니다. yyyymmdd 형태 8자리로 입력해주세요.')
                 return false
             }
-        }
         if (car_type.value === "1") {
             // 중고차
             if (car_identification.value === "") {
