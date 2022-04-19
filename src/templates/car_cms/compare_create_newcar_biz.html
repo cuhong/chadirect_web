@@ -236,7 +236,7 @@
             let digit = getNumberFromKeyEvent(event)
             let ssnValue = event.target.dataset.value
             if (digit !== null) {
-                ssnValue += event.code.slice(5, 6)
+                ssnValue += digit
             } else if (event.code === "Backspace") {
                 ssnValue = ssnValue.slice(0, ssnValue.length - 1)
             }
@@ -244,6 +244,8 @@
             event.target.dataset.value = ssnValue
             ssnDisplay.value = ssnFormatter(event.target.dataset.value)
             ssn.value = event.target.dataset.value.trim()
+            console.log(ssnValue)
+            console.log(ssnValue)
             //if (event.code.indexOf('Digit') === 0) {
             //    ssnValue += event.code.slice(5, 6)
             //} else if (event.code.indexOf('Numpad') === 0) {
