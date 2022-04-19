@@ -223,7 +223,7 @@ class FindPassword(DateTimeMixin, UUIDPkMixin, models.Model):
             "senderAddress": sender,
             "senderName": "차다이렉트",
             "title": f"[차다이렉트]{self.account.name}님의 비밀번호 초기화 링크를 보내드립니다.",
-            "body": f"안녕하세요 {self.account.name}님\n차다이렉트 앱 비밀번호 초기화 링크를 보내드립니다. 아래 링크에서 비밀번호를 변경해주세요.\n\n{str(url)}",
+            "body": f"안녕하세요 {self.account.name}님\n차다이렉트 앱 비밀번호 초기화 링크를 보내드립니다. 아래 링크에서 비밀번호를 변경해주세요.\n\n<a href='{str(url)}'>{str(url)}</a>",
             "recipients": [
                 {"address": receiver, "name": self.account.name, "type": "R"},
             ],
