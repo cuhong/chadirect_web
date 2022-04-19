@@ -178,17 +178,14 @@
 
     customer_identification_display.addEventListener('keyup', function (event) {
         let digit = getNumberFromKeyEvent(event)
-        console.log(event.keyCode)
         let ssnValue = event.target.dataset.value
          if (event.keyCode === 8) {
-            console.log(event.code)
             ssnValue = ssnValue.slice(0, ssnValue.length - 1)
         } if (digit === null || digit === undefined) {
             event.preventDefault()
         } else {
             ssnValue += digit
         }
-        console.log(ssnValue)
         event.target.dataset.value = ssnValue
         customer_identification_display.value = ssnFormatter(event.target.dataset.value)
         customer_identification.value = event.target.dataset.value.trim()

@@ -234,12 +234,14 @@
         ssnDisplay.addEventListener('keyup', function (event) {
             let digit = getNumberFromKeyEvent(event)
             let ssnValue = event.target.dataset.value
-            if (digit !== null) {
-                ssnValue += digit
-            } else if (event.code === "Backspace") {
+            if (event.keyCode === 8) {
                 ssnValue = ssnValue.slice(0, ssnValue.length - 1)
             }
-            console.log(ssnValue)
+            if (digit === null || digit === undefined) {
+                event.preventDefault()
+            } else {
+                ssnValue += digit
+            }
             event.target.dataset.value = ssnValue
             ssnDisplay.value = ssnFormatter(event.target.dataset.value)
             ssn.value = event.target.dataset.value.trim()
@@ -307,8 +309,8 @@
             }
             if (min_age_birthdate.value !== '') {
                 if (isValideDateString(min_age_birthdate.value) !== true) {
-                alert('최저연령 운전자 생년월일 형식이 올바르지 않습니다. yyyymmdd 형태 8자리로 입력해주세요.')
-                return false
+                    alert('최저연령 운전자 생년월일 형식이 올바르지 않습니다. yyyymmdd 형태 8자리로 입력해주세요.')
+                    return false
                 }
             }
             if (car_name.value === '') {
