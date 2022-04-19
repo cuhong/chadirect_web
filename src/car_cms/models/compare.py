@@ -31,7 +31,7 @@ class CompareStatus(models.IntegerChoices):
     CALCULATE_COMPLETE = 2, '견적완료'
     CALCULATE_DENY = 7, '견적산출 불가'
     DENY = 3, '견적거절'
-    CONTRACT = 4, '계약진행중'
+    CONTRACT = 4, '계약요청'
     CONTRACT_SUCCESS = 5, '계약체결'
     CONTRACT_FAIL = 6, '계약거절'
 
