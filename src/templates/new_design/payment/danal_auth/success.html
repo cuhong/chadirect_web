@@ -19,7 +19,10 @@
             <div class="pageBody align-items-center">
                 <div style="margin-bottom: 37px">
                     <div class="mb-3 text-center">
-                        {{ danal.danal_name }}님의 본인인증이 성공했습니다.
+                        {{ danal.danal_name }}님의 본인인증이 완료되었습니다.
+                    </div>
+                    <div class="mb-3 small text-right">
+                        인증일시 : {{ danal.agree_at|date:"Y-m-d H:i" }}
                     </div>
                 </div>
             </div>
