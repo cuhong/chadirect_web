@@ -294,7 +294,7 @@ class CompareForm(forms.Form):
     attach_1 = forms.ImageField(required=False)
     attach_2 = forms.ImageField(required=False)
     attach_3 = forms.ImageField(required=False)
-    request_auth = forms.BooleanField(required=True)
+    request_auth = forms.BooleanField(required=False)
 
 
 class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, View):
@@ -376,6 +376,7 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 compare_url = reverse('car_cms_fc_app:compare_detail', args=[compare.id])
             return HttpResponseRedirect(compare_url)
         else:
+            print(form.errors)
             template_name = self.get_template()
             context = dict(form=form, type=self.app_type)
             return render(request, template_name=template_name, context=context)
