@@ -612,8 +612,8 @@ class BankAccountView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, 
 class CustomerAuthView(View):
     def get(self, request, compare_id):
         compare = Compare.objects.exclude(danal_auth=None).select_related('danal_auth').get(id=compare_id)
-        if compare.danal_auth.status == DanalAuthStatusChoice.COMPLETE:
-            return HttpResponseRedirect(compare.danal_auth.auth_success_url)
-        else:
-            template_name = 'new_design/car_cms/danal_auth/danal_auth.html'
+        # if compare.danal_auth.status == DanalAuthStatusChoice.COMPLETE:
+        #     return HttpResponseRedirect(compare.danal_auth.auth_success_url)
+        # else:
+        template_name = 'new_design/car_cms/danal_auth/danal_auth.html'
         return render(request, template_name, context={"compare": compare})
