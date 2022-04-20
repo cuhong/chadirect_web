@@ -47,10 +47,10 @@ class DanalAuth(DateTimeMixin, UUIDPkMixin, models.Model):
         uri = reverse('payment:danal_auth', args=[str(self.id)])
         return urllib.parse.urljoin(settings.BASE_URL, uri)
 
-    # @property
-    # def auth_success_url(self):
-    #     uri = reverse('payment:danal_auth_success', args=[str(self.id)])
-    #     return urllib.parse.urljoin(settings.BASE_URL, uri)
+    @property
+    def auth_success_url(self):
+        uri = reverse('payment:danal_auth_success', args=[str(self.id)])
+        return urllib.parse.urljoin(settings.BASE_URL, uri)
 
     @property
     def auth_error_url(self):

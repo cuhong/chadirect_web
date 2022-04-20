@@ -219,7 +219,6 @@ class SignupView(AppTypeCheck, View):
                 return HttpResponseRedirect(reverse('car_cms_fc_app:index'))
 
 
-
 class IndexView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, TemplateView):
     template_name = 'car_cms/index.html'
 
@@ -352,7 +351,8 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 car_name=data['car_name'],
                 car_type=data['car_type'],
                 car_price=data.get('car_price', 0),
-                car_identification=None if data.get('car_identification', None) == "" else data.get('car_identification', None),
+                car_identification=None if data.get('car_identification', None) == "" else data.get(
+                    'car_identification', None),
                 attach_1=data['attach_1'],
                 attach_2=data['attach_2'],
                 attach_3=data['attach_3'],
@@ -608,11 +608,12 @@ class BankAccountView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, 
             response_data = {"result": False, "msg": str(e)}
         return JsonResponse(response_data)
 
+
 class CustomerAuthView(View):
     def get(self, request, compare_id):
         compare = Compare.objects.exclude(danal_auth=None).select_related('danal_auth').get(id=compare_id)
         if compare.danal_auth.status == DanalAuthStatusChoice.COMPLETE:
-            template_name = 'new_design/car_cms/danal_auth/auth_complete.html'
+            return HttpResponseRedirect(compare.danal_auth.auth_success_url)
         else:
             template_name = 'new_design/car_cms/danal_auth/danal_auth.html'
         return render(request, template_name, context={"compare": compare})
