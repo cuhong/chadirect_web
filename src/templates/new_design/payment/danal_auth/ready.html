@@ -8,7 +8,7 @@
         {#<form method="post" accept-charset="EUC-KR" id="authReqeustForm" action="https://wauth.teledit.com/Danal/WebAuth/Mobile/Start.php">#}
         <input name="TID" id="TID" value="{{ danal.tid }}">
         <input name="BackURL" id="BackURL" value="{{ danal.auth_error_url }}">
-        <input name="IsDstAddr" id="IsDstAddr" value="01024846313">
+        <input name="IsDstAddr" id="IsDstAddr" value="{{ danal.phone_no }}">
     </form>
 {#    <button type="button" onclick="auth()">인증</button>#}
 {% endblock %}
