@@ -426,7 +426,8 @@ class CompareDetail(models.Model):
         for _data in _insurance_data:
             insurer = _data.get('insurer')
             if insurer in [
-                VehicleInsurerChoices.HYUNDAI, VehicleInsurerChoices.KB, VehicleInsurerChoices.DB, VehicleInsurerChoices.HANHWA
+                VehicleInsurerChoices.HYUNDAI, VehicleInsurerChoices.KB, VehicleInsurerChoices.DB,
+                VehicleInsurerChoices.HANHWA, VehicleInsurerChoices.HANA
             ]:
                 _min_cost.append(_data.get('expect_cost'))
         min_cost = min(_min_cost)
@@ -442,6 +443,7 @@ class CompareDetail(models.Model):
         insurer_2 = insurance_data.get(VehicleInsurerChoices.DB.value, None)
         insurer_3 = insurance_data.get(VehicleInsurerChoices.KB.value, None)
         insurer_4 = insurance_data.get(VehicleInsurerChoices.HANHWA.value, None)
+        insurer_5 = insurance_data.get(VehicleInsurerChoices.HANA.value, None)
         manager = self.manager or self.compare.user
         data = {
             "manager_name": manager.name,
@@ -465,6 +467,9 @@ class CompareDetail(models.Model):
             "insure_4": "한화손해보험 다이렉트",
             "insure_4_premium": insurer_4.get('expect_cost_string') if insurer_4 else "산출불가",
             "insure_4_memo": "최저" if insurance_data.get(VehicleInsurerChoices.HANHWA.value, {}).get('is_cheapest', False) is True else None,
+            "insure_5": "하나손해보험 다이렉트",
+            "insure_5_premium": insurer_5.get('expect_cost_string') if insurer_5 else "산출불가",
+            "insure_5_memo": "최저" if insurance_data.get(VehicleInsurerChoices.HANA.value, {}).get('is_cheapest', False) is True else None,
             "p_1": "의무",
             "p_2": self.coverage_pdl,
             "p_3": "무한",

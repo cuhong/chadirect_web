@@ -30,6 +30,9 @@ data = {
     "insure_4": "한화손해보험 다이렉트",
     "insure_4_premium": "1,264,425",
     "insure_4_memo": None,
+    "insure_5": "하나손해보험 다이렉트",
+    "insure_5_premium": "1,264,425",
+    "insure_5_memo": None,
     "p_1": "의무",
     "p_2": "5억",
     "p_3": "무한",
@@ -115,6 +118,13 @@ def generate_estimate_image(data, backgroud_image_url=None):
         {"attr_name": "insure_4_premium", "placeholder_position": (2945, 4125, 3912, 4400), "color": color_black,
          "align": "right", "font": kor_font},
         {"attr_name": "insure_4_memo", "placeholder_position": (3913, 4125, 4863, 4400), "color": color_red,
+         "align": "center", "font": kor_font},
+
+        {"attr_name": "insure_5", "placeholder_position": (135, 4400, 2940, 4678), "color": color_black,
+         "align": "center", "font": kor_font},
+        {"attr_name": "insure_5_premium", "placeholder_position": (2945, 4400, 3912, 4678), "color": color_black,
+         "align": "right", "font": kor_font},
+        {"attr_name": "insure_5_memo", "placeholder_position": (3913, 4400, 4863, 4678), "color": color_red,
          "align": "center", "font": kor_font},
 
         {"attr_name": "p_1", "placeholder_position": (1002, 5082, 2940, 5239), "color": color_black, "align": "center",
