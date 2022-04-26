@@ -65,15 +65,12 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     def get_inline_actions(self, request, obj=None):
         actions = super(ComparePendingAdmin, self).get_inline_actions(request, obj)
         if obj:
-            if obj.danal_auth is None:
-                if obj.status == 0 and obj.manager is None:
-                    actions.append('_set_manager')
-            elif obj.danal_auth.status == DanalAuthStatusChoice.COMPLETE:
-                if obj.status == 0 and obj.manager is None:
-                    actions.append('_set_manager')
-            elif obj.danal_auth.status == DanalAuthStatusChoice.READY:
-                    actions.append('_send_auth_sms')
 
+            if obj.status == 0 and obj.manager is None:
+                actions.append('_set_manager')
+            if obj.danal_auth is not None:
+                if obj.danal_auth.status != DanalAuthStatusChoice.COMPLETE:
+                    actions.append('_send_auth_sms')
         return actions
 
     def save_model(self, request, obj, form, change):
