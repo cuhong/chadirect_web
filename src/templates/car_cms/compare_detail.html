@@ -21,18 +21,20 @@
         <div class="header_title" style="line-height: 2.5rem">
             <span class="h3 font-weight-bolder" id="customerNameTitle">{{ compare.customer_name }}</span> 고객님의<br>
             {% if compare.car_type == 0 %}
-                <span class="h3 font-weight-bolder" id="carNameTitle">{{ compare.car_name }}</span> 차량 견적요청
+                <span class="h3 font-weight-bolder" id="carNameTitle">{{ compare.car_name }}</span> 차량 견적요청이<br>
             {% else %}
-                <span class="h3 font-weight-bolder" id="carNoTitle">{{ compare.car_no }}</span> 차량 견적요청
+                <span class="h3 font-weight-bolder" id="carNoTitle">{{ compare.car_no }}</span> 차량 견적요청이<br>
             {% endif %}
+                <span class="h3 font-weight-bolder" style="color: #18becb">{{ compare.get_status_display }}</span> 중 입니다.<br>
+
         </div>
         <div class="mb-3">
-            <div class="d-flex flex-row justify-content-between align-items-center mb-3">
-                <span class="font-weight-bold">견적 상태</span>
-            </div>
+{#            <div class="d-flex flex-row justify-content-between align-items-center mb-3">#}
+{#                <span class="font-weight-bold">견적 상태</span>#}
+{#            </div>#}
             <div class="d-flex flex-row justify-content-between mb-2">
                 <div class="font-weight-light">견적 상태</div>
-                <div id="compareStatusTitle">{{ compare.get_status_display }}</div>
+                <div class="font-weight-bolder" style="color: #18becb" id="compareStatusTitle">{{ compare.get_status_display }}</div>
             </div>
 
             {% if compare.status == 2 %}
