@@ -657,6 +657,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         self.save()
 
     def success_contract(self):
+        # 체결
         if self.status != CompareStatus.CONTRACT:
             raise CarCMSCompareError(9, **{"status_display": self.get_status_display()})
         messages = self.validate_success()
@@ -665,6 +666,13 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         self.status = CompareStatus.CONTRACT_SUCCESS
         self.save()
         self.send_success_contract()
+
+    def revoke_success_contract(self):
+        # 체결 취소
+        if self.status != CompareStatus.CONTRACT_SUCCESS:
+            raise CarCMSCompareError(9, **{"status_display": self.get_status_display()})
+        self.status = CompareStatus.CONTRACT
+        self.save()
 
     def send_success_contract(self):
         from car_cms.models import Message

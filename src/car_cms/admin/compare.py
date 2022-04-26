@@ -316,6 +316,8 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
             if obj.status == CompareStatus.CONTRACT:
                 actions.append('_success_contract')
                 actions.append('_fail_contract')
+            if obj.status == CompareStatus.CONTRACT_SUCCESS:
+                actions.append('_revoke_success_contract')
             # if obj.status in [CompareStatus.CALCULATE_COMPLETE, CompareStatus.DENY, CompareStatus.CONTRACT,
             #                   CompareStatus.CONTRACT_FAIL, CompareStatus.CONTRACT_SUCCESS]:
             #     actions.append('show_estimate')
@@ -384,6 +386,14 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
         else:
             messages.success(request, '체결 실패 처리 되었습니다.')
 
+    def _revoke_success_contract(self, request, obj, parent_obj=None):
+        try:
+            result = obj.revoke_success_contract()
+        except Exception as e:
+            messages.error(request, str(e))
+        else:
+            messages.success(request, '체결 취소 처리 되었습니다.')
+
     def _status_display(self, obj):
         color = "red" if obj.status == 4 else "black"
         weight = "bold" if obj.status == 4 else "normal"
@@ -397,4 +407,5 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     _success_contract.short_description = '체결'
     _fail_contract.short_description = '체결 실패'
     _deny_calculate.short_description = '견적산출 불가'
+    _revoke_success_contract.short_description = '체결 취소'
     # show_estimate.short_description = '비교견적서'
