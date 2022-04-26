@@ -202,6 +202,7 @@ class FindPassword(DateTimeMixin, UUIDPkMixin, models.Model):
         return find_password
 
     def send_email(self, app_type):
+        from car_cms.models import Message
         receiver = self.account.email
         sender = "no-reply@directin.co.kr"
         access_key = settings.NAVER_ACCESS_KEY
@@ -219,6 +220,13 @@ class FindPassword(DateTimeMixin, UUIDPkMixin, models.Model):
             "x-ncp-apigw-signature-v2": signature,
         }
         url = self.get_url(app_type)
+        body_string = f"안녕하세요 {self.account.name}님\n\n차다이렉트 앱 비밀번호 초기화 링크를 보내드립니다. 아래 링크에서 비밀번호를 변경해주세요.\n\n{str(url)}"
+        if self.account.cellphone:
+            message = Message.objects.create(
+                receiver=self.account.cellphone,
+                msg=body_string, msg_type="LMS", title="차다이렉트 비밀번호 변경안내"
+            )
+            message.send()
         body = {
             "senderAddress": sender,
             "senderName": "차다이렉트",
