@@ -57,8 +57,15 @@ class LogoutView(AffiliateUserMixin, DjangoLogoutView):
         return url
 
 
-class IndexView(AffiliateUserMixin, TemplateView):
-    template_name = 'affiliate/index.html'
+# class IndexView(AffiliateUserMixin, TemplateView):
+#     template_name = 'affiliate/index.html'
+
+class IndexView(AffiliateUserMixin, View):
+    def get(self, request):
+        return HttpResponseRedirect(reverse('car_cms_affiliate:user_list'))
+
+    def post(self, request):
+        return HttpResponseRedirect(reverse('car_cms_affiliate:user_list'))
 
 
 class SignupView(TemplateView):
