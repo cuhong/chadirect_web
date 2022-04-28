@@ -1,0 +1,279 @@
+{% extends 'affiliate/base.html' %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui-grid/latest/tui-grid.css"/>
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css"/>
+{% endblock %}
+{% block container %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 p-t-40 p-b-90 p-t-40">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h5 class="">회원 리스트</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="m-b-10">
+                            <form method="get" id="filterForm">
+                                <input hidden id="id_page" name="page" value="{{ page_obj.number }}">
+                                <div class="form-row">
+                                    <div class="form-group floating-label col-md-1">
+                                        <label for="id_name">성명</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               placeholder="성명"
+                                               id="id_name" name="name"
+                                               value="{{ filterform.name.value|default_if_none:'' }}">
+                                    </div>
+                                    <div class="form-group floating-label col-md-1">
+                                        <label for="id_employee_no">사번</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               placeholder="사번"
+                                               id="id_employee_no" name="employee_no"
+                                               value="{{ filterform.employee_no.value|default_if_none:'' }}">
+                                    </div>
+                                    <div class="form-group floating-label col-md-1">
+                                        <label for="id_email">이메일</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               placeholder="이메일"
+                                               id="id_email" name="email"
+                                               value="{{ filterform.email.value|default_if_none:'' }}">
+                                    </div>
+                                    <div class="form-group floating-label col-md-1">
+                                        <label for="id_cellphone">휴대전화</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               placeholder="휴대전화"
+                                               id="id_cellphone" name="cellphone"
+                                               value="{{ filterform.cellphon.value|default_if_none:'' }}">
+                                    </div>
+                                    <div class="form-group floating-label col-md-2">
+                                        <label for="id_sort">정렬</label>
+                                        <select id="id_sort" name="sort" class="form-control form-control-sm">
+                                            <option value="-registered_at"
+                                                    {% if filterform.sort.value|default_if_none:'' == "-registered_at" %}selected{% endif %}>
+                                                가입일 내림차순
+                                            </option>
+                                            <option value="registered_at"
+                                                    {% if filterform.sort.value|default_if_none:'' == "registered_at" %}selected{% endif %}>
+                                                가입일 오름차순
+                                            </option>
+                                            <option value="name"
+                                                    {% if filterform.sort.value|default_if_none:'' == "name" %}selected{% endif %}>
+                                                이름 오름차순
+                                            </option>
+                                            <option value="-name"
+                                                    {% if filterform.sort.value|default_if_none:'' == "-name" %}selected{% endif %}>
+                                                이름 내림차순
+                                            </option>
+                                            <option value="-last_login"
+                                                    {% if filterform.sort.value|default_if_none:'' == "-last_login" %}selected{% endif %}>
+                                                최종로그인 내림차순
+                                            </option>
+                                            <option value="last_login"
+                                                    {% if filterform.sort.value|default_if_none:'' == "last_login" %}selected{% endif %}>
+                                                최종로그인 오름차순
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button class="btn btn-primary btn-block" type="submit">검색</button>
+                                    </div>
+                                    {#                                    <div class="col-md-1">#}
+                                    {#                                        <button class="btn btn-outline-info btn-block" type="reset">초기화</button>#}
+                                    {#                                    </div>#}
+                                </div>
+                            </form>
+
+                        </div>
+                        <div class="m-b-10" id="userListTable"></div>
+                        <div id="userPagination" class="tui-pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade modal-slide-right" id="userDetailModal" tabindex="-1" role="dialog"
+         aria-labelledby="userDetailModalLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userDetailModalLabel">회원 정보</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form class="" action="#">
+                        <input id="id_user_id_detail" value="" hidden>
+                        <div class="form-group">
+                            <label for="id_email_detail">이메일</label>
+                            <input id="id_email_detail" name="email" type="email" class="form-control" readonly
+                                   placeholder="이메일">
+                        </div>
+                        <div class="form-row row">
+                            <div class="form-group col-md-6">
+                                <label for="id_name_detail">성명</label>
+                                <input id="id_name_detail" name="name" type="text" class="form-control">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="id_employee_no_detail">사번</label>
+                                <input id="id_employee_no_detail" name="employee_no" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_cellphone_detail">휴대전화번호</label>
+                            <input id="id_cellphone_detail" name="cellphone" type="text" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="id_is_organization_admin_detail"
+                                       name="is_organization_admin">
+                                <label class="form-check-label" for="id_is_organization_admin_detail">관리자</label>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-primary btn-block" onclick="updateUser()">저장</button>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        닫기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascript %}
+    {{ json_object_list | json_script:"object_list" }}
+    <script src="https://uicdn.toast.com/tui-grid/latest/tui-grid.js"></script>
+    <script src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+    <script>
+        var Grid = tui.Grid;
+        const filterForm = document.getElementById('filterForm')
+        const formPage = document.getElementById('id_page')
+        const userListTable = document.getElementById('userListTable')
+        const userPagination = document.getElementById('userPagination')
+        let page = parseInt('{{ page_obj.number }}')
+        let perPage = parseInt('{{ page_obj.paginator.per_page }}')
+        let totalCount = parseInt('{{ page_obj.paginator.count }}')
+        const userData = JSON.parse(document.getElementById('object_list').textContent)
+        const userGrid = new Grid({
+            el: document.getElementById('userListTable'),
+            data: userData,
+            scrollY: false,
+            columns: [
+                {header: "성명", name: "name", align: "center"},
+                {header: "사번", name: "employee_no", align: "center"},
+                {header: "이메일", name: "email", align: "center"},
+                {header: "휴대전화번호", name: "cellphone", align: "center"},
+                {
+                    header: "관리자", name: "is_organization_admin", formatter: (value) => {
+                        return value.row['is_organization_admin'] === true ? "관리자" : "일반사용자"
+                    }, align: "center"
+                },
+                {
+                    header: "상태", name: "is_active", formatter: (value) => {
+                        return value.row['is_active'] === true ? "활성" : "탈퇴"
+                    }, align: "center"
+                },
+                {header: "가입일시", name: "registered_at", align: "center"},
+                {header: "최종로그인", name: "last_login", align: "center"},
+                {
+                    header: "자세히", name: "id", align: "center", formatter: (value) => {
+                        return `<button class="btn btn-primary userDetailBtn" data-user-id="${value.row.id}" type="button" onclick="showUserModal(this)">자세히</button>`
+                    },
+                    editor: {}
+                },
+            ]
+        });
+        const Pagination = tui.Pagination;
+        const pageInstance = new Pagination(userPagination, {
+            totalItems: totalCount,
+            itemsPerPage: perPage,
+            visiblePages: 10,
+            page: page,
+            centerAlign: true
+        });
+        pageInstance.on('afterMove', (event) => {
+            formPage.value = event.page
+            filterForm.submit()
+        });
+
+        const user_id_detail = document.getElementById('id_user_id_detail')
+        const email_detail = document.getElementById('id_email_detail')
+        const name_detail = document.getElementById('id_name_detail')
+        const employee_no_detail = document.getElementById('id_employee_no_detail')
+        const cellphone_detail = document.getElementById('id_cellphone_detail')
+        const is_organization_admin_detail = document.getElementById('id_is_organization_admin_detail')
+        const cleanUserModal = () => {
+            user_id_detail.value = ''
+            email_detail.value = ''
+            name_detail.value = ''
+            employee_no_detail.value = ''
+            cellphone_detail.value = ''
+            is_organization_admin_detail.checked = false
+        }
+        const showUserModal = (elem) => {
+            cleanUserModal()
+            const userId = elem.getAttribute('data-user-id')
+            const userDetailUrl = `/affiliate/user/${userId}/`
+            axios.get(userDetailUrl, {}).then(response => {
+                const responseData = response.data
+                if (responseData.result) {
+                    const userData = responseData.data
+                    user_id_detail.value = userId
+                    email_detail.value = userData.email
+                    name_detail.value = userData.name
+                    employee_no_detail.value = userData.employee_no
+                    cellphone_detail.value = userData.cellphone
+                    is_organization_admin_detail.checked = userData.is_organization_admin
+                    $("#userDetailModal").modal('show')
+                } else {
+                    alert(responseData.msg)
+                }
+            }).catch(error => {
+                console.log(error)
+                alert('오류 : 잠시 후에 다시 시도하세요.')
+            })
+        }
+        //showUserModal()
+
+        const updateUser = () => {
+            const userId = user_id_detail.value
+            const userDetailUrl = `/affiliate/user/${userId}/`
+            const requestData = {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                name: name_detail.value,
+                employee_no: employee_no_detail.value,
+                cellphone: cellphone_detail.value,
+                is_organization_admin: is_organization_admin_detail.checked,
+            }
+            const params = new URLSearchParams()
+            Object.entries(requestData).forEach((entry) => {
+                console.log(entry[0])
+                console.log(entry[1])
+                params.append(entry[0], entry[1])
+            })
+            axios.post(userDetailUrl, params, {
+                headers: { 'content-type': 'application/x-www-form-urlencoded' }
+            }).then(response => {
+                const responseData = response.data
+                if (responseData.result) {
+                    alert('성공적으로 저장되었습니다.')
+                    location.reload()
+                } else {
+                    alert(responseData.msg)
+                    console.log(responseData.error)
+                }
+            }).catch(error => {
+                console.log(error)
+                alert('오류 : 잠시 후에 다시 시도하세요.')
+            })
+        }
+    </script>
+{% endblock %}

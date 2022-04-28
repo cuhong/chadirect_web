@@ -204,23 +204,23 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'templates', 'static')
 ]
 
-if STAGE == 'local':
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-else:
-    # Storage
-    DEFAULT_FILE_STORAGE = 'itechs.storages.MediaStorage'
-    STATICFILES_STORAGE = 'itechs.storages.StaticStorage'
-    AWS_ACCESS_KEY_ID = env.AWS_ACCESS_KEY_ID
-    AWS_SECRET_ACCESS_KEY = env.AWS_SECRET_ACCESS_KEY
-    AWS_STORAGE_BUCKET_NAME = env.AWS_STORAGE_BUCKET_NAME
-    AWS_DEFAULT_ACL = env.AWS_DEFAULT_ACL
-    AWS_S3_FILE_OVERWRITE = True
-    AWS_S3_OBJECT_PARAMETERS = {
-        'CacheControl': 'max-age=86400',
-    }
-    AWS_S3_REGION_NAME = 'ap-northeast-2'
-    AWS_S3_SIGNATURE_VERSION = 's3v4'
+# if STAGE == 'local':
+#     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# else:
+# Storage
+DEFAULT_FILE_STORAGE = 'itechs.storages.MediaStorage'
+STATICFILES_STORAGE = 'itechs.storages.StaticStorage'
+AWS_ACCESS_KEY_ID = env.AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = env.AWS_SECRET_ACCESS_KEY
+AWS_STORAGE_BUCKET_NAME = env.AWS_STORAGE_BUCKET_NAME
+AWS_DEFAULT_ACL = env.AWS_DEFAULT_ACL
+AWS_S3_FILE_OVERWRITE = True
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_S3_REGION_NAME = 'ap-northeast-2'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
 
 # Encrypted Field
 FIELD_ENCRYPTION_KEYS = env.FIELD_ENCRYPTION_KEYS

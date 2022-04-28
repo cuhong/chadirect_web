@@ -1,0 +1,78 @@
+{% extends 'affiliate/base.html' %}
+{% load static %}
+{% block sidebar %}{% endblock %}
+{% block bodyclass %}jumbo-page{% endblock %}
+
+{% block body %}
+    <main class="admin-main">
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-lg-4  bg-white">
+                    <div class="row align-items-center m-h-100">
+                        <div class="mx-auto col-md-8">
+                            <div class="p-b-20 text-center">
+                                <p>
+                                    <img src="{% static 'car_cms/icons_/maskable_icon_x96.png' %}" width="80" alt="">
+                                </p>
+                                {#                            <p class="admin-brand-content">#}
+                                {#                                차다이렉트#}
+                                {#                            </p>#}
+                            </div>
+                            <h3 class="text-center p-b-20 fw-400">로그인</h3>
+                            <form class="needs-validation" action="" method="post">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <div class="form-group floating-label col-md-12">
+                                        <label for="id_username">이메일</label>
+                                        <input type="email" required class="form-control" placeholder="이메일"
+                                               id="id_username" name="username"
+                                               value="{{ form.username.value|default_if_none:'' }}">
+                                    </div>
+                                    <div class="form-group floating-label col-md-12">
+                                        <label for="id_password">비밀번호</label>
+                                        <input type="password" id="id_password" name="password" required
+                                               class="form-control" placeholder="비밀번호">
+                                    </div>
+                                </div>
+                                {% if form.non_field_errors %}
+                                    <div class="non-field-errors">
+                                        {% for err in form.non_field_errors %}
+                                            <p class="form-error">{{ err }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <button type="submit" class="btn btn-primary btn-block btn-lg">로그인</button>
+                            </form>
+                            {#                        <p class="text-right p-t-10">#}
+                            {#                            <a href="#!" class="text-underline">Forgot Password?</a>#}
+                            {#                        </p>#}
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-8 d-none d-md-block bg-cover" id="bgImage"></div>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}
+{% block extrascript %}
+    <script src="{% static 'atmos/vendor/jquery.validate/jquery.validate.min.js' %}"></script>
+    <script>
+        randomImageUrl(url => {
+            document.getElementById('bgImage').style.backgroundImage = `url('${url}')`
+        })
+        $(".needs-validation").validate({
+            errorClass: "is-invalid",
+            validClass: "is-valid",
+            rules: {
+                username: {required: true, email: true},
+                password: {required: true},
+            },
+            messages: {
+                username: {required: "필수 항목 입니다.", email: "이메일 형식이 올바르지 않습니다."},
+                password: {required: "필수 항목 입니다."},
+            }
+        });
+    </script>
+{% endblock %}

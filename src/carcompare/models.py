@@ -16,7 +16,7 @@ from sequences import get_next_value
 from account.models import Organization
 from carcompare.utils.estimate import generate_estimate_image
 from commons.models import UUIDPkMixin, DateTimeMixin, VehicleInsurerChoices
-from itechs.storages import ProtectedFileStorageRemote, ProtectedFileStorageLocal
+from itechs.storages import ProtectedFileStorage
 
 
 def generate_compare_serial():
@@ -401,7 +401,7 @@ class CompareDetail(models.Model):
     is_success = models.BooleanField(default=None, null=True, blank=True, verbose_name='조회 성공 여부')
     error = models.TextField(null=True, blank=True, verbose_name='에러')
     image = models.ImageField(
-        null=True, blank=True, storage=ProtectedFileStorageRemote(), upload_to=compare_detail_upload_to,
+        null=True, blank=True, storage=ProtectedFileStorage(), upload_to=compare_detail_upload_to,
         verbose_name='견적서 이미지'
     )
 

@@ -15,7 +15,7 @@ from car_cms.exceptions.compare import CarCMSCompareError
 from car_cms.models.upload import compare_attach_upload_to
 from carcompare.utils.estimate import generate_estimate_image
 from commons.models import DateTimeMixin, UUIDPkMixin, VehicleInsurerChoices
-from itechs.storages import ProtectedFileStorage, ProtectedFileStorageRemote
+from itechs.storages import ProtectedFileStorage
 from simple_history.models import HistoricalRecords
 
 from payment.models import DanalAuth
@@ -525,7 +525,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     bank = models.CharField(max_length=300, null=True, blank=True, verbose_name='은행')
     bank_account_no = models.CharField(max_length=300, null=True, blank=True, verbose_name='계좌번호')
     estimate_image = models.ImageField(
-        null=True, blank=True, storage=ProtectedFileStorageRemote(), upload_to=compare_detail_upload_to,
+        null=True, blank=True, storage=ProtectedFileStorage(), upload_to=compare_detail_upload_to,
         verbose_name='견적서 이미지'
     )
     danal_auth = models.ForeignKey(DanalAuth, null=True, blank=True, verbose_name='본인인증', on_delete=models.PROTECT)

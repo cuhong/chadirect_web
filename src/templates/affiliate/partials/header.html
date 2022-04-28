@@ -1,0 +1,60 @@
+<header class="admin-header">
+
+    <a href="#" class="sidebar-toggle" data-toggleclass="sidebar-open" data-target="body"> </a>
+
+{#    <nav class=" mr-auto my-auto">#}
+{#        <ul class="nav align-items-center">#}
+{##}
+{#            <li class="nav-item">#}
+{#                <a class="nav-link  " data-target="#siteSearchModal" data-toggle="modal" href="#">#}
+{#                    <i class=" mdi mdi-magnify mdi-24px align-middle"></i>#}
+{#                </a>#}
+{#            </li>#}
+{#        </ul>#}
+{#    </nav>#}
+    <nav class=" ml-auto">
+        <ul class="nav align-items-center">
+
+{#            <li class="nav-item">#}
+{#                <div class="dropdown">#}
+{#                    <a href="#" class="nav-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+{#                        <i#}
+{#                                class="mdi mdi-24px mdi-bell-outline"></i> </a>#}
+{##}
+{#                    <div class="dropdown-menu notification-container dropdown-menu-right">#}
+{#                        <h6 class="dropdown-header text-center"><span class="mdi mdi-bell-ring"></span> You have 4#}
+{#                            New#}
+{#                            Messages</h6>#}
+{##}
+{#                        <div class="notification-events">#}
+{#                            <div class="list-group list-group-flush">#}
+{#                                <a href="#" class="list-group-item list-group-item-action  text-info text-truncate">#}
+{#                                    <i class="mdi mdi-alert text-info"></i>#}
+{#                                    5 new members joined today#}
+{##}
+{#                                </a>#}
+{##}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <a class="dropdown-item text-center" href="#">View All</a>#}
+{##}
+{#                    </div>#}
+{#                </div>#}
+{#            </li>#}
+            <li class="nav-item dropdown ">
+                <a class="nav-link dropdown-toggle" href="#" id="" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    {{ request.user.name }}
+{#                    <div class="avatar avatar-sm avatar-online">#}
+{#                        <span class="avatar-title rounded-circle bg-accent">V</span>#}
+{#                    </div>#}
+                </a>
+                <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="">
+                    <a class="dropdown-item" href="{% url 'car_cms_affiliate:logout' %}"> 로그아웃</a>
+                </div>
+            </li>
+
+        </ul>
+
+    </nav>
+</header>

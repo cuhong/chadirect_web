@@ -45,8 +45,10 @@ def temp_organization():
 class UserManager(BaseUserManager):
     def create_user(
             self, email, name, cellphone=None, name_card=None, referer_code=None, user_type=None, password=None,
-            organization=None
+            organization=None, is_organization_admin=False
     ):
+        if all([organization is None, is_organization_admin is True]):
+            raise ValueError('관리자 권한을 부여하려는 조직을 지정하세요.')
         if not email:
             raise ValueError('Users must have an email address')
         if organization is not None:
@@ -136,6 +138,9 @@ class User(PermissionsMixin, AbstractBaseUser):
     organization = models.ForeignKey(
         Organization, null=True, blank=True, verbose_name='소속조직', on_delete=models.PROTECT
     )
+    is_organization_admin = models.BooleanField(
+        default=False, null=False, blank=False, verbose_name='조직 관리자'
+    )
     is_active = models.BooleanField(default=True, verbose_name='활성')
     is_admin = models.BooleanField(default=False, verbose_name='관리자(상담원)')
     bank = models.CharField(max_length=300, null=True, blank=True, verbose_name='은행')
@@ -147,6 +152,7 @@ class User(PermissionsMixin, AbstractBaseUser):
         choices=[('fc', '설계사'), ('dealer', '딜러')],
         max_length=50, null=True, blank=True, verbose_name='회원타입'
     )
+    employee_no = models.CharField(max_length=100, null=True, blank=True, verbose_name='사번')
 
     objects = UserManager()
 

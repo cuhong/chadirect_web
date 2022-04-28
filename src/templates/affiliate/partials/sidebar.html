@@ -1,0 +1,103 @@
+{% load static %}
+<aside class="admin-sidebar">
+    <div class="admin-sidebar-brand">
+        <!-- begin sidebar branding-->
+        {% if request.user.organization.small_logo %}
+            <a href="{% url 'car_cms_affiliate:index' %}">
+                <img class="admin-brand-logo" src="{{ request.user.organization.small_logo.url }}" width="150"
+                     alt="atlas Logo">
+            </a>
+            <div class="ml-auto">
+                <!-- sidebar pin-->
+                <a href="#" class="admin-pin-sidebar btn-ghost btn btn-rounded-circle"></a>
+                <!-- sidebar close for mobile device-->
+                <a href="#" class="admin-close-sidebar"></a>
+            </div>
+        {% else %}
+            <span class="admin-brand-content"><a
+                    href="{% url 'car_cms_affiliate:index' %}">{{ request.user.organization.name }}</a></span>
+            <div class="ml-auto">
+                <!-- sidebar pin-->
+                <a href="#" class="admin-pin-sidebar btn-ghost btn btn-rounded-circle"></a>
+                <!-- sidebar close for mobile device-->
+                <a href="#" class="admin-close-sidebar"></a>
+            </div>
+        {% endif %}
+        <!-- end sidebar branding-->
+
+    </div>
+    <div class="admin-sidebar-wrapper js-scrollbar">
+        <!-- Menu List Begins-->
+        <ul class="menu">
+            <!--list item begins-->
+            <li class="menu-item active">
+                <a href="#" class="menu-link">
+                        <span class="menu-label">
+                             <span class="menu-name">공지사항</span>
+                        </span>
+                    <span class="menu-icon">
+{#                                                   <span class="icon-badge badge-success badge badge-pill">1</span>#}
+                        <i class="icon-placeholder mdi mdi-bell-circle"></i>
+                    </span>
+                </a>
+            </li>
+            <!--list item ends-->
+
+            <!--list item begins-->
+            <li class="menu-item ">
+                <a href="#" class="open-dropdown menu-link">
+                        <span class="menu-label">
+                             <span class="menu-name">사용자
+                                <span class="menu-arrow"></span>
+                            </span>
+{#                                                <span class="menu-info">Contains submenu</span>#}
+                        </span>
+                    <span class="menu-icon">
+                        <i class="icon-placeholder mdi mdi-account-group "></i>
+                    </span>
+                </a>
+                <!--submenu-->
+                <ul class="sub-menu">
+                    <li class="menu-item">
+                        <a href="{% url 'car_cms_affiliate:user_list' %}" class=" menu-link">
+                            <span class="menu-label">
+                                <span class="menu-name">목록</span>
+                            </span>
+                            <span class="menu-icon">
+                                <i class="icon-placeholder mdi mdi-view-list "></i>
+                            </span>
+                        </a>
+
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class=" menu-link" onclick="alert('기능 준비중입니다.')">
+                            <span class="menu-label">
+                                <span class="menu-name">등록</span>
+                            </span>
+                            <span class="menu-icon">
+                                <i class="icon-placeholder mdi mdi-plus "></i>
+                            </span>
+                        </a>
+
+                    </li>
+                </ul>
+            </li>
+            <!--list item ends-->
+            <!--list item begins-->
+            <li class="menu-item active">
+                <a href="#" class="menu-link">
+                        <span class="menu-label">
+                             <span class="menu-name">계약 목록</span>
+                        </span>
+                    <span class="menu-icon">
+{#                                                   <span class="icon-badge badge-success badge badge-pill">1</span>#}
+                        <i class="icon-placeholder mdi mdi-view-list"></i>
+                    </span>
+                </a>
+            </li>
+            <!--list item ends-->
+        </ul>
+        <!-- Menu List Ends-->
+    </div>
+
+</aside>

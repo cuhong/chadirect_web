@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 site_header = '차다이렉트'
 admin.site.site_header = site_header
@@ -30,6 +31,7 @@ def sw_view(request):
 
 urlpatterns = [
                   path('', include('car_cms.urls_fc_app', namespace='car_cms_fc_app')),
+                  path('affiliate/', include('car_cms.urls_affiliate', namespace='car_cms_affiliate')),
                   path('payment/', include('payment.urls', namespace='payment')),
                   path('admin/', admin.site.urls),
                   path('carcompare/', include('carcompare.urls', namespace='carcompare')),
@@ -37,4 +39,8 @@ urlpatterns = [
                   path('elb-status/', elb_status),
                   path('manifest.json', manifest_view),
                   path('sw.js', sw_view)
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+              ]
+
+if settings.STAGE == 'local':
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += staticfiles_urlpatterns()

@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta property="og:site_name" content="차다이렉트"/>
+    <title>{% block title %}차다이렉트{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'atmos/img/logo.png' %}"/>
+    <link rel="icon" href="{% static 'atmos/img/logo.png' %}" type="image/png" sizes="16x16">
+
+    <link rel="stylesheet" href="{% static 'atmos/vendor/pace/pace.css' %}">
+    <script src="{% static 'atmos/vendor/pace/pace.min.js' %}"></script>
+    <!--vendors-->
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'atmos/vendor/bootstrap-datepicker/css/bootstrap-datepicker3.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'atmos/vendor/jquery-scrollbar/jquery.scrollbar.css' %}">
+    <link rel="stylesheet" href="{% static 'atmos/vendor/select2/css/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'atmos/vendor/jquery-ui/jquery-ui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'atmos/vendor/daterangepicker/daterangepicker.css' %}">
+    <link rel="stylesheet" href="{% static 'atmos/vendor/timepicker/bootstrap-timepicker.min.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
+    <!--Bootstrap + Atlas Admin CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static 'atmos/css/atmos.min.css' %}">
+    <!--Material Icons-->
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'atmos/fonts/materialdesignicons/materialdesignicons.min.css' %}">
+    <!-- Additional library for page -->
+    <style>
+        body, h1, h2, h3, h4, h5, h6, input, textarea, select { font-family: 'Noto Sans KR', sans-serif; }
+        @import url(http://fonts.googleapis.com/earlyaccess/nanummyeongjo.css);
+        .nnmj {
+            font-family: 'Nanum Myeongjo', serif !important;
+        }
+    </style>
+{% block extrastyle %}
+{% endblock %}
+</head>
+
+<body class="{% block bodyclass %}{% endblock %}">
+<!--sidebar Begins-->
+{% block sidebar %}
+{% include 'affiliate/partials/sidebar.html' %}
+{% endblock %}
+<!--sidebar Ends-->
+
+
+{% block body %}
+    <main class="admin-main">
+
+    <!--site header begins-->
+    {% include 'affiliate/partials/header.html' %}
+    <!--site header ends -->
+    <section class="admin-content">
+        <!-- BEGIN PlACE PAGE CONTENT HERE -->
+        <!--  container or container-fluid as per your need           -->
+        <div class="{% block containerclass %}container-flud{% endblock %}">
+            {% block container %}
+            {% endblock %}
+        </div>
+        <!-- END PLACE PAGE CONTENT HERE -->
+    </section>
+</main>
+
+
+<div class="modal slide-left  fade" id="siteSearchModal" tabindex="-1" role="dialog" aria-labelledby="siteSearchModal"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-body p-all-0" id="site-search">
+                <button type="button" class="close light" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="form-dark bg-accent text-white p-t-60 p-b-20 bg-dots">
+                    <h3 class="text-uppercase    text-center  fw-300 "> Search</h3>
+
+                    <div class="container-fluid">
+                        <div class="col-md-10 p-t-10 m-auto">
+                            <input type="search" placeholder="Search Something"
+                                   class=" search form-control form-control-lg">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="">
+                    <div class="bg-accent text-muted container-fluid p-b-10 text-center text-overline">
+                        results
+                    </div>
+                    <ul class="list-group list  ">
+
+
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="m-r-20">
+                                <div class="avatar avatar-sm "><img class="avatar-img rounded-circle"
+                                                                    src="{% static 'atmos/img/users/user-3.jpg' %}">
+                                </div>
+                            </div>
+                            <div class="">
+                                <div class="name">Eric Chen</div>
+                                <div class="text-muted">Developer</div>
+                            </div>
+
+
+                        </div>
+
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+<script src="{% static 'atmos/vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'atmos/vendor/jquery-ui/jquery-ui.min.js' %}"></script>
+<script src="{% static 'atmos/vendor/popper/popper.js' %}"></script>
+<script src="{% static 'atmos/vendor/bootstrap/js/bootstrap.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'atmos/vendor/select2/js/select2.full.min.js' %}"></script>
+<script src="{% static 'atmos/vendor/jquery-scrollbar/jquery.scrollbar.min.js' %}"></script>
+<script src="{% static 'atmos/vendor/listjs/listjs.min.js' %}"></script>
+<script src="{% static 'atmos/vendor/moment/moment.min.js' %}"></script>
+<script src="{% static 'atmos/vendor/daterangepicker/daterangepicker.js' %}"></script>
+<script src="{% static 'atmos/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'atmos/vendor/bootstrap-notify/bootstrap-notify.min.js' %}"></script>
+<script src="{% static 'atmos/js/atmos.min.js' %}"></script>
+<script src="{% static 'vendor/axios/axios.min.js' %}"></script>
+    <script>
+    const randomImageUrl = (successCallback) => {
+        const apiKey = "563492ad6f917000010000016bcffaa8d1994c57b6726d7f20c029f3"
+        axios.get("https://api.pexels.com/v1/search?query=Nature&orientation=landscape&size=medium", {
+        //axios.get("https://api.pexels.com/v1/curated?page=1", {
+            headers: {
+                Authorization: apiKey
+            }
+        }).then(response => {
+            const photos = response.data.photos
+            const photo = photos[Math.floor(Math.random() * photos.length)]
+            successCallback(photo.src.original)
+        })
+    }
+    </script>
+
+{% block extrascript %}
+{% endblock %}
+</body>
+</html>
