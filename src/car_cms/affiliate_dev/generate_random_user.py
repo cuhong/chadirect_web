@@ -7,9 +7,9 @@ from account.models import Organization, User
 
 faker = Faker('ko_KR')
 
-organization = Organization.objects.get(id=4)
+organization = Organization.objects.get(id=21)
 
-email_list = list(set([faker.email() for i in range(500)]))
+email_list = list(set([faker.email() for i in range(100)]))
 
 user_list = [
     {
@@ -20,3 +20,6 @@ user_list = [
 
 for user in tqdm(user_list):
     created_user = User.objects.create_user(**user)
+
+# pnam@example.net
+# p@assword1!
