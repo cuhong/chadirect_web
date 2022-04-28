@@ -76,6 +76,7 @@ entrypoints==0.3
 et-xmlfile==1.0.1
 ExifRead==2.3.2
 extract-msg==0.23.1
+Faker==13.6.0
 Flask==1.1.2
 Flask-BasicAuth==0.2.0
 funcy==1.14
