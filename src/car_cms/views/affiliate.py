@@ -37,7 +37,7 @@ class AffiliateUserMixin(LoginRequiredMixin, UserPassesTestMixin):
         if self.request.user.is_authenticated:
             url = reverse('car_cms_affiliate:403')
         else:
-            rul = reverse('car_cms_affiliate:login')
+            url = reverse('car_cms_affiliate:login')
         return redirect(url)
 
 
