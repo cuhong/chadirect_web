@@ -7,6 +7,7 @@ import urllib
 import uuid
 
 import requests
+from ckeditor.fields import RichTextField
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 
@@ -41,6 +42,7 @@ def temp_organization():
         org, created = Organization.objects.get_or_create(
             name=organization, defaults={"is_searchable": True}
         )
+
 
 class UserManager(BaseUserManager):
     def create_user(
@@ -83,15 +85,23 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 def small_logo_upload_to(instance, filename):
     ext = filename.split(".")[-1]
     file_path = f"file/car_cms/small_logo/{str(instance.id)}/{str(instance.id)}.{ext}"
     return file_path
 
+
 def estimate_background_upload_to(instance, filename):
     ext = filename.split(".")[-1]
     file_path = f"file/car_cms/estimate_background/{str(instance.id)}/{str(instance.id)}.{ext}"
     return file_path
+
+
+def generate_guid():
+    u_string = str(uuid.uuid4())
+    return u_string.split("-")[0]
+
 
 class Organization(models.Model):
     class Meta:
@@ -111,6 +121,9 @@ class Organization(models.Model):
     is_searchable = models.BooleanField(
         default=False, null=False, blank=False, verbose_name='검색 표시'
     )
+    guid = models.CharField(max_length=30, null=False, blank=False, default=generate_guid, editable=False)
+    service_policy = RichTextField(null=True, blank=True, verbose_name='서비스 이용약관(계약서)')
+    privacy_policy = RichTextField(null=True, blank=True, verbose_name='개인정보 처리방침')
 
     def __str__(self):
         return self.name

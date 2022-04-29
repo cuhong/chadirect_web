@@ -1,19 +1,21 @@
 import json
 
 from django import forms
+from django.contrib.auth import login as django_login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.views import LoginView as DjangoLoginView
 from django.contrib.auth.views import LogoutView as DjangoLogoutView
+from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import redirect
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
+from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView, ListView
 from rest_framework.views import APIView
 
-from account.models import User
+from account.models import User, Organization
 from django.contrib.auth import logout as auth_logout
 
 
@@ -85,8 +87,64 @@ class SignupView(TemplateView):
     pass
 
 
-class ExternalSignupView(TemplateView):
-    pass
+class SignupForm(forms.Form):
+    name = forms.CharField(required=True)
+    cellphone = forms.CharField(required=True)
+    username = forms.EmailField(required=True)
+    password = forms.CharField(required=True)
+    password2 = forms.CharField(required=True)
+    namecard = forms.ImageField(required=True)
+
+    def clean(self):
+        vd = super(SignupForm, self).clean()
+        if vd['password'] != vd['password2']:
+            raise ValidationError({"password2": '비밀번호가 일치하지 않습니다.'})
+        return self.cleaned_data
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        try:
+            user = User.objects.get(email=username)
+        except User.DoesNotExist:
+            return username
+        else:
+            raise ValidationError('이미 사용중인 이메일입니다.')
+
+
+class ExternalSignupView(View):
+    def get(self, request):
+        guid = request.GET.get('guid')
+        form = SignupForm()
+        organization = get_object_or_404(Organization, guid=guid)
+        return render(request, 'affiliate/auth/signup/external.html', context={"organization": organization, "form": form})
+
+    def post(self, request):
+        form = SignupForm(data=request.POST, files=request.FILES)
+        try:
+            guid = request.GET.get('guid')
+            organization = Organization.objects.get(guid=guid)
+            if form.is_valid() is True:
+                data = form.cleaned_data
+                user = User.objects.create_user(
+                    email=data.get('username'), name=data.get('name'), password=data.get('password'),
+                    cellphone=data.get('cellphone'), name_card=data.get('namecard'),
+                    user_type='fc', organization=organization
+                )
+                django_login(request, user)
+                return redirect(reverse('car_cms_fc_app:index'))
+            else:
+                return render(
+                    request, 'affiliate/auth/signup/external.html', context={"organization": organization, "form": form}
+                )
+        except Organization.DoesNotExist:
+            return HttpResponse('존재하지 않는 조직 코드입니다.')
+        except Exception as e:
+            print(e)
+            return render(
+                request, 'affiliate/auth/signup/external.html', context={
+                    "organization": organization, "form": form, "error": str(e)
+                }
+            )
 
 
 class UserListFilterForm(forms.Form):

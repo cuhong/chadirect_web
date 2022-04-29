@@ -1,0 +1,149 @@
+{% extends 'affiliate/base.html' %}
+{% load static %}
+{% block sidebar %}
+{% endblock %}
+
+{% block adminmainstyle %}
+    padding-left:0 ; padding-right:0
+{% endblock %}
+
+{% block header %}
+    <header class="admin-header px-0">
+        <nav class="mr-auto ml-4">
+            <span class="h5">차다이렉트 회원가입</span>
+        </nav>
+        <nav class="ml-auto mr-4">
+            {% if organization.small_logo %}
+                <img class="admin-brand-logo" src="{{ organization.small_logo.url }}" width="150" alt="atlas Logo">
+            {% else %}
+                <span class="h5 font-weight-bold">{{ organization.name }}</span>
+            {% endif %}
+        </nav>
+    </header>
+{% endblock %}
+
+{% block container %}
+    <div class="container">
+        <div class="row flex justify-content-center">
+            <div class="col-md-6 p-t-40 p-b-90 p-t-40">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h5 class="">회원 가입을 위해 아래 양식을 작성해주세요</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form class="needs-validation" action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="id_name" class="font-weight-bolder">성명</label>
+                                    <input type="text" class="form-control form-control-lg" placeholder="성명"
+                                           id="id_name" name="name"
+                                           value="{{ form.name.value|default_if_none:'' }}">
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="id_username" class="font-weight-bolder">이메일</label>
+                                    <input type="text" class="form-control form-control-lg" placeholder="이메일"
+                                           id="id_username" name="username"
+                                           value="{{ form.username.value|default_if_none:'' }}">
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="id_cellphone" class="font-weight-bolder">휴대전화</label>
+                                    <input type="text" class="form-control form-control-lg" placeholder="휴대전화"
+                                           id="id_cellphone" name="cellphone"
+                                           value="{{ form.cellphone.value|default_if_none:'' }}">
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="id_namecard" class="font-weight-bolder">명함사진</label>
+                                    <input type="file" class="form-control form-control-lg" placeholder="명함사진"
+                                           id="id_namecard" name="namecard">
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="id_password" class="font-weight-bolder">비밀번호</label>
+                                    <input type="password" id="id_password" name="password" required
+                                           class="form-control form-control-lg" placeholder="비밀번호">
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="id_password2" class="font-weight-bolder">비밀번호 확인</label>
+                                    <input type="password" id="id_password2" name="password2" required
+                                           class="form-control form-control-lg" placeholder="비밀번호 확인">
+                                </div>
+                            </div>
+                            <div class="m-b-10">
+                                <label for="" class="font-weight-bolder">서비스 이용 계약서</label>
+                                <div style="overflow-y: auto; height: 200px" class="border p-2 m-b-5">
+                                    {% autoescape off %}
+                                        {{ organization.service_policy }}
+                                    {% endautoescape %}
+                                </div>
+                                <label class="cstm-switch">
+                                    <input type="checkbox" name="servicePolicy" value="1" class="cstm-switch-input">
+                                    <span class="cstm-switch-indicator"></span>
+                                    <span class="cstm-switch-description">서비스 이용 계약 동의</span>
+                                </label>
+                            </div>
+                            <div class="m-b-10">
+                                <label for="" class="font-weight-bolder">개인정보 처리 방침</label>
+                                <div style="overflow-y: auto; height: 200px" class="border p-2 m-b-5">
+                                    {% autoescape off %}
+                                        {{ organization.privacy_policy }}
+                                    {% endautoescape %}
+                                </div>
+                                <label class="cstm-switch">
+                                    <input type="checkbox" name="privacyPolicy" value="1" class="cstm-switch-input">
+                                    <span class="cstm-switch-indicator"></span>
+                                    <span class="cstm-switch-description">개인정보 처리 방침 동의</span>
+                                </label>
+                            </div>
+
+                            {% if form.non_field_errors %}
+                                <div class="non-field-errors">
+                                    {% for err in form.non_field_errors %}
+                                        <p class="form-error">{{ err }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% for k, v in form.errors.items %}
+                                {{ k }} {{ v }}
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary btn-block btn-lg">회원가입</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascript %}
+    <script src="{% static 'atmos/vendor/jquery.validate/jquery.validate.min.js' %}"></script>
+    <script>
+        $(".needs-validation").validate({
+            errorClass: "is-invalid",
+            validClass: "is-valid",
+            rules: {
+                name: {required: true},
+                cellphone: {required: true},
+                username: {required: true, email: true},
+                password: {required: true},
+                password2: {required: true, equalTo: "#id_password"},
+                servicePolicy: {required: true},
+                privacyPolicy: {required: true},
+            },
+            messages: {
+                name: {required: "필수 항목 입니다."},
+                cellphone: {required: "필수 항목 입니다."},
+                username: {required: "필수 항목 입니다.", email: "이메일 형식이 올바르지 않습니다."},
+                password: {required: "필수 항목 입니다."},
+                password2: {required: "필수 항목 입니다.", equalTo: "비밀번호가 일치하지 않습니다"},
+                servicePolicy: {required: "필수 동의 항목입니다."},
+                privacyPolicy: {required: "필수 동의 항목입니다."},
+            }
+        });
+
+        {% if error %}
+            alert('{{ error }}')
+        {% endif %}
+    </script>
+{% endblock %}

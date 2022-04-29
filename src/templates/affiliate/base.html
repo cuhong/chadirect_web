@@ -52,10 +52,12 @@
 
 
 {% block body %}
-    <main class="admin-main">
+    <main class="admin-main" style="{% block adminmainstyle %}{% endblock %}">
 
     <!--site header begins-->
-    {% include 'affiliate/partials/header.html' %}
+    {% block header %}
+        {% include 'affiliate/partials/header.html' %}
+    {% endblock %}
     <!--site header ends -->
     <section class="admin-content">
         <!-- BEGIN PlACE PAGE CONTENT HERE -->
