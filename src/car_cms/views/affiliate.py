@@ -19,6 +19,7 @@ from django.contrib.auth import logout as auth_logout
 
 class AffiliateUserMixin(LoginRequiredMixin, UserPassesTestMixin):
     login_url = "/affiliate/login/"
+
     def test_func(self):
         if self.request.user.is_authenticated is True:
             return all([self.request.user.is_active, self.request.user.is_organization_admin])
@@ -38,7 +39,7 @@ class AffiliateUserMixin(LoginRequiredMixin, UserPassesTestMixin):
 
 
 # /Users/cuhong/dev/itechs/chadirect/src/templates/static/atmos/css/atmos.min.css
-class Handle403View(LoginRequiredMixin, TemplateView):
+class Handle403View(TemplateView):
     template_name = 'affiliate/auth/403.html'
 
 
