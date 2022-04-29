@@ -32,12 +32,13 @@ class AffiliateUserMixin(LoginRequiredMixin, UserPassesTestMixin):
         return url
 
     def handle_no_permission(self):
-        auth_logout(self.request)
-        url = reverse('car_cms_affiliate:login')
+        url = reverse('car_cms_affiliate:403')
         return redirect(url)
 
 
 # /Users/cuhong/dev/itechs/chadirect/src/templates/static/atmos/css/atmos.min.css
+class Handle403View(LoginRequiredMixin, TemplateView):
+    template_name = 'affiliate/auth/403.html'
 
 class LoginView(DjangoLoginView):
     template_name = 'affiliate/auth/login.html'

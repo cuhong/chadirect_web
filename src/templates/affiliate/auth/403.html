@@ -1,0 +1,41 @@
+{% extends 'affiliate/base.html' %}
+{% load static %}
+{% block sidebar %}{% endblock %}
+{% block bodyclass %}jumbo-page{% endblock %}
+
+{% block body %}
+    <main class="admin-main">
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-lg-4  bg-white">
+                    <div class="row align-items-center m-h-100">
+                        <div class="mx-auto col-md-8">
+                            <div class="p-b-20 text-center">
+                                <p>
+                                    <img src="{% static 'car_cms/icons_/maskable_icon_x96.png' %}" width="80" alt="">
+                                </p>
+                            </div>
+                            <h6 class="text-center fw-400">현재 로그인된 계정</h6>
+                            <h6 class="text-center fw-400 font-weight-bolder">{{ request.user.email }}은 관리자 권한이 없습니다.</h6>
+                            <h6 class="text-center p-b-20 fw-400">로그아웃 후 관리자 계정으로 로그인하세요.</h6>
+                            <button type="button" class="btn btn-primary btn-block btn-lg" onclick="logout()">로그아웃</button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-8 d-none d-md-block bg-cover" id="bgImage"></div>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}
+{% block extrascript %}
+    <script>
+        randomImageUrl(url => {
+            document.getElementById('bgImage').style.backgroundImage = `url('${url}')`
+        })
+        const logout = () => {
+            location.href = "{% url 'car_cms_affiliate:logout' %}"
+        }
+    </script>
+{% endblock %}
