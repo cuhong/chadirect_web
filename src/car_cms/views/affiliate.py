@@ -34,7 +34,10 @@ class AffiliateUserMixin(LoginRequiredMixin, UserPassesTestMixin):
         return url
 
     def handle_no_permission(self):
-        url = reverse('car_cms_affiliate:403')
+        if self.request.user.is_authenticated:
+            url = reverse('car_cms_affiliate:403')
+        else:
+            rul = reverse('car_cms_affiliate:login')
         return redirect(url)
 
 
