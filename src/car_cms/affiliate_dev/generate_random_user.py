@@ -21,5 +21,8 @@ user_list = [
 for user in tqdm(user_list):
     created_user = User.objects.create_user(**user)
 
-# pnam@example.net
-# p@assword1!
+"""
+test@example.com
+1234
+
+"""

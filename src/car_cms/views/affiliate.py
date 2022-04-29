@@ -7,13 +7,14 @@ from django.contrib.auth.views import LogoutView as DjangoLogoutView
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView, ListView
 from rest_framework.views import APIView
 
 from account.models import User
-
+from django.contrib.auth import logout as auth_logout
 
 class AffiliateUserMixin(LoginRequiredMixin, UserPassesTestMixin):
 
@@ -29,6 +30,11 @@ class AffiliateUserMixin(LoginRequiredMixin, UserPassesTestMixin):
     def get_login_url(self):
         url = reverse('car_cms_affiliate:login')
         return url
+
+    def handle_no_permission(self):
+        auth_logout(self.request)
+        url = reverse('car_cms_affiliate:login')
+        return redirect(url)
 
 
 # /Users/cuhong/dev/itechs/chadirect/src/templates/static/atmos/css/atmos.min.css
