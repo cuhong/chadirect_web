@@ -58,7 +58,7 @@ class LoginView(DjangoLoginView):
         return context
 
 
-class LogoutView(AffiliateUserMixin, DjangoLogoutView):
+class LogoutView(DjangoLogoutView):
     def get_next_page(self):
         url = reverse('car_cms_affiliate:login')
         return url
