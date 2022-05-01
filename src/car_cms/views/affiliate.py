@@ -1,5 +1,6 @@
 import json
 
+from dateutil.relativedelta import relativedelta
 from django import forms
 from django.contrib.auth import login as django_login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
@@ -17,6 +18,9 @@ from rest_framework.views import APIView
 
 from account.models import User, Organization
 from django.contrib.auth import logout as auth_logout
+
+from car_cms.models import Compare, CompareStatus, CustomerTypeChoices, ChannelChoices
+from commons.models import VehicleInsurerChoices
 
 
 class AffiliateUserMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -77,10 +81,13 @@ class LogoutView(DjangoLogoutView):
 
 class IndexView(AffiliateUserMixin, View):
     def get(self, request):
-        return HttpResponseRedirect(reverse('car_cms_affiliate:user_list'))
+        # return render(request, 'affiliate/index.html')
+        url = reverse('car_cms_affiliate:user_list')
+        return HttpResponseRedirect(url)
 
     def post(self, request):
-        return HttpResponseRedirect(reverse('car_cms_affiliate:user_list'))
+        url = reverse('car_cms_affiliate:user_list')
+        return HttpResponseRedirect(url)
 
 
 class SignupView(TemplateView):
@@ -254,3 +261,75 @@ class UserDetailView(AffiliateUserMixin, View):
         except Exception as e:
             response_data = {"result": False, "msg": f"기타 에러 : {str(e)}"}
         return JsonResponse(response_data)
+
+
+class AddUserView(View):
+    def get(self, request):
+        url = request.user.organization.external_signup_url
+        return render(request, 'affiliate/auth/signup/add_user.html', context={"url": url})
+
+
+
+class ContractListFilterForm(forms.Form):
+    status = forms.CharField(required=False)
+
+    def create_query(self):
+        data = self.cleaned_data
+        q = Q()
+        if data.get('status') != "":
+            q.add(Q(status=data.get('status')), q.AND)
+        return q
+
+
+class ContractListView(AffiliateUserMixin, ListView):
+    template_name = 'affiliate/contract/list.html'
+    queryset = Compare.objects.all()
+
+    def get_paginate_by(self, queryset):
+        return self.request.POST.get('perPage', 30)
+
+    def get_queryset(self):
+        queryset = super(ContractListView, self).get_queryset()
+        queryset = queryset.values(
+            'id', 'account__name', 'account__cellphone', 'serial', 'status', 'insurer', 'premium', 'customer_type', 'channel', 'registered_at'
+        ).filter(account__organization=self.request.user.organization)
+
+        filterform = ContractListFilterForm(self.request.GET)
+        if filterform.is_valid():
+            query = filterform.create_query()
+            queryset = queryset.filter(query)
+        else:
+            queryset = queryset.none()
+        return queryset
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ContractListView, self).get_context_data(*args, **kwargs)
+        # user_list = []
+        # for user in context.get('object_list'):
+        #     user_dict = dict(user)
+        #     user_dict['registered_at'] = user_dict['registered_at'].strftime("%Y-%m-%d %H:%M:%S")
+        #     user_dict['last_login'] = "미접속" if user_dict['last_login'] is None else user_dict['last_login'].strftime(
+        #         "%Y-%m-%d %H:%M:%S")
+        #     user_list.append(user_dict)
+        # context['json_object_list'] = user_list
+        filterform = ContractListFilterForm(self.request.GET)
+        context['filterform'] = filterform
+        queryset = context.get('object_list')
+        contract_list = [{
+            "id": contract.get('id'),
+            "account_name": f"{contract.get('account__name')}",
+            "serial": contract.get('serial'),
+            "status": contract.get('status'),
+            "status_display": CompareStatus(contract.get('status')).label,
+            "insurer": contract.get('insurer'),
+            "insurer_display": VehicleInsurerChoices(contract.get('insurer')).label if contract.get('insurer') else "-",
+            "premium": contract.get('premium'),
+            "customer_type": contract.get('customer_type'),
+            "customer_type_display": CustomerTypeChoices(contract.get('customer_type')).label,
+            "channel": contract.get('channel'),
+            "channel_display": ChannelChoices(contract.get('channel')).label,
+            "registered_at": (contract.get('registered_at') + relativedelta(hours=9)).strftime("%Y-%m-%d %H:%M:%S"),
+        } for contract in queryset]
+        context['contract_list'] = contract_list
+        context['status_list'] = CompareStatus.choices
+        return context

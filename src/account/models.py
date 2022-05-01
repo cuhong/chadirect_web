@@ -128,6 +128,14 @@ class Organization(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def external_signup_url(self):
+        base_url = settings.BASE_URL
+        uri = reverse('car_cms_affiliate:signup_external')
+        url = urllib.parse.urljoin(base_url, uri)
+        url += f"?guid={self.guid}"
+        return url
+
 
 class User(PermissionsMixin, AbstractBaseUser):
     class Meta:

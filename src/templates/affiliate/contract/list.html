@@ -1,0 +1,158 @@
+{% extends 'affiliate/base.html' %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui-grid/latest/tui-grid.css"/>
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css"/>
+{% endblock %}
+
+{% block container %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 p-t-40 p-b-90 p-t-40">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h5 class="">계약 리스트</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form method="get" id="filterForm">
+                            <input hidden id="id_page" name="page" value="{{ page_obj.number }}">
+                            <div class="form-row">
+                                <div class="form-group floating-label col-md-2">
+                                    <label for="id_status">정렬</label>
+                                    <select id="id_status" name="status" class="form-control form-control-sm">
+                                    <option value="">전체</option>
+                                        {% for status in status_list %}
+                                            <option value="{{ status.0 }}" {% if status.0 == filterform.status.value %}selected{% endif %}>{{ status.1 }}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                </div>
+                                <div class="col-md-1">
+                                    <button class="btn btn-primary btn-block" type="submit">검색</button>
+                                </div>
+                            </div>
+                        </form>
+                        {#                        <div class="m-b-10">#}
+                        {#                            <form method="get" id="filterForm">#}
+                        {#                                <input hidden id="id_page" name="page" value="{{ page_obj.number }}">#}
+                        {#                                <div class="form-row">#}
+                        {#                                    <div class="form-group floating-label col-md-1">#}
+                        {#                                        <label for="id_name">성명</label>#}
+                        {#                                        <input type="text" class="form-control form-control-sm"#}
+                        {#                                               placeholder="성명"#}
+                        {#                                               id="id_name" name="name"#}
+                        {#                                               value="{{ filterform.name.value|default_if_none:'' }}">#}
+                        {#                                    </div>#}
+                        {#                                    <div class="form-group floating-label col-md-1">#}
+                        {#                                        <label for="id_employee_no">사번</label>#}
+                        {#                                        <input type="text" class="form-control form-control-sm"#}
+                        {#                                               placeholder="사번"#}
+                        {#                                               id="id_employee_no" name="employee_no"#}
+                        {#                                               value="{{ filterform.employee_no.value|default_if_none:'' }}">#}
+                        {#                                    </div>#}
+                        {#                                    <div class="form-group floating-label col-md-1">#}
+                        {#                                        <label for="id_email">이메일</label>#}
+                        {#                                        <input type="text" class="form-control form-control-sm"#}
+                        {#                                               placeholder="이메일"#}
+                        {#                                               id="id_email" name="email"#}
+                        {#                                               value="{{ filterform.email.value|default_if_none:'' }}">#}
+                        {#                                    </div>#}
+                        {#                                    <div class="form-group floating-label col-md-1">#}
+                        {#                                        <label for="id_cellphone">휴대전화</label>#}
+                        {#                                        <input type="text" class="form-control form-control-sm"#}
+                        {#                                               placeholder="휴대전화"#}
+                        {#                                               id="id_cellphone" name="cellphone"#}
+                        {#                                               value="{{ filterform.cellphon.value|default_if_none:'' }}">#}
+                        {#                                    </div>#}
+                        {#                                    <div class="form-group floating-label col-md-2">#}
+                        {#                                        <label for="id_sort">정렬</label>#}
+                        {#                                        <select id="id_sort" name="sort" class="form-control form-control-sm">#}
+                        {#                                            <option value="-registered_at"#}
+                        {#                                                    {% if filterform.sort.value|default_if_none:'' == "-registered_at" %}selected{% endif %}>#}
+                        {#                                                가입일 내림차순#}
+                        {#                                            </option>#}
+                        {#                                            <option value="registered_at"#}
+                        {#                                                    {% if filterform.sort.value|default_if_none:'' == "registered_at" %}selected{% endif %}>#}
+                        {#                                                가입일 오름차순#}
+                        {#                                            </option>#}
+                        {#                                            <option value="name"#}
+                        {#                                                    {% if filterform.sort.value|default_if_none:'' == "name" %}selected{% endif %}>#}
+                        {#                                                이름 오름차순#}
+                        {#                                            </option>#}
+                        {#                                            <option value="-name"#}
+                        {#                                                    {% if filterform.sort.value|default_if_none:'' == "-name" %}selected{% endif %}>#}
+                        {#                                                이름 내림차순#}
+                        {#                                            </option>#}
+                        {#                                            <option value="-last_login"#}
+                        {#                                                    {% if filterform.sort.value|default_if_none:'' == "-last_login" %}selected{% endif %}>#}
+                        {#                                                최종로그인 내림차순#}
+                        {#                                            </option>#}
+                        {#                                            <option value="last_login"#}
+                        {#                                                    {% if filterform.sort.value|default_if_none:'' == "last_login" %}selected{% endif %}>#}
+                        {#                                                최종로그인 오름차순#}
+                        {#                                            </option>#}
+                        {#                                        </select>#}
+                        {#                                    </div>#}
+                        {#                                    <div class="col-md-1">#}
+                        {#                                        <button class="btn btn-primary btn-block" type="submit">검색</button>#}
+                        {#                                    </div>#}
+                        {#                                    <div class="col-md-1">#}
+                        {#                                        <button class="btn btn-outline-info btn-block" type="reset">초기화</button>#}
+                        {#                                    </div>#}
+                        {#                                </div>#}
+                        {#                            </form>#}
+                        {#                        </div>#}
+                        <div class="m-b-10" id="contractListTable"></div>
+                        <div id="contractPagination" class="tui-pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascript %}
+    {{ contract_list | json_script:"contract_list" }}
+    <script src="https://uicdn.toast.com/tui-grid/latest/tui-grid.js"></script>
+    <script src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+    <script>
+        var Grid = tui.Grid;
+        const filterForm = document.getElementById('filterForm')
+        const formPage = document.getElementById('id_page')
+        const contractListTable = document.getElementById('contractListTable')
+        const contractPagination = document.getElementById('contractPagination')
+        let page = parseInt('{{ page_obj.number }}')
+        let perPage = parseInt('{{ page_obj.paginator.per_page }}')
+        let totalCount = parseInt('{{ page_obj.paginator.count }}')
+        const contractData = JSON.parse(document.getElementById('contract_list').textContent)
+        const userGrid = new Grid({
+            el: document.getElementById('contractListTable'),
+            data: contractData,
+            scrollY: false,
+            columns: [
+                {header: "계약번호", name: "serial", align: "center"},
+                {header: "FC", name: "account_name", align: "center"},
+                {header: "채널", name: "channel_display", align: "center"},
+                {header: "고객타입", name: "customer_type_display", align: "center"},
+                {header: "진행상태", name: "status_display", align: "center"},
+                {header: "보험사", name: "insurer_display", align: "center"},
+                {header: "보험료", name: "premium", align: "center"},
+                {header: "요청일시", name: "registered_at", align: "center"},
+            ]
+        });
+        const Pagination = tui.Pagination;
+        const pageInstance = new Pagination(contractPagination, {
+            totalItems: totalCount,
+            itemsPerPage: perPage,
+            visiblePages: 10,
+            page: page,
+            centerAlign: true
+        });
+        pageInstance.on('afterMove', (event) => {
+            formPage.value = event.page
+            filterForm.submit()
+        });
+    </script>
+{% endblock %}
