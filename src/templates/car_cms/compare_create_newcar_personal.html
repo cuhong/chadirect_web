@@ -183,7 +183,10 @@
         {% include 'car_cms/partials/manufacturer.html' %}
     </div>
 
-    <script>
+
+{% endblock %}
+{% block extrascript %}
+        <script>
         const autoRefresh = false
         const compareForm = document.getElementById('compareForm')
         const requestAuth = document.getElementById('requestAuth')
@@ -325,6 +328,4 @@
             //overlay.off()
         })
     </script>
-{% endblock %}
-{% block extrascript %}
 {% endblock %}
