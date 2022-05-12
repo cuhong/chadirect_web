@@ -62,7 +62,7 @@ class CustomerTypeChoices(models.IntegerChoices):
 
 class CarTypeChoices(models.IntegerChoices):
     NEW = 0, '신차'
-    USED = 1, '중고차'
+    USED = 1, '기존 차량'
 
 
 class BodilyInjuryChoices(models.IntegerChoices):

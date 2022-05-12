@@ -89,7 +89,7 @@
                     </div>
                 </div>
                 <input id="id_car_type" name="car_type" value="1" hidden placeholder="차량유형">
-                <input id="id_car_name" name="car_name" value="중고차" hidden placeholder="차명">
+                <input id="id_car_name" name="car_name" value="기존 차량" hidden placeholder="차명">
                 <div class="form-group">
                     <label>차량번호 <span class="color-danger">*</span></label>
                     <input autofocus placeholder="차량번호" class="form-control-cc form-control-lg is-valid" type="text"
@@ -251,7 +251,7 @@
             if (car_type.value === "1") {
                 // 중고차
                 if (car_identification.value === "") {
-                    alert('중고차는 차량번호가 필수입니다.')
+                    alert('기존 차량은 차량번호가 필수입니다.')
                     return false
                 }
             }
