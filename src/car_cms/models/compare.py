@@ -549,7 +549,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
 감사합니다.
 """
         message = Message.objects.create(
-            receiver=self.account.cellphone,
+            receiver=self.customer_cellphone,
             msg=body, msg_type="LMS", title="자동차보험 설계 안내"
         )
         message.send()
