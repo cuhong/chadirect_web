@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     'import_export',
     'simple_history',
     'daterangefilter',
+    'link.apps.LinkConfig',
     'sequences.apps.SequencesConfig',
     'commons.apps.CommonsConfig',
     'account.apps.AccountConfig',
