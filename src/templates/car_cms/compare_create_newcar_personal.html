@@ -252,7 +252,15 @@
                 alert('고객명을 입력하세요.')
                 return false
             }
-            customer_identification_display
+            if (ssnprefix.value.length !== 6) {
+                alert('주빈번호 앞자리는 6자리 숫자입니다.')
+                return false
+            }
+            if (ssnsuffix.value.length !== 7) {
+                alert('주빈번호 뒷자리는 7자리 숫자입니다.')
+                return false
+            }
+            customer_identification.value = `${ssnprefix.value}${ssnsuffix.value}`
             if (customer_identification.value === '') {
                 alert('주민/사업자번호를 입력하세요.')
                 return false
@@ -275,7 +283,7 @@
             } else if (isValideDateString(min_age_birthdate.value) !== true) {
                 alert('최저연령 운전자 생년월일 형식이 올바르지 않습니다. yyyymmdd 형태 8자리로 입력해주세요.')
                 return false
-            }자
+            }
             if (car_type.value === "1") {
                 // 중고차
                 if (car_identification.value === "") {
