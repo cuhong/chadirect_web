@@ -246,7 +246,8 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
                 }),
                 ('설계', {
                     'fields': (
-                        'estimate_image', 'estimate_image_2', 'estimate_image_3',
+                        'estimate_image', 'estimate_image_2',
+                        'estimate_image_3',
                         ('insured_name', 'birthdate'), ('car_no', 'vin', 'car_name_fixed'),
                         ('start_at', 'driver_range_fixed', 'min_age', 'min_age_birthdate',),
                         ('bi_2', 'self_injury', 'uninsured'), ('li', 'self_damage'), ('emergency', 'blackbox'),
