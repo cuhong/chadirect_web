@@ -528,6 +528,14 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         null=True, blank=True, storage=ProtectedFileStorage(), upload_to=compare_detail_upload_to,
         verbose_name='견적서 이미지'
     )
+    estimate_image_2 = models.ImageField(
+        null=True, blank=True, storage=ProtectedFileStorage(), upload_to=compare_detail_upload_to,
+        verbose_name='견적서 이미지'
+    )
+    estimate_image_3 = models.ImageField(
+        null=True, blank=True, storage=ProtectedFileStorage(), upload_to=compare_detail_upload_to,
+        verbose_name='견적서 이미지'
+    )
     danal_auth = models.ForeignKey(DanalAuth, null=True, blank=True, verbose_name='본인인증', on_delete=models.PROTECT)
 
     @property
