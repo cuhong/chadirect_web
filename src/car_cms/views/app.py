@@ -483,11 +483,20 @@ class CompareEstimateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMix
         return render(request, template_name, context=context)
 
     def post(self, request, compare_id):
+        no = request.POST.get('no')
         compare = Compare.objects.exclude(status__in=[CompareStatus.REQUEST, CompareStatus.CALCULATE]).get(
             id=compare_id
         )
+        if no is None:
+            estimate_image = compare.estimate_image.url
+        elif str(no) == "1":
+            estimate_image = compare.estimate_image.url
+        elif str(no) == "2":
+            estimate_image = compare.estimate_image2.url
+        elif str(no) == "2":
+            estimate_image = compare.estimate_image3.url
         context = dict(
-            url=compare.estimate_image.url
+            url=estimate_image.url
         )
         return JsonResponse(context)
 
