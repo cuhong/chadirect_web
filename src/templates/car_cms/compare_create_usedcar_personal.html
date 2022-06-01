@@ -48,15 +48,16 @@
                 </div>
                 <div class="form-group">
                     <label>주민번호 <span class="color-danger">*</span></label>
-                    <input autofocus placeholder="주민번호" class="form-control-cc form-control-lg is-valid"
-                           type="text"
-                           id="id_customer_identification_display"
-                           pattern="[0-9]*"
-                           inputmode="numeric"
-                           value=""
-                           data-value=""
-                    >
-                    <input id="id_customer_identification" name="customer_identification" type="text" value="{{ form.id_ssn.value|default_if_none:'' }}" hidden>
+                    <div class="d-flex">
+                        <div class="form-group mr-1">
+                            <input class="form-control-cc" type="text" maxlength="6" minlength="6" pattern="[0-9]*" inputmode="numeric" id="ssnprefix">
+                        </div>
+                        <div class="form-group ml-1">
+                            <input class="form-control-cc" type="password" maxlength="7" minlength="7" pattern="[0-9]*" inputmode="numeric" id="ssnsuffix">
+                        </div>
+                    </div>
+                    <input id="id_customer_identification" name="customer_identification" type="text"
+                           value="" hidden>
                     <div class="invalid-feedback">주민번호 값을 확인하세요.</div>
                 </div>
                 <div class="form-row">
@@ -170,13 +171,13 @@
         const attach2PreviewWrapper = document.getElementById('attach_2')
         const attach3PreviewWrapper = document.getElementById('attach_3')
         const customer_name = document.getElementById('id_customer_name')
-        const customer_identification_display = document.getElementById('id_customer_identification_display')
         const customer_identification = document.getElementById('id_customer_identification')
         const car_type = document.getElementById('id_car_type')
         const car_identification = document.getElementById('id_car_identification')
         const customer_cellphone = document.getElementById('id_customer_cellphone')
         const min_age_birthdate = document.getElementById('id_min_age_birthdate')
-
+        const ssnprefix = document.getElementById('ssnprefix')
+        const ssnsuffix = document.getElementById('ssnsuffix')
         const birthdateOnInput = (elem) => {
             elem.value = onlyDigit(elem.value)
         }
@@ -185,21 +186,6 @@
             var inputElem = document.getElementById(`id_${id}`)
             inputElem.click()
         }
-
-    customer_identification_display.addEventListener('keyup', function (event) {
-        let digit = getNumberFromKeyEvent(event)
-        let ssnValue = event.target.dataset.value
-         if (event.keyCode === 8) {
-            ssnValue = ssnValue.slice(0, ssnValue.length - 1)
-        } if (digit === null || digit === undefined) {
-            event.preventDefault()
-        } else {
-            ssnValue += digit
-        }
-        event.target.dataset.value = ssnValue
-        customer_identification_display.value = ssnFormatter(event.target.dataset.value)
-        customer_identification.value = event.target.dataset.value.trim()
-    })
 
         attach_1.addEventListener('change', async function (event) {
             var file = event.target.files[0]
@@ -233,6 +219,15 @@
                 alert('고객명을 입력하세요.')
                 return false
             }
+            if (ssnprefix.value.length !== 6) {
+                alert('주빈번호 앞자리는 6자리 숫자입니다.')
+                return false
+            }
+            if (ssnsuffix.value.length !== 7) {
+                alert('주빈번호 뒷자리는 7자리 숫자입니다.')
+                return false
+            }
+            customer_identification.value = `${ssnprefix.value}${ssnsuffix.value}`
             if (customer_cellphone.value === '') {
                 alert('휴대전화번호는 필수 항목입니다.')
                 return false
