@@ -357,5 +357,9 @@
         }
 
         const autoRefresh = true
+
+        {% if compare.deny_msg %}
+            alert(compare.deny_msg)
+        {% endif %}
     </script>
 {% endblock %}
