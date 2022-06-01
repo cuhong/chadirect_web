@@ -496,7 +496,7 @@ class CompareEstimateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMix
         elif str(no) == "2":
             estimate_image = compare.estimate_image3.url
         context = dict(
-            url=estimate_image.url
+            url=estimate_image
         )
         return JsonResponse(context)
 
