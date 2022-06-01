@@ -526,16 +526,19 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     bank_account_no = models.CharField(max_length=300, null=True, blank=True, verbose_name='계좌번호')
     estimate_image = models.ImageField(
         null=True, blank=True, storage=ProtectedFileStorage(), upload_to=compare_detail_upload_to,
-        verbose_name='견적서 이미지'
+        verbose_name='견적서 1 이미지'
     )
+    estimate_image_comment = models.CharField(max_length=500, null=False, blank=False, verbose_name='견적서 1 커멘트')
     estimate_image_2 = models.ImageField(
         null=True, blank=True, storage=ProtectedFileStorage(), upload_to=compare_detail_upload_to,
         verbose_name='견적서 이미지'
     )
+    estimate_image_2_comment = models.CharField(max_length=500, null=False, blank=False, verbose_name='견적서 2 커멘트')
     estimate_image_3 = models.ImageField(
         null=True, blank=True, storage=ProtectedFileStorage(), upload_to=compare_detail_upload_to,
         verbose_name='견적서 이미지'
     )
+    estimate_image_3_comment = models.CharField(max_length=500, null=False, blank=False, verbose_name='견적서 3 커멘트')
     danal_auth = models.ForeignKey(DanalAuth, null=True, blank=True, verbose_name='본인인증', on_delete=models.PROTECT)
 
     @property

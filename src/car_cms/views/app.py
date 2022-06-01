@@ -492,7 +492,7 @@ class CompareEstimateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMix
         elif str(no) == "1":
             estimate_image = compare.estimate_image.url
         elif str(no) == "2":
-            estimate_image = compare.estimate_image_3.url
+            estimate_image = compare.estimate_image_2.url
         elif str(no) == "3":
             estimate_image = compare.estimate_image_3.url
         context = dict(

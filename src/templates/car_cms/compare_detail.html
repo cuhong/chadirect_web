@@ -25,16 +25,18 @@
             {% else %}
                 <span class="h3 font-weight-bolder" id="carNoTitle">{{ compare.car_no }}</span> 차량 견적요청이<br>
             {% endif %}
-                <span class="h3 font-weight-bolder" style="color: #18becb">{{ compare.get_status_display }}</span> 중 입니다.<br>
+            <span class="h3 font-weight-bolder" style="color: #18becb">{{ compare.get_status_display }}</span> 중
+            입니다.<br>
 
         </div>
         <div class="mb-3">
-{#            <div class="d-flex flex-row justify-content-between align-items-center mb-3">#}
-{#                <span class="font-weight-bold">견적 상태</span>#}
-{#            </div>#}
+            {#            <div class="d-flex flex-row justify-content-between align-items-center mb-3">#}
+            {#                <span class="font-weight-bold">견적 상태</span>#}
+            {#            </div>#}
             <div class="d-flex flex-row justify-content-between mb-2">
                 <div class="font-weight-light">견적 상태</div>
-                <div class="font-weight-bolder" style="color: #18becb" id="compareStatusTitle">{{ compare.get_status_display }}</div>
+                <div class="font-weight-bolder" style="color: #18becb"
+                     id="compareStatusTitle">{{ compare.get_status_display }}</div>
             </div>
 
             {% if compare.status == 2 %}
@@ -55,17 +57,26 @@
                 </div>
             {% else %}
                 <div class="mb-2 px-3">
-                    <button class="btn btn-cc-primary btn-block" onclick="showEstimate2(1)">비교 견적서</button>
+                    <button class="btn btn-cc-primary btn-block" onclick="showEstimate2(1)">비교 견적서 1</button>
+                    {% if compare.estimate_image_comment %}
+                        <small>{{ comapre.estimate_image_comment }}</small>
+                    {% endif %}
                 </div>
                 {% if compare.estimate_image_2 %}
-                <div class="mb-2 px-3">
-                    <button class="btn btn-cc-primary btn-block" onclick="showEstimate2(2)">비교 견적서</button>
-                </div>
+                    <div class="mb-2 px-3">
+                        <button class="btn btn-cc-primary btn-block" onclick="showEstimate2(2)">비교 견적서 2</button>
+                    {% if compare.estimate_image_2_comment %}
+                        <small>{{ comapre.estimate_image_2_comment }}</small>
+                    {% endif %}
+                    </div>
                 {% endif %}
                 {% if compare.estimate_image_3 %}
-                <div class="mb-2 px-3">
-                    <button class="btn btn-cc-primary btn-block" onclick="showEstimate2(3)">비교 견적서</button>
-                </div>
+                    <div class="mb-2 px-3">
+                        <button class="btn btn-cc-primary btn-block" onclick="showEstimate2(3)">비교 견적서 3</button>
+                    {% if compare.estimate_image_3_comment %}
+                        <small>{{ comapre.estimate_image_3_comment }}</small>
+                    {% endif %}
+                    </div>
                 {% endif %}
             {% endif %}
 
