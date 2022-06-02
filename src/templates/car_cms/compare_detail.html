@@ -57,7 +57,7 @@
                 </div>
             {% else %}
                 <div class="mb-2 px-3">
-                    <button class="btn btn-cc-primary btn-block" onclick="showEstimate2(1)">비교 견적서 1</button>
+                    <button class="btn btn-cc-primary btn-block" onclick="showEstimate(1)">비교 견적서 1</button>
                     {% if compare.estimate_image_comment %}
                         <div class="d-flex w-100 mb-2 mt-2">
                             <div class="mr-2"><small class="font-weight-bold">견적의견</small></div>
@@ -67,24 +67,24 @@
                 </div>
                 {% if compare.estimate_image_2 %}
                     <div class="mb-2 px-3">
-                        <button class="btn btn-cc-primary btn-block" onclick="showEstimate2(2)">비교 견적서 2</button>
-                    {% if compare.estimate_image_2_comment %}
-                        <div class="d-flex w-100 mb-2 mt-2">
-                            <div class="mr-2"><small class="font-weight-bold">견적의견</small></div>
-                            <div><small>{{ compare.estimate_image_2_comment }}</small></div>
-                        </div>
-                    {% endif %}
+                        <button class="btn btn-cc-primary btn-block" onclick="showEstimate(2)">비교 견적서 2</button>
+                        {% if compare.estimate_image_2_comment %}
+                            <div class="d-flex w-100 mb-2 mt-2">
+                                <div class="mr-2"><small class="font-weight-bold">견적의견</small></div>
+                                <div><small>{{ compare.estimate_image_2_comment }}</small></div>
+                            </div>
+                        {% endif %}
                     </div>
                 {% endif %}
                 {% if compare.estimate_image_3 %}
                     <div class="mb-2 px-3">
-                        <button class="btn btn-cc-primary btn-block" onclick="showEstimate2(3)">비교 견적서 3</button>
-                    {% if compare.estimate_image_3_comment %}
-                        <div class="d-flex w-100 mb-2 mt-2">
-                            <div class="mr-2"><small class="font-weight-bold">견적의견</small></div>
-                            <div><small>{{ compare.estimate_image_3_comment }}</small></div>
-                        </div>
-                    {% endif %}
+                        <button class="btn btn-cc-primary btn-block" onclick="showEstimate(3)">비교 견적서 3</button>
+                        {% if compare.estimate_image_3_comment %}
+                            <div class="d-flex w-100 mb-2 mt-2">
+                                <div class="mr-2"><small class="font-weight-bold">견적의견</small></div>
+                                <div><small>{{ compare.estimate_image_3_comment }}</small></div>
+                            </div>
+                        {% endif %}
                     </div>
                 {% endif %}
             {% endif %}
@@ -307,12 +307,8 @@
             {% endif %}
         }
 
-        function showEstimate() {
-            {% if type == "dealer" %}
-                location.href = `/compare/${compareId}/estimate/`
-            {% else %}
-                location.href = `/compare/${compareId}/estimate/`
-            {% endif %}
+        function showEstimate(no) {
+            location.href = `/compare/${compareId}/estimate/?no=${no}`
         }
 
         function simpleLightbox(imageUrl, bgColor, maxWidth) {
