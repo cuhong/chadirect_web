@@ -1134,11 +1134,7 @@
         $("#servicePolicyModal").modal('show')
     }
 
-    document.addEventListener('visibilitychange', function () {
-        if (document.visibilityState === 'visible' && autoRefresh === true) {
-            //window.location.reload()
-        }
-    })
+
 
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').then(

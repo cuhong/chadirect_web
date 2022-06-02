@@ -356,6 +356,11 @@
             requestContractData()
         }
 
-        const autoRefresh = true
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible' && autoRefresh === true) {
+                //window.location.reload()
+                location.href = "/compare/"
+            }
+        })
     </script>
 {% endblock %}
