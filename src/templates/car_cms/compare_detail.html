@@ -357,7 +357,7 @@
         }
 
         document.addEventListener('visibilitychange', function () {
-            if (document.visibilityState === 'visible' && autoRefresh === true) {
+            if (document.visibilityState === 'visible') {
                 //window.location.reload()
                 compareList()
             }
