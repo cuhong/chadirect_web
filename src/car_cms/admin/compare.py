@@ -341,12 +341,13 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     #         )
 
     def _complete_calculate(self, request, obj, parent_obj=None):
-        try:
-            result = obj._complete_calculate()
-        except Exception as e:
-            messages.error(request, str(e))
-        else:
-            messages.success(request, '견적완료 처리 되었습니다.')
+        result = obj._complete_calculate()
+        # try:
+        #     result = obj._complete_calculate()
+        # except Exception as e:
+        #     messages.error(request, str(e))
+        # else:
+        #     messages.success(request, '견적완료 처리 되었습니다.')
 
     def _deny_calculate(self, request, obj, parent_obj=None):
         try:
