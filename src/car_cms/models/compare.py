@@ -341,7 +341,7 @@ class EstimateMixin(models.Model):
                     "insure_4_memo": "최저" if insurance_data.get(VehicleInsurerChoices.HANHWA.value, {}).get(
                         'is_cheapest', False) is True else None,
                     "insure_5": "하나손해보험 다이렉트",
-                    "insure_5_premium": insurer_5.get('expect_cost_string') if insurer_4 else "산출불가",
+                    "insure_5_premium": insurer_5.get('expect_cost_string') if insurer_5 else "산출불가",
                     "insure_5_memo": "최저" if insurance_data.get(VehicleInsurerChoices.HANA.value, {}).get(
                         'is_cheapest', False) is True else None,
                     "p_1": "의무",
