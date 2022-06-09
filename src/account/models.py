@@ -10,7 +10,7 @@ import requests
 from ckeditor.fields import RichTextField
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
-
+from import_export import admin as ie_admin
 from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser,
@@ -124,6 +124,7 @@ class Organization(models.Model):
     guid = models.CharField(max_length=30, null=False, blank=False, default=generate_guid, editable=False)
     service_policy = RichTextField(null=True, blank=True, verbose_name='서비스 이용약관(계약서)')
     privacy_policy = RichTextField(null=True, blank=True, verbose_name='개인정보 처리방침')
+    need_validate = models.BooleanField(default=False, null=False, blank=False, verbose_name='목록 검증필요')
 
     def __str__(self):
         return self.name
@@ -135,6 +136,31 @@ class Organization(models.Model):
         url = urllib.parse.urljoin(base_url, uri)
         url += f"?guid={self.guid}"
         return url
+
+
+
+class OrganizationEmployee(ie_admin.ImportMixin, models.Model):
+    class Meta:
+        verbose_name = '조직 사용인'
+        verbose_name_plural = verbose_name
+
+    organization = models.ForeignKey(
+        Organization, null=False, blank=False, verbose_name='조직', on_delete=models.PROTECT
+    )
+    dept_1 = models.CharField(max_length=200, null=True, blank=True, verbose_name='부서 1')
+    dept_2 = models.CharField(max_length=200, null=True, blank=True, verbose_name='부서 2')
+    dept_3 = models.CharField(max_length=200, null=True, blank=True, verbose_name='부서 3')
+    dept_4 = models.CharField(max_length=200, null=True, blank=True, verbose_name='부서 4')
+    code = models.CharField(max_length=50, null=True, blank=True, verbose_name='사번')
+    name = models.CharField(max_length=50, null=False, blank=False, verbose_name='성명')
+    role = models.CharField(max_length=100, null=True, blank=True, verbose_name='직책')
+    contact = models.CharField(max_length=50, null=False, blank=False, verbose_name='연락처')
+
+    def save(self, *args, **kwargs):
+        self.name = self.name.strip()
+        _contact = "".join([s for s in str(self.contact) if s.isdigit()])
+        self.contact = _contact if _contact[0] == "" else f"0{_contact}"
+        super(OrganizationEmployee, self).save(*args, **kwargs)
 
 
 class User(PermissionsMixin, AbstractBaseUser):
