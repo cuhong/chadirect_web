@@ -165,7 +165,7 @@ class UserListFilterForm(forms.Form):
         data = self.cleaned_data
         q = Q()
         print(data.get('name'))
-        if data.get('name') != "":
+        if data.get('name') not in ["", None]:
             q.add(Q(name__icontains=data.get('name')), q.AND)
         if data.get('employee_no') != "":
             q.add(Q(employee_no__icontains=data.get('employee_no')), q.AND)
