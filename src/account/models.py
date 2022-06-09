@@ -62,7 +62,7 @@ class UserManager(BaseUserManager):
         if organization_instance:
             if organization_instance.need_validate is True:
                 employee_queryset = organization_instance.organizationemployee_set.filter(
-                    name=name, cellphone="".join([s for s in cellphone if s.isdigit()])
+                    name=name, contact="".join([s for s in cellphone if s.isdigit()])
                 )
                 if employee_queryset.exists() is False:
                     raise Exception('해당 조직의 직원으로 등록되지 않았습니다. 관리자의 확인이 필요합니다.')
