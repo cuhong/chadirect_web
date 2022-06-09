@@ -126,7 +126,7 @@
                 <div class="modal-body">
                 {% if errors %}
                     {% for k, v in errors.items %}
-                        {{ v }}
+                        {{ k }} :{{ v }}
                     {% endfor %}
                 {% else %}
                     {{ error }}
