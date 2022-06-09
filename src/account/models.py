@@ -22,6 +22,7 @@ from car_cms.models.upload import name_card_upload_to
 from commons.models import DateTimeMixin, UUIDPkMixin
 from itechs.storages import ProtectedFileStorage, MediaStorage
 
+DEFAULT_TEL = "1544-7654"
 
 def temp_organization():
     organization_list = [
@@ -65,7 +66,7 @@ class UserManager(BaseUserManager):
                     name=name, contact="".join([s for s in cellphone if s.isdigit()])
                 )
                 if employee_queryset.exists() is False:
-                    raise Exception('해당 조직의 직원으로 등록되지 않았습니다. 관리자의 확인이 필요합니다.')
+                    raise Exception(f'해당 조직의 직원으로 등록되지 않았습니다.\n관리자의 확인이 필요합니다.\n문의) {DEFAULT_TEL}')
         user = self.model(
             email=self.normalize_email(email),
             name=name, cellphone=cellphone,
