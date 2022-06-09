@@ -10,7 +10,7 @@ import requests
 from ckeditor.fields import RichTextField
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
-from import_export import admin as ie_admin
+
 from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser,
@@ -138,7 +138,7 @@ class Organization(models.Model):
         return url
 
 
-class OrganizationEmployee(ie_admin.ImportExportModelAdmin):
+class OrganizationEmployee(models.Model):
     class Meta:
         verbose_name = '조직 사용인'
         verbose_name_plural = verbose_name

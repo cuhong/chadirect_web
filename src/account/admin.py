@@ -4,6 +4,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import UserChangeForm
 from django.core.exceptions import ValidationError
 
+from import_export import admin as ie_admin
 from account.models import Organization, OrganizationEmployee
 
 User = get_user_model()
@@ -18,7 +19,7 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 
 @admin.register(OrganizationEmployee)
-class OrganizationEmployeeAdmin(admin.ModelAdmin):
+class OrganizationEmployeeAdmin(ie_admin.ImportMixin, admin.ModelAdmin):
     list_display = ['organization', 'dept_1', 'code', 'role', 'name', 'contact']
     list_filter = ['organization']
     search_fields = ['name__icontains', 'contact__icontains']
