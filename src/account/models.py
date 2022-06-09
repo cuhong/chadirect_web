@@ -158,7 +158,7 @@ class OrganizationEmployee(models.Model):
     def save(self, *args, **kwargs):
         self.name = self.name.strip()
         _contact = "".join([s for s in str(self.contact) if s.isdigit()])
-        self.contact = _contact if _contact[0] == "" else f"0{_contact}"
+        self.contact = _contact if _contact[0] == "0" else f"0{_contact}"
         super(OrganizationEmployee, self).save(*args, **kwargs)
 
 
