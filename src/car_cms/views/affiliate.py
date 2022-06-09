@@ -167,11 +167,11 @@ class UserListFilterForm(forms.Form):
         print(data.get('name'))
         if data.get('name') not in ["", None]:
             q.add(Q(name__icontains=data.get('name')), q.AND)
-        if data.get('employee_no') != "":
+        if data.get('employee_no') not in ["", None]:
             q.add(Q(employee_no__icontains=data.get('employee_no')), q.AND)
-        if data.get('email') != "":
+        if data.get('email') not in ["", None]:
             q.add(Q(email__icontains=data.get('email')), q.AND)
-        if data.get('cellphone') != "":
+        if data.get('cellphone') not in ["", None]:
             q.add(Q(cellphone__icontains=data.get('cellphone')), q.AND)
         sort = "-registered_at" if data.get('sort') == "" else data.get('sort')
         return q, sort
@@ -195,7 +195,6 @@ class UserListView(AffiliateUserMixin, ListView):
             ).filter(organization=self.request.user.organization).filter(query)
             filterform.create_query()
         else:
-            print(filterform.errors)
             queryset = queryset.none()
         return queryset
 

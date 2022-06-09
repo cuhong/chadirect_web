@@ -17,8 +17,11 @@
                     </div>
                     <div class="card-body">
                         <div class="m-b-10">
-                            <form method="get" id="filterForm">
+
+                            <form method="get" id="pageForm">
                                 <input hidden id="id_page" name="page" value="{{ page_obj.number }}">
+                            </form>
+                            <form method="get" id="filterForm">
                                 <div class="form-row">
                                     <div class="form-group floating-label col-md-1">
                                         <label for="id_name">성명</label>
@@ -199,7 +202,7 @@
         });
         pageInstance.on('afterMove', (event) => {
             formPage.value = event.page
-            filterForm.submit()
+            document.getElementById('pageForm').submit()
         });
 
         const user_id_detail = document.getElementById('id_user_id_detail')
