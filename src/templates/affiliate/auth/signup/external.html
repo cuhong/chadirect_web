@@ -142,8 +142,10 @@
             }
         });
 
-        {% if error %}
+        document.addEventListener('DOMContentLoaded', () => {
+            {% if error %}
             alert('{{ error }}')
         {% endif %}
+        })
     </script>
 {% endblock %}
