@@ -201,6 +201,7 @@ class SignupView(AppTypeCheck, View):
                     form=form,
                     is_success=False,
                     errors=form.errors,
+                    error=None,
                     type=self.app_type
                 )
                 return render(request, 'car_cms/auth/signup.html', context=context)
@@ -208,7 +209,8 @@ class SignupView(AppTypeCheck, View):
             context = dict(
                 form=form,
                 is_success=False,
-                errors=form.errors,
+                errors=None,
+                error=str(e),
                 type=self.app_type
             )
             return render(request, 'car_cms/auth/signup.html', context=context)

@@ -124,9 +124,13 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    {% for k, v in form.errors.items %}
+                {% if errors %}
+                    {% for k, v in errors.items %}
                         {{ v }}
                     {% endfor %}
+                {% else %}
+                    {{ error }}
+                {% endif %}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
