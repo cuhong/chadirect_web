@@ -98,15 +98,15 @@
                             </div>
 
                             {% if form.non_field_errors %}
-                                <div class="non-field-errors">
+                                <div class="non-field-errors mb-3">
                                     {% for err in form.non_field_errors %}
                                         <p class="form-error">{{ err }}</p>
                                     {% endfor %}
                                 </div>
                             {% endif %}
                             {% if error %}
-                                <div class="non-field-errors">
-                                alert('{{ error }}')
+                                <div class="non-field-errors text-danger mb-3">
+                                {{ error }}
                                 </div>
                             {% endif %}
                             {% for k, v in form.errors.items %}
