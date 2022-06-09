@@ -396,7 +396,7 @@
         })
         document.addEventListener('DOMContentLoaded', function (event) {
             //$('#orgDropdown').dropdown('toggle')
-            {% if form.errors %}
+            {% if errors or error %}
                 $("#registerFailModal").modal('show')
             {% endif %}
         })
