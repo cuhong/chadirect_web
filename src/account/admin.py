@@ -14,7 +14,7 @@ class OrganizationAdmin(admin.ModelAdmin):
     list_display = ['name', 'is_searchable']
     list_filter = ['is_searchable']
     search_fields = ['name__icontains']
-    readonly_fields = ['guid']
+    readonly_fields = ['id', 'guid']
 
 
 @admin.register(OrganizationEmployee)
