@@ -138,8 +138,7 @@ class Organization(models.Model):
         return url
 
 
-
-class OrganizationEmployee(ie_admin.ImportMixin, models.Model):
+class OrganizationEmployee(ie_admin.ImportExportModelAdmin):
     class Meta:
         verbose_name = '조직 사용인'
         verbose_name_plural = verbose_name
