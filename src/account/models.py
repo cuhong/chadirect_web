@@ -59,7 +59,13 @@ class UserManager(BaseUserManager):
             )
         else:
             organization_instance = None
-
+        if organization_instance:
+            if organization_instance.need_validate is True:
+                employee_queryset = organization_instance.organizationemployee_set.filter(
+                    name=name, cellphone="".join([s for s in cellphone if s.isdigit()])
+                )
+                if employee_queryset.exists() is False:
+                    raise Exception('해당 조직의 직원으로 등록되지 않았습니다. 관리자의 확인이 필요합니다.')
         user = self.model(
             email=self.normalize_email(email),
             name=name, cellphone=cellphone,
@@ -124,7 +130,7 @@ class Organization(models.Model):
     guid = models.CharField(max_length=30, null=False, blank=False, default=generate_guid, editable=False)
     service_policy = RichTextField(null=True, blank=True, verbose_name='서비스 이용약관(계약서)')
     privacy_policy = RichTextField(null=True, blank=True, verbose_name='개인정보 처리방침')
-    need_validate = models.BooleanField(default=False, null=False, blank=False, verbose_name='목록 검증필요')
+    need_validate = models.BooleanField(default=False, null=False, blank=False, verbose_name='조직 사용인 검증')
 
     def __str__(self):
         return self.name

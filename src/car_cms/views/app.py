@@ -183,24 +183,27 @@ class SignupView(AppTypeCheck, View):
         return render(request, 'car_cms/auth/signup.html', context=context)
 
     def post(self, request):
-        form = SignupForm(data=request.POST, files=request.FILES)
-        if form.is_valid() is False:
-            context = dict(
-                form=form,
-                is_success=False,
-                errors=form.errors,
-                type=self.app_type
-            )
-            return render(request, 'car_cms/auth/signup.html', context=context)
-        data = form.cleaned_data
         try:
-            with transaction.atomic():
-                user = User.objects.create_user(
-                    data['username'], data['name'], password=data['password'],
-                    cellphone=data['cellphone'], name_card=data['namecard'],
-                    referer_code=data['referer_code'], user_type=self.app_type,
-                    organization=data['organization']
+            form = SignupForm(data=request.POST, files=request.FILES)
+            if form.is_valid() is True:
+                data = form.cleaned_data
+                with transaction.atomic():
+                    user = User.objects.create_user(
+                        data['username'], data['name'], password=data['password'],
+                        cellphone=data['cellphone'], name_card=data['namecard'],
+                        referer_code=data['referer_code'], user_type=self.app_type,
+                        organization=data['organization']
+                    )
+                login(request, user)
+                return HttpResponseRedirect(reverse('car_cms_fc_app:index'))
+            else:
+                context = dict(
+                    form=form,
+                    is_success=False,
+                    errors=form.errors,
+                    type=self.app_type
                 )
+                return render(request, 'car_cms/auth/signup.html', context=context)
         except Exception as e:
             context = dict(
                 form=form,
@@ -208,15 +211,8 @@ class SignupView(AppTypeCheck, View):
                 errors=form.errors,
                 type=self.app_type
             )
-            print(e)
-            print(context)
             return render(request, 'car_cms/auth/signup.html', context=context)
-        else:
-            login(request, user)
-            if self.app_type == "dealer":
-                return HttpResponseRedirect(reverse('car_cms_app:index'))
-            else:
-                return HttpResponseRedirect(reverse('car_cms_fc_app:index'))
+
 
 
 class IndexView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, TemplateView):
