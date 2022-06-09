@@ -22,7 +22,7 @@ from car_cms.models.upload import name_card_upload_to
 from commons.models import DateTimeMixin, UUIDPkMixin
 from itechs.storages import ProtectedFileStorage, MediaStorage
 
-DEFAULT_TEL = "1544-7654"
+DEFAULT_TEL = "1544-7653"
 
 def temp_organization():
     organization_list = [

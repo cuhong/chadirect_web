@@ -104,6 +104,11 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            {% if error %}
+                                <div class="non-field-errors">
+                                alert('{{ error }}')
+                                </div>
+                            {% endif %}
                             {% for k, v in form.errors.items %}
                                 {{ k }} {{ v }}
                             {% endfor %}
@@ -142,10 +147,5 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            {% if error %}
-            alert('{{ error }}')
-        {% endif %}
-        })
     </script>
 {% endblock %}
