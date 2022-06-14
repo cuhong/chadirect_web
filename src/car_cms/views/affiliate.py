@@ -8,7 +8,8 @@ from django.contrib.auth.views import LoginView as DjangoLoginView
 from django.contrib.auth.views import LogoutView as DjangoLogoutView
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Case, When, Value, F
+from django.db.models.functions import Concat
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse
@@ -191,7 +192,19 @@ class UserListView(AffiliateUserMixin, ListView):
             query, sort = filterform.create_query()
             queryset = queryset.order_by(sort).values(
                 'id', 'email', 'name', 'cellphone', 'is_organization_admin', 'is_active', 'registered_at', 'last_login',
-                'employee_no'
+                'employee_no', 'role'
+            ).annotate(
+                dept_1_value=Case(When(dept_1=None, then=Value("-")), default=F('dept_1')),
+                dept_2_value=Case(When(dept_2=None, then=Value("-")), default=F('dept_2')),
+                dept_3_value=Case(When(dept_3=None, then=Value("-")), default=F('dept_3')),
+                dept_4_value=Case(When(dept_4=None, then=Value("-")), default=F('dept_4')),
+            ).annotate(
+                dept=Concat(
+                    F('dept_1_value'), Value("/"),
+                    F('dept_2_value'), Value("/"),
+                    F('dept_3_value'), Value("/"),
+                    F('dept_4_value')
+                )
             ).filter(organization=self.request.user.organization).filter(query)
             filterform.create_query()
         else:
