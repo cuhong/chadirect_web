@@ -18,10 +18,8 @@
                     <div class="card-body">
                         <div class="m-b-10">
 
-                            <form method="get" id="pageForm">
-                                <input hidden id="id_page" name="page" value="{{ page_obj.number }}">
-                            </form>
                             <form method="get" id="filterForm">
+                            <input hidden id="id_page" name="page" value="{{ page_obj.number }}">
                                 <div class="form-row">
                                     <div class="form-group floating-label col-md-1">
                                         <label for="id_name">성명</label>
@@ -163,9 +161,9 @@
     <script>
         var Grid = tui.Grid;
         const filterForm = document.getElementById('filterForm')
-        const formPage = document.getElementById('id_page')
         const userListTable = document.getElementById('userListTable')
         const userPagination = document.getElementById('userPagination')
+        const pageInput = document.getElementById('id_page')
         let page = parseInt('{{ page_obj.number }}')
         let perPage = parseInt('{{ page_obj.paginator.per_page }}')
         let totalCount = parseInt('{{ page_obj.paginator.count }}')
@@ -210,8 +208,8 @@
             centerAlign: true
         });
         pageInstance.on('afterMove', (event) => {
-            formPage.value = event.page
-            document.getElementById('pageForm').submit()
+            pageInput.value = event.page
+            document.getElementById('filterForm').submit()
         });
 
         const user_id_detail = document.getElementById('id_user_id_detail')
