@@ -86,7 +86,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-1">
-                                        <button class="btn btn-primary btn-block" type="submit">검색</button>
+                                        <button class="btn btn-primary btn-block" type="button" onclick="search()">검색</button>
                                     </div>
                                     {#                                    <div class="col-md-1">#}
                                     {#                                        <button class="btn btn-outline-info btn-block" type="reset">초기화</button>#}
@@ -207,6 +207,11 @@
             page: page,
             centerAlign: true
         });
+
+        const search = () => {
+            pageInput.value = 1
+            document.getElementById('filterForm').submit()
+        }
         pageInstance.on('afterMove', (event) => {
             pageInput.value = event.page
             document.getElementById('filterForm').submit()
