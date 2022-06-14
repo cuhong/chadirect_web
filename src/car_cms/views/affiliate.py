@@ -185,9 +185,9 @@ class UserListFilterForm(forms.Form):
         if data.get('cellphone') not in ["", None]:
             q.add(Q(cellphone__icontains=data.get('cellphone')), q.AND)
         if data.get('start'):
-            q.add(Q(registered_at__gte=data.get('start')), q.AND)
+            q.add(Q(registered_at__date__gte=data.get('start')), q.AND)
         if data.get('end'):
-            q.add(Q(registered_at__lte=data.get('end')), q.AND)
+            q.add(Q(registered_at__date__lte=data.get('end')), q.AND)
 
         sort = "-registered_at" if data.get('sort') == "" else data.get('sort')
         return q, sort
@@ -379,9 +379,9 @@ class ContractSuccessListFilterForm(forms.Form):
                 dept_4__icontains=dept)
             q.add(dept_q, q.AND)
         if data.get('start'):
-            q.add(Q(registered_at__gte=data.get('start')), q.AND)
+            q.add(Q(registered_at__date__gte=data.get('start')), q.AND)
         if data.get('end'):
-            q.add(Q(registered_at__lte=data.get('end')), q.AND)
+            q.add(Q(registered_at__date__lte=data.get('end')), q.AND)
 
         return q
 
