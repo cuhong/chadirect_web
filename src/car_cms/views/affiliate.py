@@ -379,9 +379,9 @@ class ContractSuccessListFilterForm(forms.Form):
                 dept_4__icontains=dept)
             q.add(dept_q, q.AND)
         if data.get('start'):
-            q.add(Q(registered_at__date__gte=data.get('start')), q.AND)
+            q.add(Q(updated_at__date__gte=data.get('start')), q.AND)
         if data.get('end'):
-            q.add(Q(registered_at__date__lte=data.get('end')), q.AND)
+            q.add(Q(updated_at__date__lte=data.get('end')), q.AND)
 
         return q
 
@@ -412,7 +412,7 @@ class ContractSuccessListView(AffiliateUserMixin, ListView):
             employee_no=F('account__employee_no'),
         ).values(
             'id', 'account__name', 'account__cellphone', 'serial', 'status', 'insurer', 'premium', 'customer_type',
-            'channel', 'registered_at', 'dept', 'role', 'employee_no'
+            'channel', 'registered_at', 'dept', 'role', 'employee_no', 'updated_at'
         ).filter(account__organization=self.request.user.organization)
         filterform = ContractListFilterForm(self.request.GET)
         if filterform.is_valid():
@@ -446,7 +446,7 @@ class ContractSuccessListView(AffiliateUserMixin, ListView):
             "customer_type_display": CustomerTypeChoices(contract.get('customer_type')).label,
             "channel": contract.get('channel'),
             "channel_display": ChannelChoices(contract.get('channel')).label,
-            "registered_at": (contract.get('registered_at') + relativedelta(hours=9)).strftime("%Y-%m-%d %H:%M:%S"),
+            "updated_at": (contract.get('updated_at') + relativedelta(hours=9)).strftime("%Y-%m-%d %H:%M:%S"),
         } for contract in queryset]
         context['contract_list'] = contract_list
         return context
