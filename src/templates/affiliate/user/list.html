@@ -31,6 +31,13 @@
                                                value="{{ filterform.name.value|default_if_none:'' }}">
                                     </div>
                                     <div class="form-group floating-label col-md-1">
+                                        <label for="id_dept">소속</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               placeholder="소속"
+                                               id="id_dept" name="dept"
+                                               value="{{ filterform.dept.value|default_if_none:'' }}">
+                                    </div>
+                                    <div class="form-group floating-label col-md-1">
                                         <label for="id_employee_no">사번</label>
                                         <input type="text" class="form-control form-control-sm"
                                                placeholder="사번"

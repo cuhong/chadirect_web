@@ -157,6 +157,7 @@ class ExternalSignupView(View):
 
 class UserListFilterForm(forms.Form):
     name = forms.CharField(required=False)
+    dept = forms.CharField(required=False)
     employee_no = forms.CharField(required=False)
     email = forms.CharField(required=False)
     cellphone = forms.CharField(required=False)
@@ -168,6 +169,10 @@ class UserListFilterForm(forms.Form):
         print(data.get('name'))
         if data.get('name') not in ["", None]:
             q.add(Q(name__icontains=data.get('name')), q.AND)
+        if data.get('dept') not in ["", None]:
+            dept = data.get('dept')
+            dept_q = Q(dept_1__icontains=dept) | Q(dept_2__icontains=dept) | Q(dept_3__icontains=dept) | Q(dept_4__icontains=dept)
+            q.add(Q(name__icontains=dept_q), q.AND)
         if data.get('employee_no') not in ["", None]:
             q.add(Q(employee_no__icontains=data.get('employee_no')), q.AND)
         if data.get('email') not in ["", None]:
