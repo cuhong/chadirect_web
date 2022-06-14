@@ -1,7 +1,9 @@
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from inline_actions.admin import InlineActionsModelAdminMixin
 
@@ -11,45 +13,24 @@ from payment.models import DanalAuthStatusChoice
 
 User = get_user_model()
 
+
 @admin.register(CompareAll)
 class CompareAllAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     list_display = [
-        'serial', 'account', 'manager', 'customer_name', 'customer_cellphone', 'insurer', 'premium', 'status'
+        'serial', 'account', 'customer_name', 'customer_cellphone', 'insurer', 'premium', 'status'
     ]
-    list_filter = ['manager', 'insurer', 'status']
+    list_filter = ['insurer', 'status']
     search_fields = ['serial__icontains', 'customer_name__icontains', 'customer_cellphone__icontains']
-    autocomplete_fields = ['manager']
-    #
-    # def get_inline_actions(self, request, obj=None):
-    #     actions = super(CompareAllAdmin, self).get_inline_actions(request, obj)
-    #     if obj:
-    #         if obj.status in [CompareStatus.CALCULATE_COMPLETE, CompareStatus.DENY, CompareStatus.CONTRACT,
-    #                           CompareStatus.CONTRACT_FAIL, CompareStatus.CONTRACT_SUCCESS]:
-    #             actions.append('show_estimate')
-    #     return actions
 
-    # def show_estimate(self, request, obj, parent_obj=None):
-    #     # 1. has the form been submitted?
-    #     if '_save' in request.POST:
-    #         return None  # return back to list view
-    #     # 2. has the back button been pressed?
-    #     elif '_back' in request.POST:
-    #         return None  # return back to list view
-    #     # 3. simply display the form
-    #     else:
-    #         return render(
-    #             request,
-    #             'car_cms/admin/estimate_detail_admin.html',
-    #             context={'compare': obj}
-    #         )
-    #
-    # show_estimate.short_description = '비교견적서'
+    def get_queryset(self, request):
+        return super(CompareAllAdmin, self).get_queryset(request).exclude(
+            danal_auth__status=DanalAuthStatusChoice.READY)
 
 
 @admin.register(ComparePending)
 class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     list_display = [
-        'serial', 'account', 'manager', 'customer_name', 'customer_cellphone', 'driver_range', 'status', '_auth_status'
+        'serial', 'account', 'customer_name', 'customer_cellphone', 'driver_range', 'status', '_auth_status'
     ]
     list_filter = ['status']
     search_fields = [
@@ -59,24 +40,22 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     autocomplete_fields = ['account']
 
     def get_queryset(self, request):
-        qs = super(ComparePendingAdmin, self).get_queryset(request)
-        return qs.filter(status=CompareStatus.REQUEST, manager=None)
+        qs = super(ComparePendingAdmin, self).get_queryset(request).exclude(danal_auth=None).filter(
+            danal_auth__status=DanalAuthStatusChoice.READY
+        )
+        return qs
 
     def get_inline_actions(self, request, obj=None):
         actions = super(ComparePendingAdmin, self).get_inline_actions(request, obj)
         if obj:
-
-            if obj.status == 0 and obj.manager is None:
-                actions.append('_set_manager')
-            if obj.danal_auth is not None:
-                if obj.danal_auth.status != DanalAuthStatusChoice.COMPLETE:
-                    actions.append('_send_auth_sms')
+            if obj.danal_auth.status != DanalAuthStatusChoice.COMPLETE:
+                actions.append('_send_auth_sms')
         return actions
 
     def save_model(self, request, obj, form, change):
         super(ComparePendingAdmin, self).save_model(request, obj, form, change)
         obj.refresh_from_db()
-        obj.set_manager(request.user)
+        obj.start_calculation()
 
     # def response_add(self, request, obj, post_url_continue=None):
     #     super(ComparePendingAdmin, self).response_add(request, obj, post_url_continue=post_url_continue)
@@ -89,9 +68,10 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
                 }),
                 ('견적요청', {
                     'fields': (
-                        'account', 'manager', 'status', 'channel', 'customer_name', 'career', 'customer_cellphone',
+                        'account', 'status', 'channel', 'customer_name', 'career', 'customer_cellphone',
                         'customer_type',
-                        'customer_identification', 'ssn', 'min_age', 'min_age_birthdate', 'car_name', 'car_type', 'car_identification', 'car_price',
+                        'customer_identification', 'ssn', 'min_age', 'min_age_birthdate', 'car_name', 'car_type',
+                        'car_identification', 'car_price',
                         'attach_1', 'attach_2', 'attach_3', 'driver_range', 'memo'
                     )
                 }),
@@ -111,8 +91,8 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj:
             rf = [
-                'id', 'registered_at', 'updated_at', 'serial', 'account', 'manager', 'status', 'channel',
-                'customer_name', 'career',
+                'id', 'registered_at', 'updated_at', 'serial', 'account', 'status', 'channel',
+                'customer_name', 'career', 'status',
                 'customer_cellphone', 'customer_type', 'customer_identification', 'ssn', 'car_name', 'car_type',
                 'car_identification', 'attach_1', 'attach_2', 'attach_3', 'driver_range', 'memo'
                                                                                           'request_msg', 'deny_msg',
@@ -123,35 +103,6 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
             rf = []
         return rf
 
-    def _set_manager(self, request, obj, parent_obj=None):
-        # 1. has the form been submitted?
-        if '_save' in request.POST:
-            try:
-                manager_id = request.POST.get('user')
-                manager = User.objects.get(id=manager_id)
-                obj.set_manager(manager=manager)
-            except Exception as e:
-                print(e)
-                messages.error(request, '담당자 배정 실패')
-            else:
-                messages.success(request, '담당자가 배정되었습니다.')
-            return None  # return back to list view
-        # 2. has the back button been pressed?
-        elif '_back' in request.POST:
-            return None
-        # 3. simply display the form
-        else:
-            pass
-        chatuser_queryset = User.objects.filter(Q(is_admin=True) | Q(is_superuser=True)).filter(is_active=True)
-        return render(
-            request,
-            'car_cms/admin/set_manager.html',
-            context={'chatuser_queryset': chatuser_queryset}
-        )
-
-    _set_manager.short_description = '담당자 배정'
-
-
     def _send_auth_sms(self, request, obj, parent_obj=None):
         try:
             obj.send_auth_message()
@@ -161,6 +112,7 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
             messages.success(request, '발송요청 되었습니다.')
 
     _send_auth_sms.short_description = '인증문자 재발송'
+
     def _auth_status(self, obj):
         if obj.danal_auth is None:
             html = "<span>미요청</san>"
@@ -185,7 +137,7 @@ class ComparePendingAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
 @admin.register(Compare)
 class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     list_display = [
-        'serial', 'account', 'manager', 'customer_name', 'customer_cellphone', 'driver_range', '_status_display',
+        'serial', 'account', 'customer_name', 'customer_cellphone', 'driver_range', '_status_display',
     ]
     list_filter = ['status']
     search_fields = [
@@ -198,7 +150,8 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj:
             rf = [
-                'id', 'registered_at', 'updated_at', 'serial', 'account', 'manager', 'display', 'customer_name', 'career',
+                'id', 'registered_at', 'updated_at', 'serial', 'account', 'display', 'customer_name',
+                'career', 'status',
                 'customer_cellphone', 'customer_type', 'customer_identification', 'ssn', 'car_name', 'car_type',
                 'car_identification', 'attach_1', 'attach_2', 'attach_3', 'driver_range', 'memo',
                 'request_msg', 'deny_msg', 'contract_fail_msg'
@@ -239,7 +192,8 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
                 }),
                 ('견적요청', {
                     'fields': (
-                        'account', 'manager', 'status', 'customer_name', 'career', 'customer_cellphone', 'customer_type',
+                        'account', 'status', 'customer_name', 'career', 'customer_cellphone',
+                        'customer_type',
                         'customer_identification', 'car_price', 'ssn', 'car_name', 'car_type', 'car_identification',
                         'attach_1', 'attach_2', 'attach_3', 'driver_range', 'memo'
                     )
@@ -294,21 +248,12 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
             return True
         return False
 
-    def has_change_permission(self, request, obj=None):
-        if obj is None:
-            return True
-        if obj.manager:
-            return obj.manager == request.user
-        else:
-            return False
-
-    def get_queryset(self, request):
-        qs = super(CompareAdmin, self).get_queryset(request).filter(manager=request.user)
-        return qs
 
     def get_inline_actions(self, request, obj=None):
         actions = super(CompareAdmin, self).get_inline_actions(request, obj)
         if obj:
+            if obj.status == CompareStatus.REQUEST:
+                actions.append('_start_calculation')
             if obj.status == CompareStatus.CALCULATE:
                 actions.append('_complete_calculate')
                 actions.append('_deny_calculate')
@@ -324,24 +269,19 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
             #                   CompareStatus.CONTRACT_FAIL, CompareStatus.CONTRACT_SUCCESS]:
             #     actions.append('show_estimate')
         return actions
-    #
-    # def show_estimate(self, request, obj, parent_obj=None):
-    #     # 1. has the form been submitted?
-    #     if '_save' in request.POST:
-    #         return None  # return back to list view
-    #     # 2. has the back button been pressed?
-    #     elif '_back' in request.POST:
-    #         return None  # return back to list view
-    #     # 3. simply display the form
-    #     else:
-    #         return render(
-    #             request,
-    #             'car_cms/admin/estimate_detail_admin.html',
-    #             context={'compare': obj}
-    #         )
+
+    def _start_calculation(self, request, obj, parent_obj=None):
+        try:
+            obj.start_calculation()
+        except Exception as e:
+            messages.error(request, str(e))
+        else:
+            messages.success(request, '견적 산출중으로 변경 되었습니다.')
+            url = reverse('admin:%s_%s_change' % (obj._meta.app_label, obj._meta.model_name), args=[obj.id])
+            return HttpResponseRedirect(url)
 
     def _complete_calculate(self, request, obj, parent_obj=None):
-        result = obj._complete_calculate()
+        result = obj._complete_calculate(request.user)
         # try:
         #     result = obj._complete_calculate()
         # except Exception as e:
@@ -403,6 +343,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
         html = f"<span style='color: {color}; font-weight: {weight}'>{obj.get_status_display()}</span>"
         return mark_safe(html)
 
+    _start_calculation.short_description = '산출시작'
     _status_display.short_description = '상태'
     _complete_calculate.short_description = '견적완료'
     _deny_estimate.short_description = '거절'

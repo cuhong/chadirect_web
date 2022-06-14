@@ -259,7 +259,7 @@ class EstimateMixin(models.Model):
             messages.append('증권이미지')
         return messages
 
-    def validate_calculate_complete(self):
+    def validate_calculate_complete(self, user):
         # 견적완료 가능 여부를 확인한다.
         messages = []
         if self.estimate_image.name == '':
@@ -313,7 +313,7 @@ class EstimateMixin(models.Model):
                 insurer_3 = insurance_data.get(VehicleInsurerChoices.KB.value, None)
                 insurer_4 = insurance_data.get(VehicleInsurerChoices.HANHWA.value, None)
                 insurer_5 = insurance_data.get(VehicleInsurerChoices.HANA.value, None)
-                manager = self.manager
+                manager = user
                 data = {
                     "manager_name": manager.name,
                     "manager_contact": manager.cellphone,
@@ -456,7 +456,7 @@ def compare_detail_upload_to(instance, filename):
 
 class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     class Meta:
-        verbose_name = '02. 내 견적'
+        verbose_name = '02. 견적요청'
         verbose_name_plural = verbose_name
         ordering = ('-registered_at',)
 
@@ -593,22 +593,20 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     def __str__(self):
         return self.serial
 
-    @transaction.atomic
-    def set_manager(self, manager, reset=False):
-        # 담당자 배정 => 견적 산출중
-        if all([self.status != CompareStatus.REQUEST, reset is False]):
-            raise CarCMSCompareError(2, **{"user": self.manager})
-        elif all([self.status not in [
+    def start_calculation(self, reset=False):
+        # 견적 산출 시작 => 견적 산출중
+        # if all([self.status != CompareStatus.REQUEST, reset is False]):
+        #     raise CarCMSCompareError(2, **{"user": self.manager})
+        if all([self.status not in [
             CompareStatus.REQUEST, CompareStatus.CALCULATE, CompareStatus.CALCULATE_COMPLETE, CompareStatus.CONTRACT
         ], reset is True]):
             raise CarCMSCompareError(3, **{"status_display": self.get_status_display()})
-        self.manager = manager
         self.status = CompareStatus.CALCULATE
         self.save()
 
-    def _complete_calculate(self):
+    def _complete_calculate(self, user):
         # 견적 완료 상태로 변경
-        messages = self.validate_calculate_complete()
+        messages = self.validate_calculate_complete(user)
         if len(messages) == 0:
             self.status = CompareStatus.CALCULATE_COMPLETE
             self.save()
@@ -717,14 +715,10 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         )
         message.send()
 
-    def _change_manager(self, account):
-        self.manager = account
-        self.save()
-
 
 class ComparePending(Compare):
     class Meta:
-        verbose_name = '01. 견적요청 대기'
+        verbose_name = '01. 인증대기건'
         verbose_name_plural = verbose_name
         proxy = True
 
