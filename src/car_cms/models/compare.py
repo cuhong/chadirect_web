@@ -192,7 +192,7 @@ class EstimateMixin(models.Model):
     estimate_premium_5 = models.IntegerField(null=True, blank=True, verbose_name='보험료 5')
     estimate_memo_5 = models.CharField(max_length=100, null=True, blank=True, verbose_name='비고 5')
     estimate_insurer_6 = models.CharField(
-        max_length=10,
+        max_length=10, default=VehicleInsurerChoices.HANA,
         choices=VehicleInsurerChoices.choices, null=True, blank=True, verbose_name='보험사 6'
     )
     estimate_premium_6 = models.IntegerField(null=True, blank=True, verbose_name='보험료 6')
@@ -593,7 +593,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     def __str__(self):
         return self.serial
 
-    def start_calculation(self, reset=False):
+    def start_calculation(self, user, reset=False):
         # 견적 산출 시작 => 견적 산출중
         # if all([self.status != CompareStatus.REQUEST, reset is False]):
         #     raise CarCMSCompareError(2, **{"user": self.manager})
@@ -601,6 +601,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
             CompareStatus.REQUEST, CompareStatus.CALCULATE, CompareStatus.CALCULATE_COMPLETE, CompareStatus.CONTRACT
         ], reset is True]):
             raise CarCMSCompareError(3, **{"status_display": self.get_status_display()})
+        self.manager = user
         self.status = CompareStatus.CALCULATE
         self.save()
 
@@ -627,13 +628,14 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         )
         message.send()
 
-    def _deny_calculate(self):
+    def _deny_calculate(self, user):
         # 견적 완료 상태로 변경
         if self.reject_reason in [None, ""]:
             raise Exception('견적산출 실패사유를 입력하세요')
         if self.status != CompareStatus.CALCULATE:
             raise Exception('견적요청 상태의 건만 거절 가능합니다.')
         self.status = CompareStatus.CALCULATE_DENY
+        self.manager = user
         self.save()
         from car_cms.models import Message
         body = f"""차다이렉트 안내
@@ -649,23 +651,25 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         )
         message.send()
 
-    def deny_estimate(self, msg=None):
+    def deny_estimate(self, user, msg=None):
         # 견적서 거절
         if self.status != CompareStatus.CALCULATE_COMPLETE:
             raise CarCMSCompareError(7, **{"status_display": self.get_status_display()})
         self.deny_msg = msg
+        self.manager = user
         self.status = CompareStatus.DENY
         self.save()
 
-    def start_contract(self, memo=None):
+    def start_contract(self, user, memo=None):
         # 계약 요청에 따라 계약중 상태로 변경
         if self.status != CompareStatus.CALCULATE_COMPLETE:
             raise CarCMSCompareError(8, **{"status_display": self.get_status_display()})
         self.status = CompareStatus.CONTRACT
+        self.manger = user
         self.memo = memo
         self.save()
 
-    def success_contract(self):
+    def success_contract(self, user):
         # 체결
         if self.status != CompareStatus.CONTRACT:
             raise CarCMSCompareError(9, **{"status_display": self.get_status_display()})
@@ -673,6 +677,7 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         if len(messages) != 0:
             raise Exception(f"{', '.join(messages)}를 확인하세요")
         self.status = CompareStatus.CONTRACT_SUCCESS
+        self.manager = user
         self.save()
         self.send_success_contract()
 
@@ -695,11 +700,12 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         )
         message.send()
 
-    def fail_contract(self, msg=None):
+    def fail_contract(self, user, msg=None):
         if self.status != CompareStatus.CONTRACT:
             raise CarCMSCompareError(9, **{"status_display": self.get_status_display()})
         self.status = CompareStatus.CONTRACT_FAIL
         self.contract_fail_msg = msg
+        self.manager = user
         self.save()
         self.send_fail_contract()
 

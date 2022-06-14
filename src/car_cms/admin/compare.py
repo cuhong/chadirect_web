@@ -272,7 +272,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
 
     def _start_calculation(self, request, obj, parent_obj=None):
         try:
-            obj.start_calculation()
+            obj.start_calculation(request.user)
         except Exception as e:
             messages.error(request, str(e))
         else:
@@ -291,7 +291,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
 
     def _deny_calculate(self, request, obj, parent_obj=None):
         try:
-            result = obj._deny_calculate()
+            result = obj._deny_calculate(request.user)
         except Exception as e:
             messages.error(request, str(e))
         else:
@@ -299,7 +299,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
 
     def _deny_estimate(self, request, obj, parent_obj=None):
         try:
-            obj.deny_estimate()
+            obj.deny_estimate(request.user)
         except Exception as e:
             messages.error(request, str(e))
         else:
@@ -307,7 +307,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
 
     def _start_contract(self, request, obj, parent_obj=None):
         try:
-            obj.start_contract()
+            obj.start_contract(request.user)
         except Exception as e:
             messages.error(request, str(e))
         else:
@@ -315,7 +315,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
 
     def _success_contract(self, request, obj, parent_obj=None):
         try:
-            obj.success_contract()
+            obj.success_contract(user=request.user)
         except Exception as e:
             messages.error(request, str(e))
         else:
@@ -323,7 +323,7 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
 
     def _fail_contract(self, request, obj, parent_obj=None):
         try:
-            obj.fail_contract()
+            obj.fail_contract(request.user)
         except Exception as e:
             messages.error(request, str(e))
         else:
