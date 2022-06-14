@@ -268,7 +268,7 @@ class CustomInlineActionsModelAdminMixin(BaseInlineActionsMixin):
                     if not matches_model or not matches_inline_class:
                         continue
                     model_admin = inline
-                obj = model_admin.get_queryset(request).get(pk=object_pk)
+                obj = model_admin.get_queryset.get(pk=object_pk)
 
             if model_admin:
                 return self._execute_action(

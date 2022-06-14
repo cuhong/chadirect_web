@@ -1,0 +1,123 @@
+{% extends 'affiliate/base.html' %}
+{% load humanize %}
+{% block extrastyle %}
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui-grid/latest/tui-grid.css"/>
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css"/>
+{% endblock %}
+
+{% block container %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 p-t-40 p-b-90 p-t-40">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h5 class="">체결 리스트</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div class="flex-grow-1">
+                                <form method="get" id="filterForm">
+                                    <input hidden id="id_page" name="page" value="{{ page_obj.number }}">
+                                    <div class="form-row">
+                                        <div class="form-group floating-label col-md-1">
+                                            <label for="id_name">성명</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="성명"
+                                                   id="id_name" name="name"
+                                                   value="{{ filterform.name.value|default_if_none:'' }}">
+                                        </div>
+                                        <div class="form-group floating-label col-md-1">
+                                            <label for="id_dept">소속</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="소속"
+                                                   id="id_dept" name="dept"
+                                                   value="{{ filterform.dept.value|default_if_none:'' }}">
+                                        </div>
+                                        <div class="form-group floating-label col-md-1">
+                                            <label for="id_start">체결일 조회기간 시작</label>
+                                            <input type="date" class="form-control form-control-sm"
+                                                   placeholder="체결일 조회기간 시작"
+                                                   id="id_start" name="start"
+                                                   value="{{ filterform.start.value|default_if_none:'' }}">
+                                        </div>
+                                        <div class="form-group floating-label col-md-1">
+                                            <label for="id_end">체결일 조회기간 끝</label>
+                                            <input type="date" class="form-control form-control-sm"
+                                                   placeholder="체결일 조회기간 시작"
+                                                   id="id_end" name="end"
+                                                   value="{{ filterform.end.value|default_if_none:'' }}">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button class="btn btn-primary btn-block" type="button" onclick="search()">
+                                                검색
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div>
+                                기간내 보험료 총계 : {{ total_premium|intcomma }}원
+                            </div>
+                        </div>
+                        <div class="m-b-10" id="contractListTable"></div>
+                        <div id="contractPagination" class="tui-pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascript %}
+    {{ contract_list | json_script:"contract_list" }}
+    <script src="https://uicdn.toast.com/tui-grid/latest/tui-grid.js"></script>
+    <script src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+    <script>
+        var Grid = tui.Grid;
+        const filterForm = document.getElementById('filterForm')
+        const contractListTable = document.getElementById('contractListTable')
+        const contractPagination = document.getElementById('contractPagination')
+        const pageInput = document.getElementById('id_page')
+        let page = parseInt('{{ page_obj.number }}')
+        let perPage = parseInt('{{ page_obj.paginator.per_page }}')
+        let totalCount = parseInt('{{ page_obj.paginator.count }}')
+        const contractData = JSON.parse(document.getElementById('contract_list').textContent)
+        const userGrid = new Grid({
+            el: document.getElementById('contractListTable'),
+            data: contractData,
+            scrollY: false,
+            columns: [
+                {header: "계약번호", name: "serial", align: "center"},
+                {header: "성명", name: "account_name", align: "center"},
+                {header: "소속", name: "dept", align: "center"},
+                {header: "직책", name: "role", align: "center"},
+                {header: "사번", name: "employee_no", align: "center"},
+                {header: "채널", name: "channel_display", align: "center"},
+                {header: "고객타입", name: "customer_type_display", align: "center"},
+                {header: "보험사", name: "insurer_display", align: "center"},
+                {header: "보험료", name: "premium", align: "center"},
+                {header: "요청일시", name: "registered_at", align: "center"},
+            ]
+        });
+        const Pagination = tui.Pagination;
+        const pageInstance = new Pagination(contractPagination, {
+            totalItems: totalCount,
+            itemsPerPage: perPage,
+            visiblePages: 10,
+            page: page,
+            centerAlign: true
+        });
+
+        const search = () => {
+            pageInput.value = 1
+            document.getElementById('filterForm').submit()
+        }
+
+        pageInstance.on('afterMove', (event) => {
+            pageInput.value = event.page
+            filterForm.submit()
+        });
+    </script>
+{% endblock %}

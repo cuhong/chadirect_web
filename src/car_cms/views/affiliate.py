@@ -8,11 +8,12 @@ from django.contrib.auth.views import LoginView as DjangoLoginView
 from django.contrib.auth.views import LogoutView as DjangoLogoutView
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
-from django.db.models import Q, Case, When, Value, F
-from django.db.models.functions import Concat
+from django.db.models import Q, Case, When, Value, F, Sum
+from django.db.models.functions import Concat, Coalesce
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse
+from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView, ListView
 from rest_framework.views import APIView
@@ -124,7 +125,8 @@ class ExternalSignupView(View):
         guid = request.GET.get('guid')
         form = SignupForm()
         organization = get_object_or_404(Organization, guid=guid)
-        return render(request, 'affiliate/auth/signup/external.html', context={"organization": organization, "form": form})
+        return render(request, 'affiliate/auth/signup/external.html',
+                      context={"organization": organization, "form": form})
 
     def post(self, request):
         form = SignupForm(data=request.POST, files=request.FILES)
@@ -173,7 +175,8 @@ class UserListFilterForm(forms.Form):
             q.add(Q(name__icontains=data.get('name')), q.AND)
         if data.get('dept') not in ["", None]:
             dept = data.get('dept')
-            dept_q = Q(dept_1__icontains=dept) | Q(dept_2__icontains=dept) | Q(dept_3__icontains=dept) | Q(dept_4__icontains=dept)
+            dept_q = Q(dept_1__icontains=dept) | Q(dept_2__icontains=dept) | Q(dept_3__icontains=dept) | Q(
+                dept_4__icontains=dept)
             q.add(dept_q, q.AND)
         if data.get('employee_no') not in ["", None]:
             q.add(Q(employee_no__icontains=data.get('employee_no')), q.AND)
@@ -293,7 +296,6 @@ class AddUserView(View):
         return render(request, 'affiliate/auth/signup/add_user.html', context={"url": url})
 
 
-
 class ContractListFilterForm(forms.Form):
     status = forms.CharField(required=False)
 
@@ -315,7 +317,8 @@ class ContractListView(AffiliateUserMixin, ListView):
     def get_queryset(self):
         queryset = super(ContractListView, self).get_queryset()
         queryset = queryset.values(
-            'id', 'account__name', 'account__cellphone', 'serial', 'status', 'insurer', 'premium', 'customer_type', 'channel', 'registered_at'
+            'id', 'account__name', 'account__cellphone', 'serial', 'status', 'insurer', 'premium', 'customer_type',
+            'channel', 'registered_at'
         ).filter(account__organization=self.request.user.organization)
 
         filterform = ContractListFilterForm(self.request.GET)
@@ -356,4 +359,94 @@ class ContractListView(AffiliateUserMixin, ListView):
         } for contract in queryset]
         context['contract_list'] = contract_list
         context['status_list'] = CompareStatus.choices
+        return context
+
+
+class ContractSuccessListFilterForm(forms.Form):
+    name = forms.CharField(required=False)
+    dept = forms.CharField(required=False)
+    start = forms.DateField(required=False, input_formats=["%Y-%m-%d"])
+    end = forms.DateField(required=False, input_formats=["%Y-%m-%d"])
+
+    def create_query(self):
+        data = self.cleaned_data
+        q = Q()
+        if data.get('name') not in ["", None]:
+            q.add(Q(name__icontains=data.get('name')), q.AND)
+        if data.get('dept') not in ["", None]:
+            dept = data.get('dept')
+            dept_q = Q(dept_1__icontains=dept) | Q(dept_2__icontains=dept) | Q(dept_3__icontains=dept) | Q(
+                dept_4__icontains=dept)
+            q.add(dept_q, q.AND)
+        if data.get('start'):
+            q.add(Q(registered_at__gte=data.get('start')), q.AND)
+        if data.get('end'):
+            q.add(Q(registered_at__lte=data.get('end')), q.AND)
+
+        return q
+
+
+class ContractSuccessListView(AffiliateUserMixin, ListView):
+    template_name = 'affiliate/contract/success_list.html'
+    model = Compare
+    # queryset = Compare.objects.all()
+
+    def get_paginate_by(self, queryset):
+        return self.request.POST.get('perPage', 30)
+
+    def get_queryset(self):
+        queryset = super(ContractSuccessListView, self).get_queryset().filter(status=CompareStatus.CONTRACT_SUCCESS)
+        queryset = queryset.annotate(
+            dept_1_value=Case(When(account__dept_1=None, then=Value("-")), default=F('account__dept_1')),
+            dept_2_value=Case(When(account__dept_2=None, then=Value("-")), default=F('account__dept_2')),
+            dept_3_value=Case(When(account__dept_3=None, then=Value("-")), default=F('account__dept_3')),
+            dept_4_value=Case(When(account__dept_4=None, then=Value("-")), default=F('account__dept_4')),
+        ).annotate(
+            dept=Concat(
+                F('dept_1_value'), Value("/"),
+                F('dept_2_value'), Value("/"),
+                F('dept_3_value'), Value("/"),
+                F('dept_4_value')
+            ),
+            role=F('account__role'),
+            employee_no=F('account__employee_no'),
+        ).values(
+            'id', 'account__name', 'account__cellphone', 'serial', 'status', 'insurer', 'premium', 'customer_type',
+            'channel', 'registered_at', 'dept', 'role', 'employee_no'
+        ).filter(account__organization=self.request.user.organization)
+        filterform = ContractListFilterForm(self.request.GET)
+        if filterform.is_valid():
+            query = filterform.create_query()
+            queryset = queryset.filter(query)
+        else:
+            queryset = queryset.none()
+        total_premium = queryset.aggregate(total=Coalesce(Sum('premium'), 0))['total']
+        extra_context = self.extra_context or {}
+        extra_context['total_premium'] = total_premium
+        self.extra_context = extra_context
+        return queryset
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ContractSuccessListView, self).get_context_data(*args, **kwargs)
+        filterform = ContractSuccessListFilterForm(self.request.GET)
+        context['filterform'] = filterform
+        context['total_premium'] = self.extra_context.get('total_premium')
+        queryset = context.get('object_list')
+        contract_list = [{
+            "id": contract.get('id'),
+            "account_name": f"{contract.get('account__name')}",
+            "role": contract.get('role'),
+            "employee_no": contract.get('employee_no'),
+            "dept": contract.get('dept'),
+            "serial": contract.get('serial'),
+            "insurer": contract.get('insurer'),
+            "insurer_display": VehicleInsurerChoices(contract.get('insurer')).label if contract.get('insurer') else "-",
+            "premium": contract.get('premium'),
+            "customer_type": contract.get('customer_type'),
+            "customer_type_display": CustomerTypeChoices(contract.get('customer_type')).label,
+            "channel": contract.get('channel'),
+            "channel_display": ChannelChoices(contract.get('channel')).label,
+            "registered_at": (contract.get('registered_at') + relativedelta(hours=9)).strftime("%Y-%m-%d %H:%M:%S"),
+        } for contract in queryset]
+        context['contract_list'] = contract_list
         return context
