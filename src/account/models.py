@@ -60,6 +60,7 @@ class UserManager(BaseUserManager):
             )
         else:
             organization_instance = None
+        organization_employee = None
         if organization_instance:
             if organization_instance.need_validate is True:
                 employee_queryset = organization_instance.organizationemployee_set.filter(
@@ -67,12 +68,22 @@ class UserManager(BaseUserManager):
                 )
                 if employee_queryset.exists() is False:
                     raise Exception(f'해당 조직의 직원으로 등록되지 않았습니다.\n관리자의 확인이 필요합니다.\n문의) {DEFAULT_TEL}')
+                else:
+                    organization_employee = employee_queryset.first()
         user = self.model(
             email=self.normalize_email(email),
             name=name, cellphone=cellphone,
             name_card=name_card, referer_code=referer_code,
-            user_type=user_type, organization=organization_instance
+            user_type=user_type, organization=organization_instance,
         )
+        if organization_employee:
+            user.employee_no = organization_employee.code
+            user.dept_1 = organization_employee.dept_1
+            user.dept_2 = organization_employee.dept_2
+            user.dept_3 = organization_employee.dept_3
+            user.dept_4 = organization_employee.dept_4
+            user.role = organization_employee.role
+
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -206,6 +217,13 @@ class User(PermissionsMixin, AbstractBaseUser):
         max_length=50, null=True, blank=True, verbose_name='회원타입'
     )
     employee_no = models.CharField(max_length=100, null=True, blank=True, verbose_name='사번')
+    dept_1 = models.CharField(max_length=200, null=True, blank=True, verbose_name='부서 1')
+    dept_2 = models.CharField(max_length=200, null=True, blank=True, verbose_name='부서 2')
+    dept_3 = models.CharField(max_length=200, null=True, blank=True, verbose_name='부서 3')
+    dept_4 = models.CharField(max_length=200, null=True, blank=True, verbose_name='부서 4')
+    # code = models.CharField(max_length=50, null=True, blank=True, verbose_name='사번')
+    role = models.CharField(max_length=100, null=True, blank=True, verbose_name='직책')
+    # contact = models.CharField(max_length=50, null=False, blank=False, verbose_name='연락처')
 
     objects = UserManager()
 
