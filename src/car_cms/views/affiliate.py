@@ -162,6 +162,8 @@ class UserListFilterForm(forms.Form):
     email = forms.CharField(required=False)
     cellphone = forms.CharField(required=False)
     sort = forms.CharField(required=False)
+    start = forms.DateField(required=False, input_formats=["%Y-%m-%d"])
+    end = forms.DateField(required=False, input_formats=["%Y-%m-%d"])
 
     def create_query(self):
         data = self.cleaned_data
@@ -179,6 +181,11 @@ class UserListFilterForm(forms.Form):
             q.add(Q(email__icontains=data.get('email')), q.AND)
         if data.get('cellphone') not in ["", None]:
             q.add(Q(cellphone__icontains=data.get('cellphone')), q.AND)
+        if data.get('start'):
+            q.add(Q(registered_at__gte=data.get('start')), q.AND)
+        if data.get('end'):
+            q.add(Q(registered_at__lte=data.get('end')), q.AND)
+
         sort = "-registered_at" if data.get('sort') == "" else data.get('sort')
         return q, sort
 
