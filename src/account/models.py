@@ -225,6 +225,22 @@ class User(PermissionsMixin, AbstractBaseUser):
     role = models.CharField(max_length=100, null=True, blank=True, verbose_name='직책')
     # contact = models.CharField(max_length=50, null=False, blank=False, verbose_name='연락처')
 
+    def update_employee_info(self):
+        if self.organization is None:
+            return True
+        employee_queryset = self.organization.organizationemployee_set.filter(
+            name=self.name.strip(), contact="".join([s for s in self.cellphone if s.isdigit()])
+        )
+        if employee_queryset.exists():
+            organization_employee = employee_queryset.first()
+            self.employee_no = organization_employee.code
+            self.dept_1 = organization_employee.dept_1
+            self.dept_2 = organization_employee.dept_2
+            self.dept_3 = organization_employee.dept_3
+            self.dept_4 = organization_employee.dept_4
+            self.role = organization_employee.role
+            self.save()
+
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
