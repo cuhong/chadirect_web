@@ -23,6 +23,8 @@ class OrganizationEmployeeAdmin(ie_admin.ImportMixin, admin.ModelAdmin):
     list_display = ['organization', 'dept_1', 'code', 'role', 'name', 'contact']
     list_filter = ['organization']
     search_fields = ['name__icontains', 'contact__icontains']
+    autocomplete_fields = ['organization']
+
 
 
 class CustomUserChangeForm(UserChangeForm):
