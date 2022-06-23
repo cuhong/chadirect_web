@@ -255,8 +255,8 @@ class EstimateMixin(models.Model):
             messages.append('보험료')
         if self.policy_no is None:
             messages.append('증권번호')
-        if self.policy_image in ['', None]:
-            messages.append('증권이미지')
+        # if self.policy_image in ['', None]:
+        #     messages.append('증권이미지')
         return messages
 
     def validate_calculate_complete(self, user):
