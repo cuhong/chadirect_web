@@ -224,24 +224,49 @@ class UserListView(AffiliateUserMixin, ListView):
                     F('dept_4_value')
                 )
             ).filter(organization=self.request.user.organization).filter(query)
-            filterform.create_query()
         else:
             queryset = queryset.none()
         return queryset
 
     def get_context_data(self, *args, **kwargs):
         context = super(UserListView, self).get_context_data(*args, **kwargs)
+        user_list = self.to_list(context.get('object_list'))
+        context['json_object_list'] = user_list
+        filterform = UserListFilterForm(self.request.GET)
+        context['filterform'] = filterform
+        return context
+
+    def to_list(self, queryset):
         user_list = []
-        for user in context.get('object_list'):
+        for user in queryset:
             user_dict = dict(user)
             user_dict['registered_at'] = user_dict['registered_at'].strftime("%Y-%m-%d %H:%M:%S")
             user_dict['last_login'] = "미접속" if user_dict['last_login'] is None else user_dict['last_login'].strftime(
                 "%Y-%m-%d %H:%M:%S")
             user_list.append(user_dict)
-        context['json_object_list'] = user_list
-        filterform = UserListFilterForm(self.request.GET)
-        context['filterform'] = filterform
-        return context
+        return user_list
+
+    def post(self, request):
+        queryset = self.get_queryset()
+        contract_list = self.to_list(queryset)
+        df = pd.DataFrame(contract_list)
+        save_dir = os.path.join(settings.BASE_DIR, 'car_cms', 'export_history')
+        if os.path.isdir(save_dir) is False:
+            os.makedirs(save_dir)
+        prefix = f"User-{timezone.localdate().strftime('%Y%M%d')}"
+        sequence = get_next_value(prefix)
+        filename = f"{prefix}-{str(request.user.id)}-{str(sequence).zfill(3)}.xlsx"
+        save_path = os.path.join(save_dir, filename)
+        with open(save_path, 'wb') as file:
+            writer = pd.ExcelWriter(file, engine='xlsxwriter')
+            df.to_excel(writer, index=False)
+            writer.save()
+        with open(save_path, 'rb') as file:
+            response = HttpResponse(
+                file, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+            response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
 
 
 class UserUpdateForm(forms.ModelForm):

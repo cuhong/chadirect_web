@@ -19,6 +19,7 @@
                         <div class="m-b-10">
 
                             <form method="get" id="filterForm">
+                            {% csrf_token %}
                             <input hidden id="id_page" name="page" value="{{ page_obj.number }}">
                                 <div class="form-row">
                                     <div class="form-group floating-label col-md-1">
@@ -102,6 +103,12 @@
                                     <div class="col-md-1">
                                         <button class="btn btn-primary btn-block" type="button" onclick="search()">검색</button>
                                     </div>
+
+                                        <div class="col-md-1">
+                                            <button class="btn btn-primary btn-block" type="button" onclick="downloadList()">
+                                                다운로드
+                                            </button>
+                                        </div>
                                     {#                                    <div class="col-md-1">#}
                                     {#                                        <button class="btn btn-outline-info btn-block" type="reset">초기화</button>#}
                                     {#                                    </div>#}
@@ -213,6 +220,17 @@
                 },
             ]
         });
+
+        userGrid.on('beforeExport', (event) => {
+            alert('상단의 다운로드 버튼을 이용해주세요.')
+            event.stop();
+        })
+
+
+        const downloadList = () => {
+            filterForm.method = "post"
+            filterForm.submit()
+        }
         const Pagination = tui.Pagination;
         const pageInstance = new Pagination(userPagination, {
             totalItems: totalCount,
