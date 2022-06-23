@@ -17,8 +17,37 @@
                     </div>
                     <div class="card-body">
                         <form method="get" id="filterForm">
+                        {% csrf_token %}
                             <input hidden id="id_page" name="page" value="{{ page_obj.number }}">
                             <div class="form-row">
+                                <div class="form-group floating-label col-md-1">
+                                    <label for="id_name">성명</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           placeholder="성명"
+                                           id="id_name" name="name"
+                                           value="{{ filterform.name.value|default_if_none:'' }}">
+                                </div>
+                                <div class="form-group floating-label col-md-1">
+                                    <label for="id_dept">소속</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           placeholder="소속"
+                                           id="id_dept" name="dept"
+                                           value="{{ filterform.dept.value|default_if_none:'' }}">
+                                </div>
+                                <div class="form-group floating-label col-md-1">
+                                    <label for="id_start">요청일 조회기간 시작</label>
+                                    <input type="date" class="form-control form-control-sm"
+                                           placeholder="요청일 조회기간 시작"
+                                           id="id_start" name="start"
+                                           value="{{ filterform.start.value|default_if_none:'' }}">
+                                </div>
+                                <div class="form-group floating-label col-md-1">
+                                    <label for="id_end">요청일 조회기간 끝</label>
+                                    <input type="date" class="form-control form-control-sm"
+                                           placeholder="요청일 조회기간 시작"
+                                           id="id_end" name="end"
+                                           value="{{ filterform.end.value|default_if_none:'' }}">
+                                </div>
                                 <div class="form-group floating-label col-md-2">
                                     <label for="id_status">정렬</label>
                                     <select id="id_status" name="status" class="form-control form-control-sm">
@@ -32,6 +61,12 @@
                                 <div class="col-md-1">
                                     <button class="btn btn-primary btn-block" type="submit">검색</button>
                                 </div>
+
+                                        <div class="col-md-1">
+                                            <button class="btn btn-primary btn-block" type="button" onclick="downloadList()">
+                                                다운로드
+                                            </button>
+                                        </div>
                             </div>
                         </form>
                         {#                        <div class="m-b-10">#}
@@ -142,6 +177,10 @@
                 {header: "요청일시", name: "registered_at", align: "center"},
             ]
         });
+        userGrid.on('beforeExport', (event) => {
+            alert('상단의 다운로드 버튼을 이용해주세요.')
+            event.stop();
+        })
         const Pagination = tui.Pagination;
         const pageInstance = new Pagination(contractPagination, {
             totalItems: totalCount,
@@ -150,6 +189,12 @@
             page: page,
             centerAlign: true
         });
+
+
+        const downloadList = () => {
+            filterForm.method = "post"
+            filterForm.submit()
+        }
         pageInstance.on('afterMove', (event) => {
             formPage.value = event.page
             filterForm.submit()

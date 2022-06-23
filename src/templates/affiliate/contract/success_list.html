@@ -19,6 +19,7 @@
                         <div class="d-flex justify-content-between">
                             <div class="flex-grow-1">
                                 <form method="get" id="filterForm">
+                                    {% csrf_token %}
                                     <input hidden id="id_page" name="page" value="{{ page_obj.number }}">
                                     <div class="form-row">
                                         <div class="form-group floating-label col-md-1">
@@ -52,6 +53,11 @@
                                         <div class="col-md-1">
                                             <button class="btn btn-primary btn-block" type="button" onclick="search()">
                                                 검색
+                                            </button>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button class="btn btn-primary btn-block" type="button" onclick="downloadList()">
+                                                다운로드
                                             </button>
                                         </div>
                                     </div>
@@ -101,6 +107,10 @@
                 {header: "체결일시", name: "updated_at", align: "center"},
             ]
         });
+        userGrid.on('beforeExport', (event) => {
+            alert('상단의 다운로드 버튼을 이용해주세요.')
+            event.stop();
+        })
         const Pagination = tui.Pagination;
         const pageInstance = new Pagination(contractPagination, {
             totalItems: totalCount,
@@ -113,6 +123,12 @@
         const search = () => {
             pageInput.value = 1
             document.getElementById('filterForm').submit()
+        }
+
+
+        const downloadList = () => {
+            filterForm.method = "post"
+            filterForm.submit()
         }
 
         pageInstance.on('afterMove', (event) => {

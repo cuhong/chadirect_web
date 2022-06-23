@@ -1,7 +1,9 @@
 import json
+import os
 
 from dateutil.relativedelta import relativedelta
 from django import forms
+from django.conf import settings
 from django.contrib.auth import login as django_login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.views import LoginView as DjangoLoginView
@@ -17,13 +19,14 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView, ListView
 from rest_framework.views import APIView
+from sequences import get_next_value
 
 from account.models import User, Organization
 from django.contrib.auth import logout as auth_logout
 
 from car_cms.models import Compare, CompareStatus, CustomerTypeChoices, ChannelChoices
 from commons.models import VehicleInsurerChoices
-
+import pandas as pd
 
 class AffiliateUserMixin(LoginRequiredMixin, UserPassesTestMixin):
     login_url = "/affiliate/login/"
@@ -298,12 +301,26 @@ class AddUserView(View):
 
 class ContractListFilterForm(forms.Form):
     status = forms.CharField(required=False)
+    name = forms.CharField(required=False)
+    dept = forms.CharField(required=False)
+    start = forms.DateField(required=False, input_formats=["%Y-%m-%d"])
+    end = forms.DateField(required=False, input_formats=["%Y-%m-%d"])
 
     def create_query(self):
         data = self.cleaned_data
         q = Q()
         if data.get('status') != "":
             q.add(Q(status=data.get('status')), q.AND)
+        if data.get('name') not in ["", None]:
+            q.add(Q(account__name__icontains=data.get('name')), q.AND)
+        if data.get('dept') not in ["", None]:
+            dept = data.get('dept')
+            dept_q = Q(account__dept_1__icontains=dept) | Q(account__dept_2__icontains=dept) | Q(account__dept_3__icontains=dept) | Q(account__dept_4__icontains=dept)
+            q.add(dept_q, q.AND)
+        if data.get('start'):
+            q.add(Q(registered_at__date__gte=data.get('start')), q.AND)
+        if data.get('end'):
+            q.add(Q(registered_at__date__lte=data.get('end')), q.AND)
         return q
 
 
@@ -329,19 +346,7 @@ class ContractListView(AffiliateUserMixin, ListView):
             queryset = queryset.none()
         return queryset
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(ContractListView, self).get_context_data(*args, **kwargs)
-        # user_list = []
-        # for user in context.get('object_list'):
-        #     user_dict = dict(user)
-        #     user_dict['registered_at'] = user_dict['registered_at'].strftime("%Y-%m-%d %H:%M:%S")
-        #     user_dict['last_login'] = "미접속" if user_dict['last_login'] is None else user_dict['last_login'].strftime(
-        #         "%Y-%m-%d %H:%M:%S")
-        #     user_list.append(user_dict)
-        # context['json_object_list'] = user_list
-        filterform = ContractListFilterForm(self.request.GET)
-        context['filterform'] = filterform
-        queryset = context.get('object_list')
+    def to_list(self, queryset):
         contract_list = [{
             "id": contract.get('id'),
             "account_name": f"{contract.get('account__name')}",
@@ -357,9 +362,47 @@ class ContractListView(AffiliateUserMixin, ListView):
             "channel_display": ChannelChoices(contract.get('channel')).label,
             "registered_at": (contract.get('registered_at') + relativedelta(hours=9)).strftime("%Y-%m-%d %H:%M:%S"),
         } for contract in queryset]
+        return contract_list
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ContractListView, self).get_context_data(*args, **kwargs)
+        # user_list = []
+        # for user in context.get('object_list'):
+        #     user_dict = dict(user)
+        #     user_dict['registered_at'] = user_dict['registered_at'].strftime("%Y-%m-%d %H:%M:%S")
+        #     user_dict['last_login'] = "미접속" if user_dict['last_login'] is None else user_dict['last_login'].strftime(
+        #         "%Y-%m-%d %H:%M:%S")
+        #     user_list.append(user_dict)
+        # context['json_object_list'] = user_list
+        filterform = ContractListFilterForm(self.request.GET)
+        context['filterform'] = filterform
+        queryset = context.get('object_list')
+        contract_list = self.to_list(queryset)
         context['contract_list'] = contract_list
         context['status_list'] = CompareStatus.choices
         return context
+
+    def post(self, request):
+        queryset = self.get_queryset()
+        contract_list = self.to_list(queryset)
+        df = pd.DataFrame(contract_list)
+        save_dir = os.path.join(settings.BASE_DIR, 'car_cms', 'export_history')
+        if os.path.isdir(save_dir) is False:
+            os.makedirs(save_dir)
+        prefix = f"Contract-{timezone.localdate().strftime('%Y%M%d')}"
+        sequence = get_next_value(prefix)
+        filename = f"{prefix}-{str(request.user.id)}-{str(sequence).zfill(3)}.xlsx"
+        save_path = os.path.join(save_dir, filename)
+        with open(save_path, 'wb') as file:
+            writer = pd.ExcelWriter(file, engine='xlsxwriter')
+            df.to_excel(writer, index=False)
+            writer.save()
+        with open(save_path, 'rb') as file:
+            response = HttpResponse(
+                file, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+            response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
 
 
 class ContractSuccessListFilterForm(forms.Form):
@@ -424,12 +467,7 @@ class ContractSuccessListView(AffiliateUserMixin, ListView):
         self.extra_context = extra_context
         return queryset
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(ContractSuccessListView, self).get_context_data(*args, **kwargs)
-        filterform = ContractSuccessListFilterForm(self.request.GET)
-        context['filterform'] = filterform
-        context['total_premium'] = self.extra_context.get('total_premium')
-        queryset = context.get('object_list')
+    def to_list(self, queryset):
         contract_list = [{
             "id": contract.get('id'),
             "account_name": f"{contract.get('account__name')}",
@@ -446,5 +484,36 @@ class ContractSuccessListView(AffiliateUserMixin, ListView):
             "channel_display": ChannelChoices(contract.get('channel')).label,
             "updated_at": (contract.get('updated_at') + relativedelta(hours=9)).strftime("%Y-%m-%d %H:%M:%S"),
         } for contract in queryset]
+        return contract_list
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ContractSuccessListView, self).get_context_data(*args, **kwargs)
+        filterform = ContractSuccessListFilterForm(self.request.GET)
+        context['filterform'] = filterform
+        context['total_premium'] = self.extra_context.get('total_premium')
+        queryset = context.get('object_list')
+        contract_list = self.to_list(queryset)
         context['contract_list'] = contract_list
         return context
+
+    def post(self, request):
+        queryset = self.get_queryset()
+        contract_list = self.to_list(queryset)
+        df = pd.DataFrame(contract_list)
+        save_dir = os.path.join(settings.BASE_DIR, 'car_cms', 'export_history')
+        if os.path.isdir(save_dir) is False:
+            os.makedirs(save_dir)
+        prefix = f"ContractComplete-{timezone.localdate().strftime('%Y%M%d')}"
+        sequence = get_next_value(prefix)
+        filename = f"{prefix}-{str(request.user.id)}-{str(sequence).zfill(3)}.xlsx"
+        save_path = os.path.join(save_dir, filename)
+        with open(save_path, 'wb') as file:
+            writer = pd.ExcelWriter(file, engine='xlsxwriter')
+            df.to_excel(writer, index=False)
+            writer.save()
+        with open(save_path, 'rb') as file:
+            response = HttpResponse(
+                file, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+            response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
