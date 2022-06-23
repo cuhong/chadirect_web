@@ -45,7 +45,7 @@
                     {#                    <button class="btn btn-cc-primary btn-block" onclick="requestContract()">계약요청</button>#}
                 </div>
             {% endif %}
-            {% if compare.status == 5 %}
+            {% if compare.status == 5 and compare.policy_image %}
                 <div class="mb-2 px-3">
                     <button class="btn btn-cc-primary btn-block" onclick="showPolicy()">가입증명서</button>
                 </div>
