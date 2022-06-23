@@ -255,6 +255,7 @@ class EstimateMixin(models.Model):
             messages.append('보험료')
         if self.policy_no is None:
             messages.append('증권번호')
+        # 20220623
         # if self.policy_image in ['', None]:
         #     messages.append('증권이미지')
         return messages
