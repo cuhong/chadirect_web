@@ -372,17 +372,15 @@ class ContractSuccessListFilterForm(forms.Form):
         data = self.cleaned_data
         q = Q()
         if data.get('name') not in ["", None]:
-            q.add(Q(name__icontains=data.get('name')), q.AND)
+            q.add(Q(account__name__icontains=data.get('name')), q.AND)
         if data.get('dept') not in ["", None]:
             dept = data.get('dept')
-            dept_q = Q(dept_1__icontains=dept) | Q(dept_2__icontains=dept) | Q(dept_3__icontains=dept) | Q(
-                dept_4__icontains=dept)
+            dept_q = Q(account__dept_1__icontains=dept) | Q(account__dept_2__icontains=dept) | Q(account__dept_3__icontains=dept) | Q(account__dept_4__icontains=dept)
             q.add(dept_q, q.AND)
         if data.get('start'):
             q.add(Q(updated_at__date__gte=data.get('start')), q.AND)
         if data.get('end'):
             q.add(Q(updated_at__date__lte=data.get('end')), q.AND)
-
         return q
 
 
@@ -414,7 +412,7 @@ class ContractSuccessListView(AffiliateUserMixin, ListView):
             'id', 'account__name', 'account__cellphone', 'serial', 'status', 'insurer', 'premium', 'customer_type',
             'channel', 'registered_at', 'dept', 'role', 'employee_no', 'updated_at'
         ).filter(account__organization=self.request.user.organization)
-        filterform = ContractListFilterForm(self.request.GET)
+        filterform = ContractSuccessListFilterForm(self.request.GET)
         if filterform.is_valid():
             query = filterform.create_query()
             queryset = queryset.filter(query)
