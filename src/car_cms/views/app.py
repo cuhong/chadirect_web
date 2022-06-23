@@ -470,6 +470,24 @@ class CompareDetailView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
 
 
 class CompareEstimateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, View):
+    # def get(self, request, compare_id):
+    #     no = str(request.GET.get('no', '1'))
+    #     compare = Compare.objects.exclude(status__in=[CompareStatus.REQUEST, CompareStatus.CALCULATE]).get(
+    #         id=compare_id
+    #     )
+    #     if no == "2":
+    #         estimate_image = compare.estimate_image_2
+    #     elif no == "3":
+    #         estimate_image = compare.estimate_image_3
+    #     else:
+    #         estimate_image = compare.estimate_image
+    #     template_name = 'car_cms/estimate_detail_view.html'
+    #     context = dict(
+    #         compare=compare, url=estimate_image.url
+    #     )
+    #     return render(request, template_name, context=context)
+    #
+
     def get(self, request, compare_id):
         no = str(request.GET.get('no', '1'))
         compare = Compare.objects.exclude(status__in=[CompareStatus.REQUEST, CompareStatus.CALCULATE]).get(
@@ -481,11 +499,7 @@ class CompareEstimateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMix
             estimate_image = compare.estimate_image_3
         else:
             estimate_image = compare.estimate_image
-        template_name = 'car_cms/estimate_detail_view.html'
-        context = dict(
-            compare=compare, url=estimate_image.url
-        )
-        return render(request, template_name, context=context)
+        return HttpResponseRedirect(estimate_image.url)
 
     def post(self, request, compare_id):
         no = request.POST.get('no')
