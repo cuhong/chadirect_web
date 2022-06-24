@@ -108,7 +108,7 @@
                 {header: "보험사", name: "insurer_display", align: "center"},
                 {
                     header: "보험료", name: "premium", align: "center",
-                    formatter:  (value) => {return intComma(value)}
+                    formatter({value}) {return intComma(value)}
                 },
                 {header: "요청일시", name: "registered_at", align: "center"},
             ]
