@@ -211,7 +211,8 @@
                 {header: "최종로그인", name: "last_login", align: "center"},
                 {
                     header: "자세히", name: "id", align: "center", formatter: (value) => {
-                        return `<button class="btn btn-primary userDetailBtn" data-user-id="${value.row.id}" type="button" onclick="showUserModal(this)">자세히</button>`
+                        //return `<button class="btn btn-primary userDetailBtn" data-user-id="${value.row.id}" type="button" onclick="showUserModal(this)">자세히</button>`
+                        return `<div data-user-id="${value.row.id}" type="button" onclick="showUserModal(this)">자세히</div>`
                     },
                     editor: {}
                 },
