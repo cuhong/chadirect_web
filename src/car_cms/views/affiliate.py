@@ -358,11 +358,24 @@ class ContractListView(AffiliateUserMixin, ListView):
 
     def get_queryset(self):
         queryset = super(ContractListView, self).get_queryset()
-        queryset = queryset.values(
+        queryset = queryset.annotate(
+            dept_1_value=Case(When(account__dept_1=None, then=Value("-")), default=F('account__dept_1')),
+            dept_2_value=Case(When(account__dept_2=None, then=Value("-")), default=F('account__dept_2')),
+            dept_3_value=Case(When(account__dept_3=None, then=Value("-")), default=F('account__dept_3')),
+            dept_4_value=Case(When(account__dept_4=None, then=Value("-")), default=F('account__dept_4')),
+        ).annotate(
+            dept=Concat(
+                F('dept_1_value'), Value("/"),
+                F('dept_2_value'), Value("/"),
+                F('dept_3_value'), Value("/"),
+                F('dept_4_value')
+            ),
+            role=F('account__role'),
+            employee_no=F('account__employee_no'),
+        ).values(
             'id', 'account__name', 'account__cellphone', 'serial', 'status', 'insurer', 'premium', 'customer_type',
-            'channel', 'registered_at'
+            'channel', 'registered_at', 'dept', 'role', 'employee_no'
         ).filter(account__organization=self.request.user.organization)
-
         filterform = ContractListFilterForm(self.request.GET)
         if filterform.is_valid():
             query = filterform.create_query()

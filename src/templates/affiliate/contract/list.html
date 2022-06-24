@@ -12,7 +12,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">
-                            <h5 class="">계약 리스트</h5>
+                            <h5 class="">견적 요청 리스트</h5>
                         </div>
                     </div>
                     <div class="card-body">
@@ -169,6 +169,9 @@
             columns: [
                 {header: "계약번호", name: "serial", align: "center"},
                 {header: "FC", name: "account_name", align: "center"},
+                {header: "소속", name: "dept", align: "center"},
+                {header: "직책", name: "role", align: "center"},
+                {header: "사번", name: "employee_no", align: "center"},
                 {header: "채널", name: "channel_display", align: "center"},
                 {header: "고객타입", name: "customer_type_display", align: "center"},
                 {header: "진행상태", name: "status_display", align: "center"},
@@ -196,6 +199,7 @@
             filterForm.submit()
         }
         pageInstance.on('afterMove', (event) => {
+            filterForm.method = "get"
             formPage.value = event.page
             filterForm.submit()
         });

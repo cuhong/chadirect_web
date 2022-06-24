@@ -245,6 +245,7 @@
             document.getElementById('filterForm').submit()
         }
         pageInstance.on('afterMove', (event) => {
+            document.getElementById('filterForm').method = "get"
             pageInput.value = event.page
             document.getElementById('filterForm').submit()
         });

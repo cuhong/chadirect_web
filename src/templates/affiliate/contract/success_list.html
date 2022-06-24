@@ -132,6 +132,7 @@
         }
 
         pageInstance.on('afterMove', (event) => {
+            filterForm.method = "get"
             pageInput.value = event.page
             filterForm.submit()
         });
