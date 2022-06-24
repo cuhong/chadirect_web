@@ -105,7 +105,7 @@
                 {header: "보험사", name: "insurer_display", align: "center"},
                 {
                     header: "보험료", name: "premium", align: "center",
-                    formatter:  (value) => {return numberWithCommas(value)}
+                    formatter:  (value) => {return intComma(value)}
                 },
                 {header: "체결일시", name: "updated_at", align: "center"},
             ]
