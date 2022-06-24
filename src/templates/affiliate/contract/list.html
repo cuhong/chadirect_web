@@ -92,7 +92,6 @@
         let perPage = parseInt('{{ page_obj.paginator.per_page }}')
         let totalCount = parseInt('{{ page_obj.paginator.count }}')
         const contractData = JSON.parse(document.getElementById('contract_list').textContent)
-        numberWithCommas
         const userGrid = new Grid({
             el: document.getElementById('contractListTable'),
             data: contractData,
