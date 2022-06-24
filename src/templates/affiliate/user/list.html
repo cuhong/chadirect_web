@@ -238,8 +238,9 @@
         });
 
         const search = () => {
+            filterForm.method = "get"
             pageInput.value = 1
-            document.getElementById('filterForm').submit()
+            filterForm.submit()
         }
         pageInstance.on('afterMove', (event) => {
             document.getElementById('filterForm').method = "get"

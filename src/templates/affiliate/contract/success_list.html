@@ -124,8 +124,9 @@
         });
 
         const search = () => {
+            filterForm.method = "get"
             pageInput.value = 1
-            document.getElementById('filterForm').submit()
+            filterForm.submit()
         }
 
 

@@ -17,7 +17,7 @@
                     </div>
                     <div class="card-body">
                         <form method="get" id="filterForm">
-                        {% csrf_token %}
+                            {% csrf_token %}
                             <input hidden id="id_page" name="page" value="{{ page_obj.number }}">
                             <div class="form-row">
                                 <div class="form-group floating-label col-md-1">
@@ -51,22 +51,24 @@
                                 <div class="form-group floating-label col-md-2">
                                     <label for="id_status">정렬</label>
                                     <select id="id_status" name="status" class="form-control form-control-sm">
-                                    <option value="">전체</option>
+                                        <option value="">전체</option>
                                         {% for status in status_list %}
-                                            <option value="{{ status.0 }}" {% if status.0 == filterform.status.value %}selected{% endif %}>{{ status.1 }}</option>
+                                            <option value="{{ status.0 }}"
+                                                    {% if status.0 == filterform.status.value %}selected{% endif %}>{{ status.1 }}</option>
                                         {% endfor %}
                                     </select>
 
                                 </div>
                                 <div class="col-md-1">
-                                    <button class="btn btn-primary btn-block" type="submit">검색</button>
+                                    <button class="btn btn-primary btn-block" type="button" onclick="search()">검색
+                                    </button>
                                 </div>
 
-                                        <div class="col-md-1">
-                                            <button class="btn btn-primary btn-block" type="button" onclick="downloadList()">
-                                                다운로드
-                                            </button>
-                                        </div>
+                                <div class="col-md-1">
+                                    <button class="btn btn-primary btn-block" type="button" onclick="downloadList()">
+                                        다운로드
+                                    </button>
+                                </div>
                             </div>
                         </form>
                         <div class="m-b-10" id="contractListTable"></div>
@@ -88,6 +90,7 @@
         const formPage = document.getElementById('id_page')
         const contractListTable = document.getElementById('contractListTable')
         const contractPagination = document.getElementById('contractPagination')
+        const pageInput = document.getElementById('id_page')
         let page = parseInt('{{ page_obj.number }}')
         let perPage = parseInt('{{ page_obj.paginator.per_page }}')
         let totalCount = parseInt('{{ page_obj.paginator.count }}')
@@ -108,7 +111,9 @@
                 {header: "보험사", name: "insurer_display", align: "center"},
                 {
                     header: "보험료", name: "premium", align: "right",
-                    formatter({value}) {return intComma(value)}
+                    formatter({value}) {
+                        return intComma(value)
+                    }
                 },
                 {header: "요청일시", name: "registered_at", align: "center"},
             ]
@@ -126,6 +131,12 @@
             centerAlign: true
         });
 
+
+        const search = () => {
+            filterForm.method = "get"
+            pageInput.value = 1
+            filterForm.submit()
+        }
 
         const downloadList = () => {
             filterForm.method = "post"
