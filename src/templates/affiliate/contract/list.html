@@ -69,76 +69,6 @@
                                         </div>
                             </div>
                         </form>
-                        {#                        <div class="m-b-10">#}
-                        {#                            <form method="get" id="filterForm">#}
-                        {#                                <input hidden id="id_page" name="page" value="{{ page_obj.number }}">#}
-                        {#                                <div class="form-row">#}
-                        {#                                    <div class="form-group floating-label col-md-1">#}
-                        {#                                        <label for="id_name">성명</label>#}
-                        {#                                        <input type="text" class="form-control form-control-sm"#}
-                        {#                                               placeholder="성명"#}
-                        {#                                               id="id_name" name="name"#}
-                        {#                                               value="{{ filterform.name.value|default_if_none:'' }}">#}
-                        {#                                    </div>#}
-                        {#                                    <div class="form-group floating-label col-md-1">#}
-                        {#                                        <label for="id_employee_no">사번</label>#}
-                        {#                                        <input type="text" class="form-control form-control-sm"#}
-                        {#                                               placeholder="사번"#}
-                        {#                                               id="id_employee_no" name="employee_no"#}
-                        {#                                               value="{{ filterform.employee_no.value|default_if_none:'' }}">#}
-                        {#                                    </div>#}
-                        {#                                    <div class="form-group floating-label col-md-1">#}
-                        {#                                        <label for="id_email">이메일</label>#}
-                        {#                                        <input type="text" class="form-control form-control-sm"#}
-                        {#                                               placeholder="이메일"#}
-                        {#                                               id="id_email" name="email"#}
-                        {#                                               value="{{ filterform.email.value|default_if_none:'' }}">#}
-                        {#                                    </div>#}
-                        {#                                    <div class="form-group floating-label col-md-1">#}
-                        {#                                        <label for="id_cellphone">휴대전화</label>#}
-                        {#                                        <input type="text" class="form-control form-control-sm"#}
-                        {#                                               placeholder="휴대전화"#}
-                        {#                                               id="id_cellphone" name="cellphone"#}
-                        {#                                               value="{{ filterform.cellphon.value|default_if_none:'' }}">#}
-                        {#                                    </div>#}
-                        {#                                    <div class="form-group floating-label col-md-2">#}
-                        {#                                        <label for="id_sort">정렬</label>#}
-                        {#                                        <select id="id_sort" name="sort" class="form-control form-control-sm">#}
-                        {#                                            <option value="-registered_at"#}
-                        {#                                                    {% if filterform.sort.value|default_if_none:'' == "-registered_at" %}selected{% endif %}>#}
-                        {#                                                가입일 내림차순#}
-                        {#                                            </option>#}
-                        {#                                            <option value="registered_at"#}
-                        {#                                                    {% if filterform.sort.value|default_if_none:'' == "registered_at" %}selected{% endif %}>#}
-                        {#                                                가입일 오름차순#}
-                        {#                                            </option>#}
-                        {#                                            <option value="name"#}
-                        {#                                                    {% if filterform.sort.value|default_if_none:'' == "name" %}selected{% endif %}>#}
-                        {#                                                이름 오름차순#}
-                        {#                                            </option>#}
-                        {#                                            <option value="-name"#}
-                        {#                                                    {% if filterform.sort.value|default_if_none:'' == "-name" %}selected{% endif %}>#}
-                        {#                                                이름 내림차순#}
-                        {#                                            </option>#}
-                        {#                                            <option value="-last_login"#}
-                        {#                                                    {% if filterform.sort.value|default_if_none:'' == "-last_login" %}selected{% endif %}>#}
-                        {#                                                최종로그인 내림차순#}
-                        {#                                            </option>#}
-                        {#                                            <option value="last_login"#}
-                        {#                                                    {% if filterform.sort.value|default_if_none:'' == "last_login" %}selected{% endif %}>#}
-                        {#                                                최종로그인 오름차순#}
-                        {#                                            </option>#}
-                        {#                                        </select>#}
-                        {#                                    </div>#}
-                        {#                                    <div class="col-md-1">#}
-                        {#                                        <button class="btn btn-primary btn-block" type="submit">검색</button>#}
-                        {#                                    </div>#}
-                        {#                                    <div class="col-md-1">#}
-                        {#                                        <button class="btn btn-outline-info btn-block" type="reset">초기화</button>#}
-                        {#                                    </div>#}
-                        {#                                </div>#}
-                        {#                            </form>#}
-                        {#                        </div>#}
                         <div class="m-b-10" id="contractListTable"></div>
                         <div id="contractPagination" class="tui-pagination"></div>
                     </div>
@@ -162,6 +92,7 @@
         let perPage = parseInt('{{ page_obj.paginator.per_page }}')
         let totalCount = parseInt('{{ page_obj.paginator.count }}')
         const contractData = JSON.parse(document.getElementById('contract_list').textContent)
+        numberWithCommas
         const userGrid = new Grid({
             el: document.getElementById('contractListTable'),
             data: contractData,
@@ -176,7 +107,10 @@
                 {header: "고객타입", name: "customer_type_display", align: "center"},
                 {header: "진행상태", name: "status_display", align: "center"},
                 {header: "보험사", name: "insurer_display", align: "center"},
-                {header: "보험료", name: "premium", align: "center"},
+                {
+                    header: "보험료", name: "premium", align: "center",
+                    formatter:  (value) => {return numberWithCommas(value)}
+                },
                 {header: "요청일시", name: "registered_at", align: "center"},
             ]
         });
