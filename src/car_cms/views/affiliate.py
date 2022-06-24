@@ -399,6 +399,9 @@ class ContractListView(AffiliateUserMixin, ListView):
             "channel": contract.get('channel'),
             "channel_display": ChannelChoices(contract.get('channel')).label,
             "registered_at": (contract.get('registered_at') + relativedelta(hours=9)).strftime("%Y-%m-%d %H:%M:%S"),
+            "dept": contract.get('dept'),
+            "role": contract.get('role'),
+            "employee_no": contract.get('employee_no'),
         } for contract in queryset]
         return contract_list
 
