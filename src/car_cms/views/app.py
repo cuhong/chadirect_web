@@ -19,10 +19,10 @@ from django.views import View
 from django.views.generic import TemplateView
 from sentry_sdk import capture_exception
 
-from account.load_legacy_user import KST
 from car_cms.exceptions.compare import CarCMSCompareError
 from car_cms.models import Notice, Compare, CompareStatus
 from commons.utils.age import lunar_age
+from itechs.commons import KST
 from payment.models import DanalAuthStatusChoice, DanalAuth
 
 
