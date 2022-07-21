@@ -12,6 +12,7 @@ from commons.models import VehicleInsurerChoices, DateTimeMixin
 
 User = get_user_model()
 
+
 class ProductChoice(models.TextChoices):
     HANHWA_VHC = 'hanwha_vehicle', '한화손해보험 다이렉트 자동차보험'
     # http://bit.ly/HanHwaDirect
@@ -96,12 +97,37 @@ class Shortlink(DateTimeMixin, models.Model):
         )
         return getattr(self.product, 'mobile_url' if is_mobile else 'pc_url')
 
+    def send_sms(self, cellphone):
+        body = f"""안녕하세요, {self.compare.customer_name} 고객님
+
+{self.compare.account.name} 설계사를 통해 요청하신 [{self.product.get_product_display()}]의
+가입 링크를 전달해 드립니다.
+
+아래 링크를 통해  보험 가입을 진행해 주세요.
+
+{self.short_url}
+
+가입 중 어려움이 있으실 경우 차다이렉트 고객센터로 문의 부탁드립니다.
+
+고객센터 : 1544-7653
+(평일 09시~18시 운영 /12시~1시는 점심시간 입니다)
+
+감사합니다.
+"""
+        from car_cms.models import Message
+        message = Message.objects.create(
+            receiver=cellphone,
+            msg=body, msg_type="LMS", title="차다이렉트 보험가입 링크"
+        )
+        message.send()
+
 
 class ShortlinkLog(models.Model):
     class Meta:
         verbose_name = '단축 링크'
         verbose_name_plural = verbose_name
         ordering = ('-registered_at',)
+
     registered_at = models.DateTimeField(auto_now_add=True, verbose_name='유입일시')
     short_link = models.ForeignKey(
         Shortlink, null=False, blank=False, verbose_name='단축 링크', on_delete=models.PROTECT

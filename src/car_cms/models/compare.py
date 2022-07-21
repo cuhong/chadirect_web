@@ -18,6 +18,7 @@ from commons.models import DateTimeMixin, UUIDPkMixin, VehicleInsurerChoices
 from itechs.storages import ProtectedFileStorage
 from simple_history.models import HistoricalRecords
 
+
 from payment.models import DanalAuth
 
 
@@ -722,6 +723,15 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
         )
         message.send()
 
+    def create_link(self, product_choice, user, cellphone=None):
+        from link.models import ProductLink
+        product = ProductLink.objects.get(product=product_choice)
+        short_link = product.generate_short_link(
+            compare=self, user=user
+        )
+        short_link.send_sms(cellphone or self.customer_cellphone)
+        return short_link
+
 
 class ComparePending(Compare):
     class Meta:
@@ -735,43 +745,3 @@ class CompareAll(Compare):
         verbose_name = '전체 견적요청'
         verbose_name_plural = verbose_name
         proxy = True
-#
-# m_dat = [
-#     {'code': 'l01', 'name': 'hyundai', 'static_path': 'car_cms/manufacturer/local_01_hyundai.png'},
-#     {'code': 'l02', 'name': 'kia', 'static_path': 'car_cms/manufacturer/local_02_kia.png'},
-#     {'code': 'l03', 'name': 'genesis', 'static_path': 'car_cms/manufacturer/local_03_genesis.png'},
-#     {'code': 'l04', 'name': 'renault', 'static_path': 'car_cms/manufacturer/local_04_renault.png'},
-#     {'code': 'l05', 'name': 'chevrolet', 'static_path': 'car_cms/manufacturer/local_05_chevrolet.png'},
-#     {'code': 'l06', 'name': 'ssangyong', 'static_path': 'car_cms/manufacturer/local_06_ssangyong.png'},
-#     {'code': 'f01', 'name': 'benz', 'static_path': 'car_cms/manufacturer/foreign_01_benz.png'},
-#     {'code': 'f02', 'name': 'bmw', 'static_path': 'car_cms/manufacturer/foreign_02_bmw.png'},
-#     {'code': 'f03', 'name': 'audi', 'static_path': 'car_cms/manufacturer/foreign_03_audi.png'},
-#     {'code': 'f04', 'name': 'volkswagen', 'static_path': 'car_cms/manufacturer/foreign_04_volkswagen.png'},
-#     {'code': 'f05', 'name': 'volvo', 'static_path': 'car_cms/manufacturer/foreign_05_volvo.png'},
-#     {'code': 'f06', 'name': 'mini', 'static_path': 'car_cms/manufacturer/foreign_06_mini.png'},
-#     {'code': 'f07', 'name': 'lexus', 'static_path': 'car_cms/manufacturer/foreign_07_lexus.png'},
-#     {'code': 'f08', 'name': 'porsche', 'static_path': 'car_cms/manufacturer/foreign_08_porsche.png'},
-#     {'code': 'f09', 'name': 'honda', 'static_path': 'car_cms/manufacturer/foreign_09_honda.png'},
-#     {'code': 'f10', 'name': 'toyota', 'static_path': 'car_cms/manufacturer/foreign_10_toyota.png'},
-#     {'code': 'f11', 'name': 'jeep', 'static_path': 'car_cms/manufacturer/foreign_11_jeep.png'},
-#     {'code': 'f12', 'name': 'ford', 'static_path': 'car_cms/manufacturer/foreign_12_ford.png'},
-#     {'code': 'f13', 'name': 'landrover', 'static_path': 'car_cms/manufacturer/foreign_13_landrover.png'},
-#     {'code': 'f14', 'name': 'lincoln', 'static_path': 'car_cms/manufacturer/foreign_14_lincoln.png'},
-#     {'code': 'f15', 'name': 'peugeot', 'static_path': 'car_cms/manufacturer/foreign_15_peugeot.png'},
-#     {'code': 'f16', 'name': 'cadillac', 'static_path': 'car_cms/manufacturer/foreign_16_cadillac.png'},
-#     {'code': 'f16b', 'name': 'tesla', 'static_path': 'car_cms/manufacturer/foreign_16b_tesla.png'},
-#     {'code': 'f17', 'name': 'maserati', 'static_path': 'car_cms/manufacturer/foreign_17_maserati.png'},
-#     {'code': 'f18', 'name'적: 'bentley', 'static_path': 'car_cms/manufacturer/foreign_18_bentley.png'},
-#     {'code': 'f19', 'name': 'lamborghini', 'static_path': 'car_cms/manufacturer/foreign_19_lamborghini.png'},
-#     {'code': 'f20', 'name': 'citroen', 'static_path': 'car_cms/manufacturer/foreign_20_citroen.png'},
-#     {'code': 'f21', 'name': 'ds', 'static_path': 'car_cms/manufacturer/foreign_21_ds.png'},
-#     {'code': 'f22', 'name': 'jaguar', 'static_path': 'car_cms/manufacturer/foreign_22_jaguar.png'},
-#     {'code': 'f23', 'name': 'rollsroyce', 'static_path': 'car_cms/manufacturer/foreign_23_rollsroyce.png'},
-#     {'code': 'f51', 'name': 'Maybach', 'static_path': 'car_cms/manufacturer/foreign_51_Maybach.png'},
-#     {'code': 'f52', 'name': 'infiniti', 'static_path': 'car_cms/manufacturer/foreign_52_infiniti.png'},
-#     {'code': 'f53', 'name': 'fiat', 'static_path': 'car_cms/manufacturer/foreign_53_fiat.png'},
-#     {'code': 'f54', 'name': 'astonmartin', 'static_path': 'car_cms/manufacturer/foreign_54_astonmartin.png'},
-# ]
-#
-# for index, m in enumerate(m_dat):
-#     span = f"<img src='{}'>"

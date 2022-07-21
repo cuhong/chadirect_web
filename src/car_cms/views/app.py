@@ -411,11 +411,13 @@ class CompareListView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, 
 
 class CompareDetailView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin, View):
     def get(self, request, compare_id):
+        from link.models import ProductChoice
         template_name = 'car_cms/compare_detail.html'
         compare = Compare.objects.get(
             account=request.user, id=compare_id
         )
-        context = dict(compare=compare, type=self.app_type)
+        product_choices = ProductChoice.choices
+        context = dict(compare=compare, type=self.app_type, product_choices=product_choices)
         return render(request, template_name, context=context)
 
     def post(self, request, compare_id):
@@ -424,7 +426,15 @@ class CompareDetailView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
         )
         action = request.POST.get('action', None)
         try:
-            if action == 'requestContract':
+            if action == 'requestLink':
+                print(request.POST)
+                product = request.POST.get('product')
+                cellphone = request.POST.get('cellphone')
+                link = compare.create_link(product, request.user, cellphone)
+                print(link.short_url)
+                response_data = {"result": True}
+                print('response_data = {"result": True}')
+            elif action == 'requestContract':
                 memo = request.POST.get('memo')
                 compare.start_contract(memo=memo)
                 response_data = {"result": True}

@@ -29,6 +29,9 @@
             입니다.<br>
 
         </div>
+        <div class="mb-5">
+            <button class="btn btn-cc-primary btn-block" onclick="showSendSmsModalBtn()">가입링크 발송</button>
+        </div>
         <div class="mb-3">
             {#            <div class="d-flex flex-row justify-content-between align-items-center mb-3">#}
             {#                <span class="font-weight-bold">견적 상태</span>#}
@@ -214,13 +217,99 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="sendSmsModal" tabindex="-1" role="dialog"
+         aria-labelledby="sendSmsModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sendSmsModalLabel">가입링크 발송</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mb-2">
+                        <label for="product" class="">보험사</label>
+                        <select id="product" name="product" class="form-control">
+                            {% for product in product_choices %}
+                                <option value="{{ product.0 }}">{{ product.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cellphone">고객 전화번호</label>
+                        <input type="text" id="cellphone" name="cellphone"
+                               class="form-control"
+                               value="{{ compare.customer_cellphone }}">
+                    </div>
+                    <button type="button" class="btn btn-phone-primary btn-block mb-2" onclick="requestProductLink()">링크발송
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block extrascript %}
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         const compareId = document.getElementById('compareId').value
         const requestMemoInput = document.getElementById('requestMemo')
+        const productInput = document.getElementById('product')
+        const cellphoneInput = document.getElementById('cellphone')
         let contractDataTemp
+        const sendSmsModal = $("#sendSmsModal")
+
+        function showSendSmsModalBtn() {
+            sendSmsModal.modal('show')
+        }
+
+        showSendSmsModalBtn()
+
+        function hideSendSmsModalBtn() {
+            sendSmsModal.modal('hide')
+        }
+
+        function requestProductLink() {
+            console.log('가입링크 발송')
+            const product = productInput.value
+            const cellphone = cellphoneInput.value.trim()
+            if (cellphone === "") {
+                alert('고객 전화번호를 입력하세요.')
+                return
+            }
+            $.ajax({
+                type: "POST",
+                data: {
+                    'action': 'requestLink',
+                    'product': product,
+                    'cellphone': cellphone,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    if (response.result) {
+                        hideSendSmsModalBtn()
+                        Swal.fire(
+                            '성공',
+                            `${cellphone} 번호로 보험가입 링크가 발송되었습니다.`,
+                            'success'
+                        )
+                    } else {
+                        Swal.fire(
+                            '실패',
+                            `링크 발송중 오류가 발생했습니다.`,
+                            'error'
+                        )
+                    }
+                },
+                error: function (request, status, error) {
+                    alert("서버 오류")
+                },
+            });
+        }
 
         function showRequestContractModal() {
             requestMemoInput.value = ''
