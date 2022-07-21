@@ -119,15 +119,17 @@ class Shortlink(DateTimeMixin, models.Model):
     def send_sms(self, cellphone):
         body = f"""안녕하세요, {self.compare.customer_name} 고객님
 
-{self.compare.account.name} 설계사를 통해 요청하신 [{self.product.get_product_display()}]의
-가입 링크를 전달해 드립니다.
+{self.compare.account.name} 설계사를 통해 요청하신 [{self.product.get_product_display()}] 가입안내 입니다.
 
 아래 링크를 통해  보험 가입을 진행해 주세요.
 
-{self.short_url}
+ - 전화 02-2275-8027 : 상담원의 도움을 받아 가입을 진행하고 싶으신 경우
 
-가입 중 어려움이 있으실 경우 차다이렉트 고객센터로 문의 부탁드립니다.
+ - 링크 {self.short_url} : 직접 가입하시고 싶으신 경우
 
+***보험료는 동일합니다.**
+
+문의사항이 있으신 경우 차다이렉트 고객센터로 문의 부탁드립니다.
 고객센터 : 1544-7653
 (평일 09시~18시 운영 /12시~1시는 점심시간 입니다)
 
