@@ -19,12 +19,12 @@ def get_client_ip(request):
 
 class ShortLinkView(View):
     def get(self, request, short_code):
-        is_mobile = request.device.get('is_mobile')
-        ip = get_client_ip(request)
-        referer = request.META.get('HTTP_REFERER')
+        # is_mobile = request.device.get('is_mobile')
+        # ip = get_client_ip(request)
+        # referer = request.META.get('HTTP_REFERER')
         try:
             short_link_instance = Shortlink.objects.select_related('product').get(short_code=short_code)
-            target_url = short_link_instance.create_history(is_mobile, referer, ip)
+            target_url = short_link_instance.create_history(True, None, None)
             return HttpResponseRedirect(target_url)
         except Shortlink.DoesNotExist:
             return HttpResponse(f'{short_code}은 존재하지 않는 단축코드 입니다.', status=404)
