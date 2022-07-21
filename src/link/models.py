@@ -121,11 +121,12 @@ class Shortlink(DateTimeMixin, models.Model):
 
 {self.compare.account.name} 설계사를 통해 요청하신 [{self.product.get_product_display()}] 가입안내 입니다.
 
-아래 링크를 통해  보험 가입을 진행해 주세요.
+아래 두가지 방법 중 편하신 방법으로 가입을 도와드리겠습니다.
 
- - 전화 02-2275-8027 : 상담원의 도움을 받아 가입을 진행하고 싶으신 경우
-
- - 링크 {self.short_url} : 직접 가입하시고 싶으신 경우
+- 전화 02-2275-8027
+상담원의 도움을 받아 가입을 진행하고 싶으신 경우
+- 링크 {self.short_url}
+인터넷으로 직접 가입하시고 싶으신 경우
 
 ***보험료는 동일합니다.**
 
