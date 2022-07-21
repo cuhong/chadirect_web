@@ -448,8 +448,9 @@ class CompareDetailView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 ).all()
                 link_list = [
                     {
-                        "product": link.product,
-                        "last_log_at": link.last_log_at.astimezone(KST).strftime("%Y-%m-%d %H:%M"),
+                        "product": link.product.get_product_display(),
+                        "registered_at": link.registered_at.astimezone(KST).strftime("%Y-%m-%d %H:%M"),
+                        "last_log_at": link.last_log_at.astimezone(KST).strftime("%Y-%m-%d %H:%M") if link.last_log_at else "",
                         "count": link.log_count
                     } for link in links
                 ]
@@ -495,6 +496,7 @@ class CompareDetailView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
             else:
                 response_data = {"result": False, "msg": "잘못된 요청"}
         except Exception as e:
+            print(e)
             response_data = {"result": False, "msg": f"오류 : {str(e)}"}
         return JsonResponse(response_data)
 

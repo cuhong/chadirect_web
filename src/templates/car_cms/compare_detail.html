@@ -265,23 +265,26 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group mb-2">
-                        <label for="product" class="">보험사</label>
-                        <select id="product" name="product" class="form-control">
-                            {% for product in product_choices %}
-                                <option value="{{ product.0 }}">{{ product.1 }}</option>
-                            {% endfor %}
-                        </select>
+                    <div class="w-100" id="resultRow">
+                        <div class="mb-3">
+                            <div class="mb-2 border-bottom pb-1">
+                                <span class="font-weight-bolder">하나손해보험</span>
+                                <div class="small">2022-07-01 23:22 발송</div>
+                            </div>
+                            <div>
+                                고객이 아직 링크를 개봉하지 않았습니다.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="mb-2 border-bottom pb-1">
+                                <span class="font-weight-bolder">하나손해보험</span>
+                                <div class="small">2022-07-01 23:22 발송</div>
+                            </div>
+                            <div>
+                                고객이 아직 링크를 개봉하지 않았습니다.
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="cellphone">고객 전화번호</label>
-                        <input type="text" id="cellphone" name="cellphone"
-                               class="form-control"
-                               value="{{ compare.customer_cellphone }}">
-                    </div>
-                    <button type="button" class="btn btn-phone-primary btn-block mb-2" onclick="requestProductLink()">
-                        링크발송
-                    </button>
                 </div>
             </div>
         </div>
@@ -296,6 +299,7 @@
         const requestMemoInput = document.getElementById('requestMemo')
         const productInput = document.getElementById('product')
         const cellphoneInput = document.getElementById('cellphone')
+        const resultRow = document.getElementById('resultRow')
         let contractDataTemp
         const sendSmsModal = $("#sendSmsModal")
         const sendSmsResultModal = $("#sendSmsResultModal")
@@ -308,6 +312,7 @@
             sendSmsModal.modal('hide')
         }
 
+
         function showSendSmsResultModalBtn() {
             $.ajax({
                 type: "POST",
@@ -315,9 +320,38 @@
                     'action': 'requestLinkResult',
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
+                /*
+
+                        <div class="mb-3">
+                            <div class="mb-2 border-bottom pb-1">
+                                <span class="font-weight-bolder">하나손해보험</span>
+                                <div class="small">2022-07-01 23:22 발송</div>
+                            </div>
+                            <div>
+                                고객이 아직 링크를 개봉하지 않았습니다.
+                            </div>
+                        </div>
+                * */
                 success: function (response) {
                     if (response.result) {
                         console.log(response.link_list)
+                        resultRow.innerHTML = ""
+                        response.link_list.forEach(link => {
+                            var html = '<div class="mb-3">'
+                            html += '<div class="mb-2 border-bottom pb-1">'
+                            html += `<span class="font-weight-bolder">${link.product}</span>`
+                            html += `<div class="small">${link.registered_at} 발송</div>`
+                            html += '</div>'
+                            html += '<div>'
+                            if (link.last_log_at) {
+                                html += `${link.last_log_at} 까지 총 ${count}회 개봉되었습니다.`
+                            } else {
+                                html += '고객이 아직 링크를 개봉하지 않았습니다.'
+                            }
+                            html += '</div>'
+                            resultRow.insertAdjacentHTML("afterbegin", html)
+                        })
+                        sendSmsResultModal.modal('show')
                     } else {
                         console.log(response.msg)
                         Swal.fire(
@@ -325,7 +359,6 @@
                             `조회중 오류가 발생했습니다.`,
                             'error'
                         )
-                        sendSmsResultModal.modal('show')
                     }
                 },
                 error: function (request, status, error) {

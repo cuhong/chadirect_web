@@ -41,8 +41,10 @@ class ProductChoice(models.TextChoices):
 # for data in data_list:
 #     ProductLink.objects.update_or_create(
 #         product=data.get('product'),
-#         pc_url=data.get('url'),
-#         mobile_url=data.get('url'),
+#         defaults=dict(
+#             pc_url=data.get('url'),
+#             mobile_url=data.get('url'),
+#         )
 #     )
 
 class DeviceChoice(models.TextChoices):
