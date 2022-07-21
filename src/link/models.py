@@ -26,7 +26,24 @@ class ProductChoice(models.TextChoices):
     # https://www.directdb.co.kr/product/at/pvuatarc/step1/formStepPre.do?partner_code=C315
     KB_VHC = 'kb_vehicle', 'KB 손해보험 다이렉트 자동차보험'
     # https://direct.kbinsure.co.kr/websquare/promotion.jsp?pid=1090049&code=0872&page=step1
-
+#
+# data_list = [
+#     {"product": "hanwha_vehicle", "url": "http://bit.ly/HanHwaDirect"},
+#     {"product": "hana_vehicle", "url": "https://www.educar.co.kr/cal/car?sAffiliatedConcernKey=cardirect"},
+#     {"product": "carrot_vehicle", "url": "https://carrotins.com/common/url/calculation/car/personal?afccd=PA00040"},
+#     {"product": "hyundai_vehicle", "url": "https://direct.hi.co.kr/service.do?m=28680681ee&cnc_no=605&media_no=B430&companyId=605"},
+#     {"product": "db_vehicle", "url": "https://www.directdb.co.kr/product/at/pvuatarc/step1/formStepPre.do?partner_code=C315"},
+#     {"product": "kb_vehicle", "url": "https://direct.kbinsure.co.kr/websquare/promotion.jsp?pid=1090049&code=0872&page=step1"},
+# ]
+#
+#
+#
+# for data in data_list:
+#     ProductLink.objects.update_or_create(
+#         product=data.get('product'),
+#         pc_url=data.get('url'),
+#         mobile_url=data.get('url'),
+#     )
 
 class DeviceChoice(models.TextChoices):
     PC = 'pc', '피씨'
@@ -55,16 +72,16 @@ class ProductLink(models.Model):
     def generate_short_link(self, compare=None, user=None):
         while True:
             short_code = generate_short_code()
-            try:
-                base_url = settings.BASE_URL
-                uri = reverse('link:shortner', args=[short_code])
-                url = urllib.parse.urljoin(base_url, uri)
-                short_link_instance = Shortlink.objects.create(
-                    product=self, short_code=short_code, short_url=url, compare=compare, user=user
-                )
-                return short_link_instance
-            except:
-                continue
+            # try:
+            base_url = settings.BASE_URL
+            uri = reverse('link:shortner', args=[short_code])
+            url = urllib.parse.urljoin(base_url, uri)
+            short_link_instance = Shortlink.objects.create(
+                product=self, short_code=short_code, short_url=url, compare=compare, user=user
+            )
+            return short_link_instance
+            # except:
+            #     continue
 
 
 class Shortlink(DateTimeMixin, models.Model):

@@ -267,7 +267,7 @@
             sendSmsModal.modal('show')
         }
 
-        showSendSmsModalBtn()
+        {#showSendSmsModalBtn()#}
 
         function hideSendSmsModalBtn() {
             sendSmsModal.modal('hide')
@@ -298,6 +298,7 @@
                             'success'
                         )
                     } else {
+                        console.log(response.msg)
                         Swal.fire(
                             '실패',
                             `링크 발송중 오류가 발생했습니다.`,
