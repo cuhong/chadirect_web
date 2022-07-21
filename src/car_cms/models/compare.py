@@ -301,7 +301,9 @@ class EstimateMixin(models.Model):
                         VehicleInsurerChoices.HYUNDAI, VehicleInsurerChoices.KB, VehicleInsurerChoices.DB,
                         VehicleInsurerChoices.HANHWA, VehicleInsurerChoices.HANA
                     ]:
-                        _min_cost.append(estimate_premium)
+                        if estimate_premium is not None:
+                            _min_cost.append(estimate_premium)
+
                         insurance_data[estimate_insurer] = {
                             "expect_cost": estimate_premium,
                             "expect_cost_string": "산출불가" if estimate_premium is None else f"{estimate_premium:,}원",
