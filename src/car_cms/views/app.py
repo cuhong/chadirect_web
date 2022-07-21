@@ -455,7 +455,7 @@ class CompareDetailView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                         "product": link.product.get_product_display(),
                         "registered_at": link.registered_at.astimezone(KST).strftime("%Y-%m-%d %H:%M"),
                         "last_log_at": link.last_log_at.astimezone(KST).strftime("%Y-%m-%d %H:%M") if link.last_log_at else "",
-                        "count": link.log_count
+                        "count": link.log_count - 3
                     } for link in links
                 ]
                 response_data = {"result": True, "link_list": link_list}
