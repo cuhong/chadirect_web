@@ -29,9 +29,10 @@
             입니다.<br>
 
         </div>
-{#        <div class="mb-5">#}
-{#            <button class="btn btn-cc-primary btn-block" onclick="showSendSmsModalBtn()">가입링크 발송</button>#}
-{#        </div>#}
+        <div class="mb-5">
+            <button class="btn btn-cc-primary btn-block" onclick="showSendSmsModalBtn()">가입링크 발송</button>
+{#            <button class="btn btn-cc-primary btn-block" onclick="showSendSmsResultModalBtn()">가입링크 발송 이력</button>#}
+        </div>
         <div class="mb-3">
             {#            <div class="d-flex flex-row justify-content-between align-items-center mb-3">#}
             {#                <span class="font-weight-bold">견적 상태</span>#}
@@ -262,15 +263,22 @@
         const cellphoneInput = document.getElementById('cellphone')
         let contractDataTemp
         const sendSmsModal = $("#sendSmsModal")
+        const sendSmsResultModal = $("#sendSmsModal")
 
         function showSendSmsModalBtn() {
             sendSmsModal.modal('show')
         }
 
-        {#showSendSmsModalBtn()#}
-
         function hideSendSmsModalBtn() {
             sendSmsModal.modal('hide')
+        }
+
+        function showSendSmsResultModalBtn() {
+
+        }
+
+        function hideSendSmsResultModalBtn() {
+
         }
 
         function requestProductLink() {
