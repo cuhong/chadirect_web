@@ -16,102 +16,115 @@
                         </div>
                     </div>
                     <div class="card-body">
-                            <form method="get" id="filterForm">
+                        <form method="get" id="filterForm">
                             {% csrf_token %}
                             <input hidden id="id_page" name="page" value="{{ page_obj.number }}">
-                                <div class="form-row">
+                            <div class="form-row">
+                                <div class="form-group floating-label col-md-1">
+                                    <label for="id_name">성명</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           placeholder="성명"
+                                           id="id_name" name="name"
+                                           value="{{ filterform.name.value|default_if_none:'' }}">
+                                </div>
+                                {% if group_type_list %}
                                     <div class="form-group floating-label col-md-1">
-                                        <label for="id_name">성명</label>
-                                        <input type="text" class="form-control form-control-sm"
-                                               placeholder="성명"
-                                               id="id_name" name="name"
-                                               value="{{ filterform.name.value|default_if_none:'' }}">
-                                    </div>
-                                    <div class="form-group floating-label col-md-1">
-                                        <label for="id_dept">소속</label>
-                                        <input type="text" class="form-control form-control-sm"
-                                               placeholder="소속"
-                                               id="id_dept" name="dept"
-                                               value="{{ filterform.dept.value|default_if_none:'' }}">
-                                    </div>
-                                    <div class="form-group floating-label col-md-1">
-                                        <label for="id_employee_no">사번</label>
-                                        <input type="text" class="form-control form-control-sm"
-                                               placeholder="사번"
-                                               id="id_employee_no" name="employee_no"
-                                               value="{{ filterform.employee_no.value|default_if_none:'' }}">
-                                    </div>
-                                    <div class="form-group floating-label col-md-1">
-                                        <label for="id_email">이메일</label>
-                                        <input type="text" class="form-control form-control-sm"
-                                               placeholder="이메일"
-                                               id="id_email" name="email"
-                                               value="{{ filterform.email.value|default_if_none:'' }}">
-                                    </div>
-                                    <div class="form-group floating-label col-md-1">
-                                        <label for="id_cellphone">휴대전화</label>
-                                        <input type="text" class="form-control form-control-sm"
-                                               placeholder="휴대전화"
-                                               id="id_cellphone" name="cellphone"
-                                               value="{{ filterform.cellphon.value|default_if_none:'' }}">
-                                    </div>
-                                    <div class="form-group floating-label col-md-1">
-                                        <label for="id_start">가입일 조회기간 시작</label>
-                                        <input type="date" class="form-control form-control-sm"
-                                               placeholder="가입일 조회기간 시작"
-                                               id="id_start" name="start"
-                                               value="{{ filterform.start.value|default_if_none:'' }}">
-                                    </div>
-                                    <div class="form-group floating-label col-md-1">
-                                        <label for="id_end">가입일 조회기간 끝</label>
-                                        <input type="date" class="form-control form-control-sm"
-                                               placeholder="가입일 조회기간 시작"
-                                               id="id_end" name="end"
-                                               value="{{ filterform.end.value|default_if_none:'' }}">
-                                    </div>
-                                    <div class="form-group floating-label col-md-2">
-                                        <label for="id_sort">정렬</label>
-                                        <select id="id_sort" name="sort" class="form-control form-control-sm">
-                                            <option value="-registered_at"
-                                                    {% if filterform.sort.value|default_if_none:'' == "-registered_at" %}selected{% endif %}>
-                                                가입일 내림차순
-                                            </option>
-                                            <option value="registered_at"
-                                                    {% if filterform.sort.value|default_if_none:'' == "registered_at" %}selected{% endif %}>
-                                                가입일 오름차순
-                                            </option>
-                                            <option value="name"
-                                                    {% if filterform.sort.value|default_if_none:'' == "name" %}selected{% endif %}>
-                                                이름 오름차순
-                                            </option>
-                                            <option value="-name"
-                                                    {% if filterform.sort.value|default_if_none:'' == "-name" %}selected{% endif %}>
-                                                이름 내림차순
-                                            </option>
-                                            <option value="-last_login"
-                                                    {% if filterform.sort.value|default_if_none:'' == "-last_login" %}selected{% endif %}>
-                                                최종로그인 내림차순
-                                            </option>
-                                            <option value="last_login"
-                                                    {% if filterform.sort.value|default_if_none:'' == "last_login" %}selected{% endif %}>
-                                                최종로그인 오름차순
-                                            </option>
+                                        <label for="id_group_type">소속타입</label>
+                                        <select id="id_group_type" name="group_type"
+                                                class="form-control form-control-sm">
+                                            <option value="">소속타입 선택</option>
+                                            {% for gr in group_type_list %}
+                                                <option value="{{ gr }}" {% if filterform.group_type.value == gr %}selected{% endif %}>{{ gr }}</option>
+                                            {% endfor %}
                                         </select>
                                     </div>
-                                    <div class="col-md-1">
-                                        <button class="btn btn-primary btn-block" type="button" onclick="search()">검색</button>
-                                    </div>
-
-                                        <div class="col-md-1">
-                                            <button class="btn btn-primary btn-block" type="button" onclick="downloadList()">
-                                                다운로드
-                                            </button>
-                                        </div>
-                                    {#                                    <div class="col-md-1">#}
-                                    {#                                        <button class="btn btn-outline-info btn-block" type="reset">초기화</button>#}
-                                    {#                                    </div>#}
+                                {% endif %}
+                                <div class="form-group floating-label col-md-1">
+                                    <label for="id_dept">소속</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           placeholder="소속"
+                                           id="id_dept" name="dept"
+                                           value="{{ filterform.dept.value|default_if_none:'' }}">
                                 </div>
-                            </form>
+                                <div class="form-group floating-label col-md-1">
+                                    <label for="id_employee_no">사번</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           placeholder="사번"
+                                           id="id_employee_no" name="employee_no"
+                                           value="{{ filterform.employee_no.value|default_if_none:'' }}">
+                                </div>
+                                <div class="form-group floating-label col-md-1">
+                                    <label for="id_email">이메일</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           placeholder="이메일"
+                                           id="id_email" name="email"
+                                           value="{{ filterform.email.value|default_if_none:'' }}">
+                                </div>
+                                <div class="form-group floating-label col-md-1">
+                                    <label for="id_cellphone">휴대전화</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           placeholder="휴대전화"
+                                           id="id_cellphone" name="cellphone"
+                                           value="{{ filterform.cellphon.value|default_if_none:'' }}">
+                                </div>
+                                <div class="form-group floating-label col-md-1">
+                                    <label for="id_start">가입일 조회기간 시작</label>
+                                    <input type="date" class="form-control form-control-sm"
+                                           placeholder="가입일 조회기간 시작"
+                                           id="id_start" name="start"
+                                           value="{{ filterform.start.value|default_if_none:'' }}">
+                                </div>
+                                <div class="form-group floating-label col-md-1">
+                                    <label for="id_end">가입일 조회기간 끝</label>
+                                    <input type="date" class="form-control form-control-sm"
+                                           placeholder="가입일 조회기간 시작"
+                                           id="id_end" name="end"
+                                           value="{{ filterform.end.value|default_if_none:'' }}">
+                                </div>
+                                <div class="form-group floating-label col-md-2">
+                                    <label for="id_sort">정렬</label>
+                                    <select id="id_sort" name="sort" class="form-control form-control-sm">
+                                        <option value="-registered_at"
+                                                {% if filterform.sort.value|default_if_none:'' == "-registered_at" %}selected{% endif %}>
+                                            가입일 내림차순
+                                        </option>
+                                        <option value="registered_at"
+                                                {% if filterform.sort.value|default_if_none:'' == "registered_at" %}selected{% endif %}>
+                                            가입일 오름차순
+                                        </option>
+                                        <option value="name"
+                                                {% if filterform.sort.value|default_if_none:'' == "name" %}selected{% endif %}>
+                                            이름 오름차순
+                                        </option>
+                                        <option value="-name"
+                                                {% if filterform.sort.value|default_if_none:'' == "-name" %}selected{% endif %}>
+                                            이름 내림차순
+                                        </option>
+                                        <option value="-last_login"
+                                                {% if filterform.sort.value|default_if_none:'' == "-last_login" %}selected{% endif %}>
+                                            최종로그인 내림차순
+                                        </option>
+                                        <option value="last_login"
+                                                {% if filterform.sort.value|default_if_none:'' == "last_login" %}selected{% endif %}>
+                                            최종로그인 오름차순
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-1">
+                                    <button class="btn btn-primary btn-block" type="button" onclick="search()">검색
+                                    </button>
+                                </div>
+
+                                <div class="col-md-1">
+                                    <button class="btn btn-primary btn-block" type="button" onclick="downloadList()">
+                                        다운로드
+                                    </button>
+                                </div>
+                                {#                                    <div class="col-md-1">#}
+                                {#                                        <button class="btn btn-outline-info btn-block" type="reset">초기화</button>#}
+                                {#                                    </div>#}
+                            </div>
+                        </form>
 
                         <div class="m-b-10" id="userListTable"></div>
                         <div id="userPagination" class="tui-pagination"></div>
@@ -162,9 +175,9 @@
                         </div>
 
                         <button type="button" class="btn btn-primary btn-block m-b-5" onclick="updateUser()">저장</button>
-<button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">
-                        닫기
-                    </button>
+                        <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">
+                            닫기
+                        </button>
                     </form>
                 </div>
             </div>
@@ -192,6 +205,7 @@
             scrollY: false,
             columns: [
                 {header: "성명", name: "name", align: "center"},
+                {header: "소속타입", name: "group_type", align: "center"},
                 {header: "소속", name: "dept", align: "center"},
                 {header: "직책", name: "role", align: "center"},
                 {header: "사번", name: "employee_no", align: "center"},
@@ -304,7 +318,7 @@
                 params.append(entry[0], entry[1])
             })
             axios.post(userDetailUrl, params, {
-                headers: { 'content-type': 'application/x-www-form-urlencoded' }
+                headers: {'content-type': 'application/x-www-form-urlencoded'}
             }).then(response => {
                 const responseData = response.data
                 if (responseData.result) {

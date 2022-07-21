@@ -47,8 +47,12 @@ def temp_organization():
 
 class UserManager(BaseUserManager):
     def create_user(
-            self, email, name, cellphone=None, name_card=None, referer_code=None, user_type=None, password=None,
-            organization=None, is_organization_admin=False
+            self, email, name, cellphone=None, name_card=None, group_type=None, referer_code=None, user_type=None, password=None,
+            organization=None, is_organization_admin=False,
+            dept_1=None,
+            dept_2=None,
+            dept_3=None,
+            dept_4=None,
     ):
         if all([organization is None, is_organization_admin is True]):
             raise ValueError('관리자 권한을 부여하려는 조직을 지정하세요.')
@@ -75,6 +79,11 @@ class UserManager(BaseUserManager):
             name=name, cellphone=cellphone,
             name_card=name_card, referer_code=referer_code,
             user_type=user_type, organization=organization_instance,
+            group_type=group_type,
+            dept_1=dept_1,
+            dept_2=dept_2,
+            dept_3=dept_3,
+            dept_4=dept_4,
         )
         if organization_employee:
             user.employee_no = organization_employee.code
@@ -143,6 +152,20 @@ class Organization(models.Model):
     service_policy = RichTextField(null=True, blank=True, verbose_name='서비스 이용약관(계약서)')
     privacy_policy = RichTextField(null=True, blank=True, verbose_name='개인정보 처리방침')
     need_validate = models.BooleanField(default=False, null=False, blank=False, verbose_name='조직 사용인 검증')
+    group_list_string = models.CharField(max_length=500, null=True, blank=True, verbose_name='그룹타입리스트')
+    dept_1_select = models.BooleanField(default=False, null=False, verbose_name='부서1')
+    dept_2_select = models.BooleanField(default=False, null=False, verbose_name='부서2')
+    dept_3_select = models.BooleanField(default=False, null=False, verbose_name='부서3')
+    dept_4_select = models.BooleanField(default=False, null=False, verbose_name='부서4')
+
+    @property
+    def group_list(self):
+        if self.group_list_string is None:
+            return None
+        group_list = [s for s in self.group_list_string.split(",") if s.strip() != ""]
+        if len(group_list) == 0:
+            return None
+        return group_list
 
     def __str__(self):
         return self.name
@@ -217,6 +240,7 @@ class User(PermissionsMixin, AbstractBaseUser):
         max_length=50, null=True, blank=True, verbose_name='회원타입'
     )
     employee_no = models.CharField(max_length=100, null=True, blank=True, verbose_name='사번')
+    group_type = models.CharField(max_length=100, null=True, blank=True, verbose_name='조직')
     dept_1 = models.CharField(max_length=200, null=True, blank=True, verbose_name='부서 1')
     dept_2 = models.CharField(max_length=200, null=True, blank=True, verbose_name='부서 2')
     dept_3 = models.CharField(max_length=200, null=True, blank=True, verbose_name='부서 3')

@@ -42,7 +42,52 @@
                                            id="id_name" name="name"
                                            value="{{ form.name.value|default_if_none:'' }}">
                                 </div>
+                                {% if organization.group_list %}
+                                    <div class="form-group col-md-12">
+                                        <label for="id_group_type" class="font-weight-bolder">소속 조직</label>
+                                        <select type="text" class="form-control form-control-lg"
+                                                id="id_group_type" name="group_type">
+                                            {% for group in organization.group_list %}
+                                                <option value="{{ group }}"
+                                                        {% if form.group_type.value == group %} selected{% endif %}
+                                                >{{ group }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endif %}
+                                {% if organization.dept_1_select %}
                                 <div class="form-group col-md-12">
+                                    <label for="id_dept_1" class="font-weight-bolder">사업부</label>
+                                    <input type="text" class="form-control form-control-lg" placeholder="사업부"
+                                           id="id_dept_1" name="dept_1"
+                                           value="{{ form.dept_1.value|default_if_none:'' }}">
+                                </div>
+                                {% endif %}
+                                {% if organization.dept_2_select %}
+                                <div class="form-group col-md-12">
+                                    <label for="id_dept_2" class="font-weight-bolder">본부</label>
+                                    <input type="text" class="form-control form-control-lg" placeholder="본부"
+                                           id="id_dept_2" name="dept_2"
+                                           value="{{ form.dept_2.value|default_if_none:'' }}">
+                                </div>
+                                {% endif %}
+                                {% if organization.dept_3_select %}
+                                <div class="form-group col-md-12">
+                                    <label for="id_dept_3" class="font-weight-bolder">지사</label>
+                                    <input type="text" class="form-control form-control-lg" placeholder="사업부"
+                                           id="id_dept_3" name="dept_3"
+                                           value="{{ form.dept_3.value|default_if_none:'' }}">
+                                </div>
+                                {% endif %}
+                                {% if organization.dept_4_select %}
+                                <div class="form-group col-md-12">
+                                    <label for="id_dept_4" class="font-weight-bolder">부서</label>
+                                    <input type="text" class="form-control form-control-lg" placeholder="부서"
+                                           id="id_dept_4" name="dept_4"
+                                           value="{{ form.dept_4.value|default_if_none:'' }}">
+                                </div>
+                                {% endif %}
+                                <div class="form-group col-md-12 mt-4">
                                     <label for="id_username" class="font-weight-bolder">이메일</label>
                                     <input type="text" class="form-control form-control-lg" placeholder="이메일"
                                            id="id_username" name="username"
@@ -106,7 +151,7 @@
                             {% endif %}
                             {% if error %}
                                 <div class="non-field-errors text-danger mb-3">
-                                {{ error }}
+                                    {{ error }}
                                 </div>
                             {% endif %}
                             {% for k, v in form.errors.items %}

@@ -106,12 +106,42 @@ class SignupForm(forms.Form):
     password = forms.CharField(required=True)
     password2 = forms.CharField(required=True)
     namecard = forms.ImageField(required=True)
+    group_type = forms.CharField(required=False)
+    dept_1 = forms.CharField(required=False)
+    dept_2 = forms.CharField(required=False)
+    dept_3 = forms.CharField(required=False)
+    dept_4 = forms.CharField(required=False)
 
     def clean(self):
         vd = super(SignupForm, self).clean()
         if vd['password'] != vd['password2']:
             raise ValidationError({"password2": '비밀번호가 일치하지 않습니다.'})
         return self.cleaned_data
+
+    # def clean_dept_1(self):
+    #     value = self.cleaned_data.get('dept_1')
+    #     if self.organization.dept_1_select is True and value is None:
+    #         raise ValidationError({"dept_1": '소속 부서명을 입력하세요'})
+    #     return value
+    #
+    # def clean_dept_2(self):
+    #     value = self.cleaned_data.get('dept_2')
+    #     if self.organization.dept_2_select is True and value is None:
+    #         raise ValidationError({"dept_2": '소속 부서명을 입력하세요'})
+    #     return value
+    #
+    # def clean_dept_3(self):
+    #     value = self.cleaned_data.get('dept_3')
+    #     if self.organization.dept_3_select is True and value is None:
+    #         raise ValidationError({"dept_3": '소속 부서명을 입력하세요'})
+    #     return value
+    #
+    # def clean_dept_4(self):
+    #     value = self.cleaned_data.get('dept_4')
+    #     if self.organization.dept_4_select is True and value is None:
+    #         raise ValidationError({"dept_4": '소속 부서명을 입력하세요'})
+    #     return value
+
 
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -126,8 +156,8 @@ class SignupForm(forms.Form):
 class ExternalSignupView(View):
     def get(self, request):
         guid = request.GET.get('guid')
-        form = SignupForm()
         organization = get_object_or_404(Organization, guid=guid)
+        form = SignupForm(initial=dict(organization=organization))
         return render(request, 'affiliate/auth/signup/external.html',
                       context={"organization": organization, "form": form})
 
@@ -141,7 +171,11 @@ class ExternalSignupView(View):
                 user = User.objects.create_user(
                     email=data.get('username'), name=data.get('name'), password=data.get('password'),
                     cellphone=data.get('cellphone'), name_card=data.get('namecard'),
-                    user_type='fc', organization=organization
+                    user_type='fc', organization=organization, group_type=data.get('group_type'),
+                    dept_1=data.get('dept_1'),
+                    dept_2=data.get('dept_2'),
+                    dept_3=data.get('dept_3'),
+                    dept_4=data.get('dept_4'),
                 )
                 django_login(request, user)
                 return redirect(reverse('car_cms_fc_app:index'))
@@ -169,11 +203,11 @@ class UserListFilterForm(forms.Form):
     sort = forms.CharField(required=False)
     start = forms.DateField(required=False, input_formats=["%Y-%m-%d"])
     end = forms.DateField(required=False, input_formats=["%Y-%m-%d"])
+    group_type = forms.CharField(required=False)
 
     def create_query(self):
         data = self.cleaned_data
         q = Q()
-        print(data.get('name'))
         if data.get('name') not in ["", None]:
             q.add(Q(name__icontains=data.get('name')), q.AND)
         if data.get('dept') not in ["", None]:
@@ -191,6 +225,8 @@ class UserListFilterForm(forms.Form):
             q.add(Q(registered_at__date__gte=data.get('start')), q.AND)
         if data.get('end'):
             q.add(Q(registered_at__date__lte=data.get('end')), q.AND)
+        if data.get('group_type'):
+            q.add(Q(group_type=data.get('group_type')), q.AND)
 
         sort = "-registered_at" if data.get('sort') == "" else data.get('sort')
         return q, sort
@@ -210,7 +246,7 @@ class UserListView(AffiliateUserMixin, ListView):
             query, sort = filterform.create_query()
             queryset = queryset.order_by(sort).values(
                 'id', 'email', 'name', 'cellphone', 'is_organization_admin', 'is_active', 'registered_at', 'last_login',
-                'employee_no', 'role'
+                'employee_no', 'role', 'group_type'
             ).annotate(
                 dept_1_value=Case(When(dept_1=None, then=Value("-")), default=F('dept_1')),
                 dept_2_value=Case(When(dept_2=None, then=Value("-")), default=F('dept_2')),
@@ -234,6 +270,8 @@ class UserListView(AffiliateUserMixin, ListView):
         context['json_object_list'] = user_list
         filterform = UserListFilterForm(self.request.GET)
         context['filterform'] = filterform
+        context['organization'] = self.request.user.organization
+        context['group_type_list'] = self.request.user.organization.group_list
         return context
 
     def to_list(self, queryset):
