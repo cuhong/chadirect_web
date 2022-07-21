@@ -29,7 +29,7 @@
             입니다.<br>
 
         </div>
-        {% if compare.status >= 2 %}
+        {% if compare.status == 2 or compare.status == 7 or compare.status == 3 or compare.status == 4 or compare.status == 6 %}
         <div class="mb-5">
             <button class="btn btn-cc-primary btn-block" onclick="showSendSmsModalBtn()">가입링크 발송</button>
             <button class="btn btn-cc-primary btn-block" onclick="showSendSmsResultModalBtn()">가입링크 발송 이력</button>
