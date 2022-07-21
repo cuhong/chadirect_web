@@ -417,7 +417,11 @@ class CompareDetailView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
         compare = Compare.objects.get(
             account=request.user, id=compare_id
         )
-        product_choices = ProductChoice.choices
+        from link.models import ProductLink
+        _product_choices = ProductLink.objects.all()
+        product_choices = [
+            (product.product, product.get_product_display()) for product in _product_choices
+        ]
         context = dict(compare=compare, type=self.app_type, product_choices=product_choices)
         return render(request, template_name, context=context)
 
