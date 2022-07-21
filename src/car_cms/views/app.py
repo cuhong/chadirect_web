@@ -448,7 +448,7 @@ class CompareDetailView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 ).all()
                 link_list = [
                     {
-                        "product": link.get_product_display(),
+                        "product": link.short_link.get_product_display(),
                         "last_log_at": link.last_log_at.astimezone(KST).strftime("%Y-%m-%d %H:%M"),
                         "count": link.log_count
                     } for link in links

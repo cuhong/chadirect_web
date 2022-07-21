@@ -31,7 +31,7 @@
         </div>
         <div class="mb-5">
             <button class="btn btn-cc-primary btn-block" onclick="showSendSmsModalBtn()">가입링크 발송</button>
-                        <button class="btn btn-cc-primary btn-block" onclick="showSendSmsResultModalBtn()">가입링크 발송 이력</button>
+            <button class="btn btn-cc-primary btn-block" onclick="showSendSmsResultModalBtn()">가입링크 발송 이력</button>
         </div>
         <div class="mb-3">
             {#            <div class="d-flex flex-row justify-content-between align-items-center mb-3">#}
@@ -309,7 +309,7 @@
         }
 
         function showSendSmsResultModalBtn() {
-                        $.ajax({
+            $.ajax({
                 type: "POST",
                 data: {
                     'action': 'requestLinkResult',
@@ -329,11 +329,11 @@
                     }
                 },
                 error: function (request, status, error) {
-                        Swal.fire(
-                            '실패',
-                            `조회중 오류가 발생했습니다.`,
-                            'error'
-                        )
+                    Swal.fire(
+                        '실패',
+                        `조회중 오류가 발생했습니다.`,
+                        'error'
+                    )
                 },
             });
         }
