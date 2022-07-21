@@ -31,7 +31,7 @@
         </div>
         <div class="mb-5">
             <button class="btn btn-cc-primary btn-block" onclick="showSendSmsModalBtn()">가입링크 발송</button>
-{#            <button class="btn btn-cc-primary btn-block" onclick="showSendSmsResultModalBtn()">가입링크 발송 이력</button>#}
+                        <button class="btn btn-cc-primary btn-block" onclick="showSendSmsResultModalBtn()">가입링크 발송 이력</button>
         </div>
         <div class="mb-3">
             {#            <div class="d-flex flex-row justify-content-between align-items-center mb-3">#}
@@ -245,7 +245,42 @@
                                class="form-control"
                                value="{{ compare.customer_cellphone }}">
                     </div>
-                    <button type="button" class="btn btn-phone-primary btn-block mb-2" onclick="requestProductLink()">링크발송
+                    <button type="button" class="btn btn-phone-primary btn-block mb-2" onclick="requestProductLink()">
+                        링크발송
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="sendSmsResultModal" tabindex="-1" role="dialog"
+         aria-labelledby="sendSmsResultModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sendSmsResultModalLabel">가입링크 발송 이력</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mb-2">
+                        <label for="product" class="">보험사</label>
+                        <select id="product" name="product" class="form-control">
+                            {% for product in product_choices %}
+                                <option value="{{ product.0 }}">{{ product.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cellphone">고객 전화번호</label>
+                        <input type="text" id="cellphone" name="cellphone"
+                               class="form-control"
+                               value="{{ compare.customer_cellphone }}">
+                    </div>
+                    <button type="button" class="btn btn-phone-primary btn-block mb-2" onclick="requestProductLink()">
+                        링크발송
                     </button>
                 </div>
             </div>
@@ -263,7 +298,7 @@
         const cellphoneInput = document.getElementById('cellphone')
         let contractDataTemp
         const sendSmsModal = $("#sendSmsModal")
-        const sendSmsResultModal = $("#sendSmsModal")
+        const sendSmsResultModal = $("#sendSmsResultModal")
 
         function showSendSmsModalBtn() {
             sendSmsModal.modal('show')
@@ -274,11 +309,37 @@
         }
 
         function showSendSmsResultModalBtn() {
-
+                        $.ajax({
+                type: "POST",
+                data: {
+                    'action': 'requestLinkResult',
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    if (response.result) {
+                        console.log(response.link_list)
+                    } else {
+                        console.log(response.msg)
+                        Swal.fire(
+                            '실패',
+                            `조회중 오류가 발생했습니다.`,
+                            'error'
+                        )
+                        sendSmsResultModal.modal('show')
+                    }
+                },
+                error: function (request, status, error) {
+                        Swal.fire(
+                            '실패',
+                            `조회중 오류가 발생했습니다.`,
+                            'error'
+                        )
+                },
+            });
         }
 
         function hideSendSmsResultModalBtn() {
-
+            sendSmsResultModal.modal('hide')
         }
 
         function requestProductLink() {

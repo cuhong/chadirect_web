@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ValidationError
 from django.db import transaction, models
-from django.db.models import Count, Sum, When, Case, Value, Q
+from django.db.models import Count, Sum, When, Case, Value, Q, Subquery, OuterRef
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.views.generic import TemplateView, ListView
@@ -19,6 +19,7 @@ from django.views import View
 from django.views.generic import TemplateView
 from sentry_sdk import capture_exception
 
+from account.load_legacy_user import KST
 from car_cms.exceptions.compare import CarCMSCompareError
 from car_cms.models import Notice, Compare, CompareStatus
 from commons.utils.age import lunar_age
@@ -434,6 +435,25 @@ class CompareDetailView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 print(link.short_url)
                 response_data = {"result": True}
                 print('response_data = {"result": True}')
+            elif action == 'requestLinkResult':
+                from link.models import ShortlinkLog
+                links = compare.shortlink_set.annotate(
+                    log_count=Coalesce(
+                        Subquery(
+                            ShortlinkLog.objects.filter(short_link=OuterRef('pk')).values('short_link').annotate(
+                                count=Count('pk')
+                            ).values('count')
+                        ), 0
+                    )
+                ).all()
+                link_list = [
+                    {
+                        "product": link.get_product_display(),
+                        "last_log_at": link.last_log_at.astimezone(KST).strftime("%Y-%m-%d %H:%M"),
+                        "count": link.log_count
+                    } for link in links
+                ]
+                response_data = {"result": True, "link_list": link_list}
             elif action == 'requestContract':
                 memo = request.POST.get('memo')
                 compare.start_contract(memo=memo)
