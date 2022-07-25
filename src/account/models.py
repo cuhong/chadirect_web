@@ -228,6 +228,12 @@ class User(PermissionsMixin, AbstractBaseUser):
     is_organization_admin = models.BooleanField(
         default=False, null=False, blank=False, verbose_name='조직 관리자'
     )
+    is_organization_superadmin = models.BooleanField(
+        default=False, null=False, blank=False, verbose_name='조직 슈퍼 관리자'
+    )
+    override = models.BooleanField(
+        default=False, null=False, blank=False, verbose_name='오버라이딩'
+    )
     is_active = models.BooleanField(default=True, verbose_name='활성')
     is_admin = models.BooleanField(default=False, verbose_name='관리자(상담원)')
     bank = models.CharField(max_length=300, null=True, blank=True, verbose_name='은행')

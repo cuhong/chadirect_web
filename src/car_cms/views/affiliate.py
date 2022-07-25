@@ -244,10 +244,16 @@ class UserListView(AffiliateUserMixin, ListView):
         filterform = UserListFilterForm(self.request.GET)
         if filterform.is_valid():
             query, sort = filterform.create_query()
-            queryset = queryset.order_by(sort).values(
-                'id', 'email', 'name', 'cellphone', 'is_organization_admin', 'is_active', 'registered_at', 'last_login',
-                'employee_no', 'role', 'group_type'
-            ).annotate(
+            values = [
+                'id', 'email', 'name', 'cellphone', 'is_organization_admin'
+            ]
+            if self.request.user.is_organization_superadmin is True:
+                values.append('override')
+            values += [
+                'is_active', 'registered_at',
+                'last_login', 'employee_no', 'role', 'group_type'
+            ]
+            queryset = queryset.order_by(sort).values(*values).annotate(
                 dept_1_value=Case(When(dept_1=None, then=Value("-")), default=F('dept_1')),
                 dept_2_value=Case(When(dept_2=None, then=Value("-")), default=F('dept_2')),
                 dept_3_value=Case(When(dept_3=None, then=Value("-")), default=F('dept_3')),
@@ -272,6 +278,7 @@ class UserListView(AffiliateUserMixin, ListView):
         context['filterform'] = filterform
         context['organization'] = self.request.user.organization
         context['group_type_list'] = self.request.user.organization.group_list
+        context['is_super_user'] = self.request.user.is_organization_superadmin
         return context
 
     def to_list(self, queryset):
@@ -312,14 +319,22 @@ class UserUpdateForm(forms.ModelForm):
         model = User
         fields = ['name', 'employee_no', 'cellphone', 'is_organization_admin']
 
+class UserUpdateSuForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['name', 'employee_no', 'cellphone', 'is_organization_admin', 'override']
+
 
 class UserDetailView(AffiliateUserMixin, View):
     def get(self, request, user_id):
         try:
-            user = User.objects.values(
+            values = [
                 'id', 'registered_at', 'last_login', 'email', 'name', 'employee_no', 'cellphone',
                 'is_organization_admin'
-            ).get(id=user_id, organization=request.user.organization)
+            ]
+            if request.user.is_organization_superadmin is True:
+                values.append('override')
+            user = User.objects.values(*values).get(id=user_id, organization=request.user.organization)
             user_data = dict(
                 id=str(user.get('id')),
                 registered_at=user.get('registered_at').strftime("%Y-%m-%d %H:%M:%S"),
@@ -329,6 +344,7 @@ class UserDetailView(AffiliateUserMixin, View):
                 name=user.get('name'),
                 employee_no=user.get('employee_no'),
                 cellphone=user.get('cellphone'),
+                override=user.get('override', None),
                 is_organization_admin=user.get('is_organization_admin'),
             )
             response_data = {
@@ -343,7 +359,8 @@ class UserDetailView(AffiliateUserMixin, View):
     def post(self, request, user_id):
         try:
             user = User.objects.get(id=user_id, organization=request.user.organization)
-            form = UserUpdateForm(request.POST, instance=user)
+            form_class = UserUpdateSuForm if self.request.user.is_organization_superadmin else UserUpdateForm
+            form = form_class(request.POST, instance=user)
             if form.is_valid() is True:
                 form.save()
                 response_data = {"result": True, "data": None}
