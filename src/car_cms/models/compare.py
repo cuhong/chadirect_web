@@ -7,6 +7,7 @@ from traceback import print_exc
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models, transaction
+from django.db.models import When, Value, Case, Count
 from django.urls import reverse
 from django.utils import timezone
 from sequences import get_next_value
@@ -545,6 +546,19 @@ class Compare(DateTimeMixin, UUIDPkMixin, EstimateMixin, models.Model):
     estimate_image_3_comment = models.CharField(max_length=500, null=True, blank=True, verbose_name='견적서 3 커멘트')
     danal_auth = models.ForeignKey(DanalAuth, null=True, blank=True, verbose_name='본인인증', on_delete=models.PROTECT)
 
+    @classmethod
+    def get_summary(cls):
+        status_list = [
+            When(
+                status=choice[0], then=Value(choice[1], output_field=models.CharField())
+            ) for choice in CompareStatus.choices
+        ]
+        summary = Compare.objects.all().annotate(
+            status_display=Case(*status_list)
+        ).values('status', 'status_display').annotate(
+            total=Count('status')
+        ).order_by('status')
+        return summary
     @property
     def auth_url(self):
         url = reverse('car_cms_app:customer_auth', args=[self.id])

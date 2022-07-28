@@ -338,8 +338,15 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
             messages.success(request, '체결 취소 처리 되었습니다.')
 
     def _status_display(self, obj):
-        color = "red" if obj.status == 4 else "black"
-        weight = "bold" if obj.status == 4 else "normal"
+        if obj.status == 4:
+            color = "red"
+            weight = "bold"
+        elif obj.status == 0:
+            color = "blue"
+            weight = "bold"
+        else:
+            color = "black"
+            weight = "normal"
         html = f"<span style='color: {color}; font-weight: {weight}'>{obj.get_status_display()}</span>"
         return mark_safe(html)
 
