@@ -461,7 +461,7 @@ class CompareDetailView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 response_data = {"result": True, "link_list": link_list}
             elif action == 'requestContract':
                 memo = request.POST.get('memo')
-                compare.start_contract(memo=memo)
+                compare.start_contract(request.user, memo=memo)
                 response_data = {"result": True}
             elif action == 'getContractData':
                 response_data = {
