@@ -339,15 +339,18 @@ class CompareAdmin(CustomInlineActionsModelAdminMixin, admin.ModelAdmin):
 
     def _status_display(self, obj):
         if obj.status == 4:
+            font_size = "14px"
             color = "red"
             weight = "bold"
         elif obj.status == 0:
+            font_size = "16px"
             color = "blue"
             weight = "bold"
         else:
+            font_size = "14px"
             color = "black"
             weight = "normal"
-        html = f"<span style='color: {color}; font-weight: {weight}'>{obj.get_status_display()}</span>"
+        html = f"<span style='color: {color}; font-weight: {weight}; font-size: {font_size}'>{obj.get_status_display()}</span>"
         return mark_safe(html)
 
     _start_calculation.short_description = '산출시작'
