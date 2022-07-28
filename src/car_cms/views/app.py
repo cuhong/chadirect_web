@@ -1,5 +1,6 @@
 import datetime
 
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ValidationError
 from django.db import transaction, models
@@ -331,16 +332,31 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 birthdate = None
             min_age_birthdate = data.get('min_age_birthdate', None)
             min_age = None if min_age_birthdate is None else lunar_age(min_age_birthdate)
-            # print(form.cleaned_data)
+            customer_name = data['customer_name']
+            customer_cellphone = data.get('customer_cellphone')
+            # 20220728 단기간 내에 동일 요청 여러건 하는 경우 필터링
+            if Compare.objects.filter(
+                account=request.user, customer_name=customer_name,
+                customer_cellphone=customer_cellphone,
+                registered_at__gte=timezone.now() - relativedelta(minutes=30)
+            ).exists():
+                context = dict(
+                    form=CompareForm(),
+                    type=self.app_type,
+                    error="30분 이내에 동일한 고객이름, 전화번호로 요청한 건이 있습니다."
+                )
+                template_name = self.get_template()
+                return render(request, template_name=template_name, context=context)
+
             danal_auth = DanalAuth.objects.create(
                 title="자동차보험 견적 설계 동의",
                 phone_no=data.get('customer_cellphone')
             ) if data.get('request_auth') is True else None
             compare = Compare.objects.create(
                 account=request.user,
-                customer_name=data['customer_name'],
+                customer_name=customer_name,
                 career=data.get('career'),
-                customer_cellphone=data.get('customer_cellphone'),
+                customer_cellphone=customer_cellphone,
                 customer_type=data['customer_type'],
                 customer_identification=data['customer_identification'],
                 ssn=data.get('ssn', ''),
@@ -375,9 +391,9 @@ class CompareCreateView(AppTypeCheck, LoginRequiredMixin, CmsUserPermissionMixin
                 compare_url = reverse('car_cms_fc_app:compare_detail', args=[compare.id])
             return HttpResponseRedirect(compare_url)
         else:
-            print(form.errors)
             template_name = self.get_template()
-            context = dict(form=form, type=self.app_type)
+            error = "입력 내용을 확인하세요."
+            context = dict(form=form, type=self.app_type, error=error)
             return render(request, template_name=template_name, context=context)
 
 

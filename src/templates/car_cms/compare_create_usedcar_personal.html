@@ -261,7 +261,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', function (event) {
-            //overlay.off()
+            {% if error %}
+                alert('{{ error }}')
+            {% endif %}
         })
     </script>
 {% endblock %}
